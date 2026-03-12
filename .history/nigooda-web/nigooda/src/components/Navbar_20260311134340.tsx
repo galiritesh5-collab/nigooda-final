@@ -22,6 +22,13 @@ const Navbar: React.FC<Props> = ({
   products,
 }) => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+
+  const closeMenu = () => {
+    setTimeout(() => {
+      setActiveMenu(null);
+    }, 120);
+  };
 
   const navigate = useNavigate();
 
@@ -186,14 +193,19 @@ const Navbar: React.FC<Props> = ({
         </div>
 
         <div className="py-3 relative z-10">
-          <div className="flex space-x-4 pb-2 relative">
+          <div className="flex space-x-4 overflow-x-auto pb-2 relative">
 
             {CATEGORIES.map((cat) => {
               const isSimple = cat.type === "simple";
               const isTabbed = cat.type === "tabbed";
 
               return (
-                <div key={cat.id} className="relative py-2 group">
+                <div key={cat.id} className="relative py-2">
+
+                  <div
+                    onMouseEnter={() => setActiveMenu(cat.id)}
+                    onMouseLeave={() => setActiveMenu(null)}
+                  >
 
                     <button
                       onClick={() => navigate(`/category/${cat.id}`)}
@@ -203,7 +215,11 @@ const Navbar: React.FC<Props> = ({
                     </button>
 
                     {isSimple && cat.items && (
-                      <div className="absolute left-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-[200] min-w-[260px] hidden group-hover:block">
+                      <div
+                        className={`absolute left-0 top-full mt-1 bg-white border rounded-xl shadow-lg z-[200] min-w-[260px] ${
+                          activeMenu === cat.id ? "block" : "hidden"
+                        }`}
+                      >
                         {cat.items.map((item) => (
                           <Link
                             key={item}
@@ -217,7 +233,11 @@ const Navbar: React.FC<Props> = ({
                     )}
 
                     {isTabbed && (
-                      <div className="absolute left-0 top-full mt-1 bg-white border rounded-2xl shadow-xl z-[200] p-6 min-w-[900px] hidden group-hover:block">
+                      <div
+                        className={`absolute left-0 top-full mt-1 bg-white border rounded-2xl shadow-xl z-[200] p-6 min-w-[900px] ${
+                          activeMenu === cat.id ? "block" : "hidden"
+                        }`}
+                      >
 
                         {cat.id === "women" && (
                           <div className="grid grid-cols-5 gap-8">
@@ -271,6 +291,8 @@ const Navbar: React.FC<Props> = ({
 
                       </div>
                     )}
+
+                  </div>
 
                 </div>
               );
