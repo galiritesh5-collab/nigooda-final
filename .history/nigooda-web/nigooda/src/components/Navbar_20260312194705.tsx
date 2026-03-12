@@ -61,37 +61,20 @@ const Navbar: React.FC<Props> = ({
 
   return (
     <nav className="fixed top-0 left-0 w-full z-[100] bg-white/90 backdrop-blur border-b shadow-sm">
-      <div className="max-w-[1500px] mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
 
-        <div className="flex items-center justify-between h-14 gap-4">
+        <div className="flex items-center justify-between h-20">
 
           <Link to="/" className="flex items-center gap-2 group">
             <img
               src={logo}
               alt="Nigooda"
-              className="h-10 w-auto group-hover:scale-105 transition"
+              className="h-6 w-auto group-hover:scale-105 transition"
             />
           </Link>
 
-          <div className="hidden md:block w-[640px] mx-2">
-
+          <div className="hidden md:block flex-1 max-w-md mx-8">
             <div ref={dropdownRef} className="relative w-full">
-
-              {/* Search Icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35m1.85-5.65a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-                />
-              </svg>
 
               <input
                 type="text"
@@ -107,7 +90,7 @@ const Navbar: React.FC<Props> = ({
                   }
                 }}
                 placeholder="Search products..."
-                className="w-full pl-12 pr-5 py-2.5 border rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-5 py-2.5 border rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
 
               {showDropdown && search && (
@@ -168,25 +151,28 @@ const Navbar: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
 
-            <div ref={accountRef} className="relative flex flex-col items-center cursor-pointer">
+            <Link
+              to="/wishlist"
+              className="flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium text-rose-600 border-rose-200 bg-rose-50 hover:bg-rose-100 hover:scale-105 transition"
+            >
+              ❤️ Wishlist
+            </Link>
 
+            <div ref={accountRef} className="relative">
               <button
                 onClick={() => setIsAccountOpen(!isAccountOpen)}
-                className="flex flex-col items-center text-sm font-medium text-slate-700 hover:text-indigo-600"
+                className="flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 transition"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5.121 17.804A9 9 0 1118.879 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                Profile
+                👤 Account
               </button>
 
               {isAccountOpen && (
                 <div className="absolute right-0 top-full mt-3 w-48 bg-white border rounded-xl shadow-xl overflow-hidden z-50">
 
                   <button className="block w-full text-left px-4 py-3 text-sm hover:bg-indigo-50">
-                    Profile
+                    👤 Profile
                   </button>
 
                   <button className="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50">
@@ -195,32 +181,12 @@ const Navbar: React.FC<Props> = ({
 
                 </div>
               )}
-
             </div>
-
-            <Link to="/wishlist" className="flex flex-col items-center text-sm font-medium text-slate-700 hover:text-indigo-600">
-
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364 4.318 12.682a4.5 4.5 0 010-6.364z"/>
-              </svg>
-
-              Wishlist
-
-            </Link>
-
-            <Link to="/about" className="flex flex-col items-center text-sm font-medium text-slate-700 hover:text-indigo-600">
-
-              <span className="text-lg mb-1">ℹ︎</span>
-
-              About
-
-            </Link>
-
           </div>
         </div>
 
-        <div className="py-1 relative z-10">
-          <div className="flex gap-3 pb-1 relative">
+        <div className="py-3 relative z-10">
+          <div className="flex space-x-4 pb-2 relative">
 
             {CATEGORIES.map((cat) => {
               const isSimple = cat.type === "simple";
@@ -231,7 +197,7 @@ const Navbar: React.FC<Props> = ({
 
                     <button
                       onClick={() => navigate(`/category/${cat.id}`)}
-                      className="px-3 py-1 rounded-full text-sm font-semibold border bg-white hover:border-indigo-500 whitespace-nowrap flex-shrink-0"
+                      className="px-4 py-2 rounded-full text-sm font-semibold border bg-white hover:border-indigo-500 whitespace-nowrap flex-shrink-0"
                     >
                       {cat.label}
                     </button>
@@ -312,7 +278,6 @@ const Navbar: React.FC<Props> = ({
 
           </div>
         </div>
-
       </div>
     </nav>
   );
