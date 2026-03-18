@@ -7,14 +7,7 @@ import ProductSection from "../components/ProductSection";
    UTILS
 ----------------------------------*/
 const slugify = (text: string) =>
-  text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/&/g, "and")
-    .replace(/,/g, "")
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-");
+  text.toLowerCase().replace(/\s+/g, "-");
 
 /* -------------------------------
    PAGE
@@ -43,7 +36,7 @@ const CategoryPage = ({ products }: { products: any[] }) => {
       products.filter(
         (p) =>
           p["Primary Category"] &&
-          slugify(p["Primary Category"]) === slugify(categoryId || "")
+          slugify(p["Primary Category"]) === categoryId
       ),
     [products, categoryId]
   );

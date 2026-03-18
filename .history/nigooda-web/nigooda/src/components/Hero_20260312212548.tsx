@@ -4,7 +4,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="bg-gradient-to-b from-indigo-50 via-white to-white px-4 md:px-6 py-20">
+    <section className="bg-gradient-to-b from-indigo-50 via-white to-white px-4 md:px-6 mt-16 py-20">
       <div className="max-w-7xl mx-auto space-y-16">
         {/* TAGLINE */}
         <div className="max-w-4xl mx-auto text-center space-y-6">
@@ -12,7 +12,7 @@ const Hero = () => {
             The Future of Shopping
           </span>
 
-          {/* ✅ Tailwind v4 Hero Heading */}
+          {/* Hero Heading */}
           <h1 className="text-4xl font-bold text-slate-900 leading-tight">
             Discover Better.{" "}
             <span className="text-indigo-600">Scan Smarter.</span>
@@ -38,7 +38,7 @@ const Hero = () => {
             </p>
             <button
               onClick={comingSoon}
-              className="w-full py-3 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition"
+              className="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition"
             >
               Scan Product
             </button>
@@ -52,7 +52,7 @@ const Hero = () => {
             </p>
             <button
               onClick={comingSoon}
-              className="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition"
+              className="w-full py-2.5 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition"
             >
               Analyze Label
             </button>
@@ -66,7 +66,7 @@ const Hero = () => {
             </p>
             <button
               onClick={comingSoon}
-              className="w-full py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-500 transition"
+              className="w-full py-2.5 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-500 transition"
             >
               Start Styling
             </button>
