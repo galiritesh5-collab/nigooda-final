@@ -1,0 +1,8 @@
+﻿src/components/Navbar.tsx(16,44): error TS2769: No overload matches this call.
+  Argument of type '["Wishlist"]' is not assignable to parameter of type '[screen: "MainTabs", params: NavigatorScreenParams<RootTabParamList>, options?: { merge?: boolean | undefined; pop?: boolean | undefined; } | undefined] | ... 4 more ... | [screen: ...]'.
+    Type '["Wishlist"]' is not assignable to type '[screen: "Home", params?: undefined, options?: { merge?: boolean | undefined; pop?: boolean | undefined; } | undefined] | [screen: "Search", params?: undefined, options?: { merge?: boolean | undefined; pop?: boolean | undefined; } | undefined]'.
+      Type '["Wishlist"]' is not assignable to type '[screen: "Search", params?: undefined, options?: { merge?: boolean | undefined; pop?: boolean | undefined; } | undefined]'.
+        Type at position 0 in source is not compatible with type at position 0 in target.
+          Type '"Wishlist"' is not assignable to type '"Search"'.
+  Overload 2 of 2, '(options: { name: "MainTabs"; params: NavigatorScreenParams<RootTabParamList>; path?: string | undefined; merge?: boolean | undefined; pop?: boolean | undefined; } | ... 4 more ... | { ...; }): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type '{ name: "MainTabs"; params: NavigatorScreenParams<RootTabParamList>; path?: string | undefined; merge?: boolean | undefined; pop?: boolean | undefined; } | ... 4 more ... | { ...; }'.

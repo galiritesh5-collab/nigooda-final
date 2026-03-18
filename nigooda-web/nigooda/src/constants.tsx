@@ -197,7 +197,7 @@ export const CATEGORIES = [
     items: ['Kids Clothing', 'Kids Care'],
   },
   {
-    id: 'toys-learning',
+    id: 'toys-and-learning',
     label: 'TOYS & LEARNING',
     type: 'simple',
     items: ['Toys', 'Educational & STEM Learning'],
@@ -214,19 +214,19 @@ export const CATEGORIES = [
     ],
   },
   {
-    id: 'fitness',
+    id: 'fitness-and-wellness',
     label: 'FITNESS & WELLNESS',
     type: 'simple',
     items: ['Supplements', 'Fitness Equipment'],
   },
   {
-    id: 'home',
+    id: 'home-decor-and-kitchen',
     label: 'HOME, DECOR & KITCHEN',
     type: 'simple',
     items: ['Home Decor', 'Kitchen Essentials', 'Lifestyle Essentials'],
   },
   {
-    id: 'electronics',
+    id: 'electronics-and-smart-products',
     label: 'ELECTRONICS & SMART PRODUCTS',
     type: 'simple',
     items: ['Smart Gadgets', 'Electronics'],

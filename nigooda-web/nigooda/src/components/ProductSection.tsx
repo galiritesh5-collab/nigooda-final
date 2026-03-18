@@ -41,7 +41,7 @@ const ProductCard: React.FC<{
 
   return (
     <div
-      className={`relative bg-white rounded-xl border hover:shadow-md transition ${
+      className={`relative group bg-white rounded-2xl border border-slate-100 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 ${
         compact ? "p-3" : "p-5"
       }`}
     >
@@ -61,13 +61,13 @@ const ProductCard: React.FC<{
       {/* MAIN IMAGE */}
       <Link to={`/product/${activeVariant.id}`}>
         <div
-          className={`w-full flex items-center justify-center ${
-            compact ? "h-28 mb-2" : "h-56 mb-4"
+          className={`w-full flex items-center justify-center overflow-hidden rounded-xl ${
+            compact ? "h-28 mb-3" : "h-56 mb-5"
           }`}
         >
           <img
             src={activeVariant["Main Image URL"]}
-            className="max-h-full object-contain"
+            className="max-h-full object-contain group-hover:scale-110 transition-transform duration-500"
             alt={activeVariant["Name of Product"]}
           />
         </div>
@@ -75,8 +75,8 @@ const ProductCard: React.FC<{
 
       {/* PRODUCT NAME */}
       <h3
-        className={`text-center line-clamp-2 ${
-          compact ? "text-xs" : "text-sm font-medium"
+        className={`text-center line-clamp-2 text-slate-800 ${
+          compact ? "text-xs font-semibold" : "text-sm font-bold leading-snug"
         }`}
       >
         {activeVariant["Name of Product"]}
@@ -99,8 +99,8 @@ const ProductCard: React.FC<{
       {/* PRICE */}
       {activeVariant.Price && (
         <p
-          className={`text-center mt-2 ${
-            compact ? "text-xs" : "text-sm font-semibold"
+          className={`text-center mt-3 text-indigo-600 ${
+            compact ? "text-xs font-semibold" : "text-base font-bold"
           }`}
         >
           ₹{activeVariant.Price}

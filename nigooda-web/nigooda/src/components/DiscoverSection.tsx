@@ -29,18 +29,18 @@ const DiscoverSection = ({
   if (groupedProducts.length === 0) return null;
 
   return (
-    <div className="mb-12">
-      <div className="flex items-center justify-between px-6 mb-3">
+    <div className="mb-16">
+      <div className="flex items-end justify-between px-4 md:px-6 xl:px-8 mb-6">
         <div>
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <p className="text-sm text-slate-600">{description}</p>
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">{title}</h2>
+          <p className="text-base text-slate-500 mt-1">{description}</p>
         </div>
 
         <Link
           to={`/discover/${sectionKey}`}
-          className="text-sm font-medium text-indigo-600 hover:underline"
+          className="group flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
         >
-          View All
+          View All <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
         </Link>
       </div>
 
