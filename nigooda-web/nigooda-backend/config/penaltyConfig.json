@@ -1,0 +1,16 @@
+{
+  "critical_penalties": {
+    "trans_fat": -1.2,
+    "synthetic_antioxidant": -0.9,
+    "artificial_dye": -0.7,
+    "hfcs": -0.6,
+    "artificial_sweetener": -0.6
+  },
+
+  "processing_penalties": {
+    "deep_fried": -0.8,
+    "extruded_fried": -0.9,
+    "refined_oil_frying": -0.3,
+    "moderately_processed": -0.3
+  }
+}
