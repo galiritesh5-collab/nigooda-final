@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "hash": "669490d73e2620f6abd00dbd36cce264",
+    "ingredients": [
+      "potato",
+      "palmolein oil",
+      "salt"
+    ],
+    "processing_types": [],
+    "processing_level": "moderate",
+    "created_at": "2026-03-23T12:31:56.012Z"
+  }
+]

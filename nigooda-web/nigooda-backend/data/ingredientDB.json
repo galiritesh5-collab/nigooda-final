@@ -1,1 +1,119 @@
-[]
+[
+  {
+    "ingredient_id": "ING_000001",
+    "canonical_name": "potato",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 2,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T16:56:02.213Z",
+    "last_updated": "2026-03-25T16:56:02.213Z"
+  },
+  {
+    "ingredient_id": "ING_000002",
+    "canonical_name": "palmolein oil",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 2,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T16:56:11.281Z",
+    "last_updated": "2026-03-25T16:56:11.281Z"
+  },
+  {
+    "ingredient_id": "ING_000003",
+    "canonical_name": "salt",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 2,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T16:56:20.325Z",
+    "last_updated": "2026-03-25T16:56:20.325Z"
+  }
+]

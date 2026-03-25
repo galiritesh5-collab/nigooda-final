@@ -11,6 +11,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+/* =========================
+   ✅ ADDED ROUTE (NEW)
+   analyzeIngredients route
+========================= */
+
+const analyzeRoute =
+  require("./routes/analyzeIngredients");
+
+app.use("/api", analyzeRoute);
+
+/* =========================
+   EXISTING CODE CONTINUES
+========================= */
+
 const upload = multer({ dest: "uploads/" });
 const PORT = 5000;
 const DATA_FILE = path.join(__dirname, "data", "products.json");

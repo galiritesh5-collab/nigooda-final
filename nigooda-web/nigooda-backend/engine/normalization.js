@@ -4,116 +4,86 @@ const fs = require("fs");
 const path = require("path");
 
 
-// Load ingredient database for alias lookup
+
+/* =========================================
+   LOAD DB (CACHE)
+========================================= */
 
 const ingredientDBPath = path.join(
   __dirname,
   "../data/ingredientDB.json"
 );
 
-function loadIngredientDB() {
+let ingredientDB = [];
 
-  try {
+try {
 
-    const data = fs.readFileSync(
-      ingredientDBPath,
-      "utf8"
-    );
-
-    return JSON.parse(data);
-
-  } catch (error) {
-
-    return [];
-
-  }
-
-}
-
-
-
-// 🧠 STEP 1 — Split Ingredients
-
-function splitIngredients(text) {
-
-  return text
-    .split(/[,;\n•]/)
-    .map(item => item.trim());
-
-}
-
-
-
-// 🧠 STEP 2 — Remove Brackets
-
-function removeBrackets(text) {
-
-  return text.replace(/\(.*?\)/g, "");
-
-}
-
-
-
-// 🧠 STEP 3 — Remove Percentages
-
-function removePercentages(text) {
-
-  return text.replace(
-    /\d+(\.\d+)?%/g,
-    ""
+  const data = fs.readFileSync(
+    ingredientDBPath,
+    "utf8"
   );
 
+  ingredientDB = JSON.parse(data);
+
 }
 
+catch {
 
-
-// 🧠 STEP 4 — Remove Punctuation
-
-function removePunctuation(text) {
-
-  return text.replace(
-    /[^\w\s]/g,
-    ""
-  );
+  ingredientDB = [];
 
 }
 
 
 
-// 🧠 STEP 5 — Normalize Spaces
+/* =========================================
+   CLEAN SINGLE INGREDIENT
+========================================= */
 
-function normalizeSpaces(text) {
+function cleanItem(item) {
 
-  return text
+  if (!item) return "";
+
+  return item
+    .toLowerCase()
+
+    // remove brackets
+    .replace(/\(.*?\)/g, "")
+
+    // remove %
+    .replace(/\d+(\.\d+)?%/g, "")
+
+    // remove punctuation
+    .replace(/[^\w\s]/g, "")
+
+    // normalize spaces
     .replace(/\s+/g, " ")
+
     .trim();
 
 }
 
 
 
-// 🧠 STEP 6 — Resolve Aliases
+/* =========================================
+   ALIAS RESOLUTION
+========================================= */
 
 function resolveAlias(name) {
 
-  const db = loadIngredientDB();
+  for (let ing of ingredientDB) {
 
-  for (let ingredient of db) {
-
-    if (
-      ingredient.canonical_name === name
-    ) {
+    if (ing.canonical_name === name) {
 
       return name;
 
     }
 
     if (
-      ingredient.aliases &&
-      ingredient.aliases.includes(name)
+      ing.aliases &&
+      ing.aliases.includes(name)
     ) {
 
-      return ingredient.canonical_name;
+      return ing.canonical_name;
 
     }
 
@@ -125,34 +95,57 @@ function resolveAlias(name) {
 
 
 
-// 🧠 MAIN NORMALIZATION FUNCTION
+/* =========================================
+   MAIN FUNCTION
+========================================= */
 
-function normalizeIngredients(rawText) {
+function normalizeIngredients(input) {
 
-  if (!rawText) return [];
+  let list = [];
 
-  let ingredients =
-    splitIngredients(rawText);
+
+
+  /* CASE 1 — ARRAY */
+
+  if (Array.isArray(input)) {
+
+    list = input;
+
+  }
+
+
+
+  /* CASE 2 — STRING */
+
+  else if (typeof input === "string") {
+
+    list = input.split(/[,;\n•]/);
+
+  }
+
+
+
+  else {
+
+    return [];
+
+  }
+
+
 
   let normalized = [];
 
-  for (let item of ingredients) {
 
-    item = item.toLowerCase();
 
-    item = removeBrackets(item);
+  for (let item of list) {
 
-    item = removePercentages(item);
+    let clean = cleanItem(item);
 
-    item = removePunctuation(item);
+    clean = resolveAlias(clean);
 
-    item = normalizeSpaces(item);
+    if (clean.length > 0) {
 
-    item = resolveAlias(item);
-
-    if (item.length > 0) {
-
-      normalized.push(item);
+      normalized.push(clean);
 
     }
 
@@ -160,10 +153,9 @@ function normalizeIngredients(rawText) {
 
 
 
-  // 🧠 Remove duplicates
+  /* Remove duplicates */
 
-  normalized =
-    [...new Set(normalized)];
+  normalized = [...new Set(normalized)];
 
 
 
@@ -172,7 +164,5 @@ function normalizeIngredients(rawText) {
 }
 
 
-
-// Export function
 
 module.exports = normalizeIngredients;

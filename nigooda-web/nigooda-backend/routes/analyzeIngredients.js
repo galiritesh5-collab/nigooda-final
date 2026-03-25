@@ -40,17 +40,14 @@ router.post(
 
     try {
 
-      const {
-        ingredients
-      } = req.body;
+      const { ingredients } =
+        req.body;
 
 
 
       if (
         !ingredients ||
-        !Array.isArray(
-          ingredients
-        )
+        !Array.isArray(ingredients)
       ) {
 
         return res.status(400).json({
@@ -104,8 +101,6 @@ router.post(
             name
           );
 
-
-
         ingredientObjects.push(
           ingredient
         );
@@ -115,7 +110,7 @@ router.post(
 
 
       /* =========================================
-         STEP 3 — PROCESSING DETECTION
+         STEP 3 — PROCESSING
       ========================================= */
 
       const processingData =
