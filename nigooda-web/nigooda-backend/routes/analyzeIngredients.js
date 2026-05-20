@@ -5,7 +5,6 @@ const express = require("express");
 const router = express.Router();
 
 
-
 /* =========================================
    IMPORT ENGINES
 ========================================= */
@@ -29,7 +28,6 @@ const calculateFinalRating =
   require("../engine/finalRating");
 
 
-
 /* =========================================
    MAIN ROUTE
 ========================================= */
@@ -42,7 +40,6 @@ router.post(
 
       const { ingredients } =
         req.body;
-
 
 
       if (
@@ -60,12 +57,10 @@ router.post(
       }
 
 
-
       console.log(
         "📥 Ingredients received:",
         ingredients
       );
-
 
 
       /* =========================================
@@ -78,12 +73,10 @@ router.post(
         );
 
 
-
       console.log(
         "🧼 Normalized:",
         normalized
       );
-
 
 
       /* =========================================
@@ -91,7 +84,6 @@ router.post(
       ========================================= */
 
       const ingredientObjects = [];
-
 
 
       for (let name of normalized) {
@@ -108,7 +100,6 @@ router.post(
       }
 
 
-
       /* =========================================
          STEP 3 — PROCESSING
       ========================================= */
@@ -119,7 +110,6 @@ router.post(
         );
 
 
-
       /* =========================================
          STEP 4 — SCORING
       ========================================= */
@@ -128,7 +118,6 @@ router.post(
         calculateScore(
           ingredientObjects
         );
-
 
 
       /* =========================================
@@ -149,10 +138,20 @@ router.post(
         });
 
 
-
       /* =========================================
          STEP 6 — FINAL RATING
       ========================================= */
+
+      console.log(
+        "📊 Weighted Score:",
+        scoreData.weighted_score
+      );
+
+      console.log(
+        "⚠️ Penalty Data:",
+        penaltyData
+      );
+
 
       const finalRating =
         calculateFinalRating({
@@ -165,6 +164,11 @@ router.post(
 
         });
 
+
+      console.log(
+        "⭐ Final Rating:",
+        finalRating
+      );
 
 
       /* =========================================
@@ -203,7 +207,6 @@ router.post(
       );
 
 
-
       return res.status(500).json({
 
         error:
@@ -219,7 +222,6 @@ router.post(
   }
 
 );
-
 
 
 module.exports = router;

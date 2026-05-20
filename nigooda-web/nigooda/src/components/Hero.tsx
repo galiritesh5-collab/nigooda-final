@@ -1,6 +1,14 @@
+import { useNavigate } from "react-router-dom";
+
 const Hero = () => {
+  const navigate = useNavigate();
+
   const comingSoon = () => {
     alert("🚧 Coming Soon!\nWe’re actively building this AI feature.");
+  };
+
+  const handleFoodScan = () => {
+    navigate("/scan");
   };
 
   return (
@@ -12,7 +20,7 @@ const Hero = () => {
             The Future of Shopping
           </span>
 
-          {/* ✅ Tailwind v4 Hero Heading */}
+          {/* Hero Heading */}
           <h1 className="text-4xl font-bold text-slate-900 leading-tight">
             Discover Better.{" "}
             <span className="text-indigo-600">Scan Smarter.</span>
@@ -30,14 +38,19 @@ const Hero = () => {
 
         {/* AI FEATURES */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
           {/* FOOD AI */}
           <div className="rounded-2xl p-8 border bg-white shadow-sm hover:shadow-md transition">
-            <h3 className="text-xl font-bold mb-3">Food Rating AI</h3>
+            <h3 className="text-xl font-bold mb-3">
+              Food Rating AI
+            </h3>
+
             <p className="text-slate-600 text-sm mb-6">
               Detect hidden sugars, additives, and preservatives instantly.
             </p>
+
             <button
-              onClick={comingSoon}
+              onClick={handleFoodScan}
               className="w-full py-3 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition"
             >
               Scan Product
@@ -46,10 +59,14 @@ const Hero = () => {
 
           {/* INGREDIENT AI */}
           <div className="rounded-2xl p-8 border bg-white shadow-sm hover:shadow-md transition">
-            <h3 className="text-xl font-bold mb-3">Ingredient Analysis</h3>
+            <h3 className="text-xl font-bold mb-3">
+              Ingredient Analysis
+            </h3>
+
             <p className="text-slate-600 text-sm mb-6">
               Analyze labels for baby care, pet care & home essentials.
             </p>
+
             <button
               onClick={comingSoon}
               className="w-full py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition"
@@ -60,10 +77,14 @@ const Hero = () => {
 
           {/* STYLIST AI */}
           <div className="rounded-2xl p-8 border bg-white shadow-sm hover:shadow-md transition">
-            <h3 className="text-xl font-bold mb-3">Stylist AI</h3>
+            <h3 className="text-xl font-bold mb-3">
+              Stylist AI
+            </h3>
+
             <p className="text-slate-600 text-sm mb-6">
               Upload your photo and get AI-powered outfit suggestions.
             </p>
+
             <button
               onClick={comingSoon}
               className="w-full py-3 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-500 transition"
@@ -71,6 +92,7 @@ const Hero = () => {
               Start Styling
             </button>
           </div>
+
         </div>
       </div>
     </section>

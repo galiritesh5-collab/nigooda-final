@@ -15,6 +15,11 @@ import SubCategoryPage from "./pages/SubCategoryPage";
 import AdminPage from "./pages/AdminPage";
 import ProductPage from "./pages/ProductPage";
 import WishlistPage from "./pages/WishlistPage";
+import IngredientTextInput from "./pages/IngredientTextInput";
+import IngredientImageUpload from "./pages/IngredientImageUpload";
+
+/* ✅ ADDED IMPORT */
+import FoodScanPage from "./pages/FoodScanPage";
 
 const AppContent = () => {
   const location = useLocation();
@@ -170,8 +175,21 @@ const AppContent = () => {
           path="/wishlist"
           element={<WishlistPage products={products} />}
         />
+        <Route
+         path="/scan/text"
+        element={<IngredientTextInput />}
+        />
+
+      <Route
+        path="/scan/image"
+        element={<IngredientImageUpload />}
+      />
 
         <Route path="/admin" element={<AdminPage />} />
+
+        {/* ✅ ADDED ROUTE */}
+        <Route path="/scan" element={<FoodScanPage />} />
+
       </Routes>
     </div>
   );

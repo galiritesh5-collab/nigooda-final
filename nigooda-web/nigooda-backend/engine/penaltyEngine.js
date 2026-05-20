@@ -3,6 +3,12 @@
 const penaltyConfig =
   require("../config/penaltyConfig.json");
 
+/* =========================================
+   ✅ ADDED PATTERN PENALTY ENGINE
+========================================= */
+
+const patternPenalty =
+  require("./patternPenaltyEngine");
 
 
 /* =========================================
@@ -25,7 +31,6 @@ function safeNumber(value) {
 }
 
 
-
 /* =========================================
    CRITICAL PENALTIES
 ========================================= */
@@ -40,12 +45,10 @@ function calculateCriticalPenalties(
     penaltyConfig.critical_penalties;
 
 
-
   for (let ingredient of ingredients) {
 
     const flags =
       ingredient.penalty_flags || {};
-
 
 
     if (flags.is_trans_fat) {
@@ -58,7 +61,6 @@ function calculateCriticalPenalties(
     }
 
 
-
     if (flags.is_artificial_dye) {
 
       total +=
@@ -69,7 +71,6 @@ function calculateCriticalPenalties(
     }
 
 
-
     if (flags.is_artificial_sweetener) {
 
       total +=
@@ -78,7 +79,6 @@ function calculateCriticalPenalties(
         );
 
     }
-
 
 
     if (flags.is_hfcs) {
@@ -93,13 +93,11 @@ function calculateCriticalPenalties(
   }
 
 
-
   return Number(
     total.toFixed(2)
   );
 
 }
-
 
 
 /* =========================================
@@ -116,7 +114,6 @@ function calculateProcessingPenalties(
     penaltyConfig.processing_penalties;
 
 
-
   if (!processingData) {
 
     return 0;
@@ -124,10 +121,8 @@ function calculateProcessingPenalties(
   }
 
 
-
   const types =
     processingData.processing_types || [];
-
 
 
   for (let type of types) {
@@ -142,7 +137,6 @@ function calculateProcessingPenalties(
     }
 
   }
-
 
 
   // processing level penalty
@@ -160,13 +154,11 @@ function calculateProcessingPenalties(
   }
 
 
-
   return Number(
     total.toFixed(2)
   );
 
 }
-
 
 
 /* =========================================
@@ -193,7 +185,6 @@ function applyAllPenalties({
     );
 
 
-
   /* =========================================
      PROCESSING
   ========================================= */
@@ -204,19 +195,32 @@ function applyAllPenalties({
     );
 
 
+  /* =========================================
+     ✅ PATTERN PENALTY (ADDED)
+  ========================================= */
+
+  const patternPenaltyValue =
+    patternPenalty({
+
+      ingredients,
+
+      ingredientNames
+
+    });
+
 
   /* =========================================
-     TOTAL
+     TOTAL (UPDATED)
   ========================================= */
 
   const totalPenalty =
     Number(
       (
         criticalPenalty +
-        processingPenalty
+        processingPenalty +
+        patternPenaltyValue
       ).toFixed(2)
     );
-
 
 
   /* =========================================
@@ -235,7 +239,6 @@ function applyAllPenalties({
   }
 
 
-
   return {
 
     critical_penalty:
@@ -244,13 +247,15 @@ function applyAllPenalties({
     processing_penalty:
       processingPenalty,
 
+    pattern_penalty:
+      patternPenaltyValue,
+
     total_penalty:
       totalPenalty
 
   };
 
 }
-
 
 
 module.exports =

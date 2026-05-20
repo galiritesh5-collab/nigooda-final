@@ -6,11 +6,19 @@ const path = require("path");
 const multer = require("multer");
 const xlsx = require("xlsx");
 const XLSX = require("xlsx");
-
+const mongoose = require("mongoose");
+const Product = require("./models/Product");
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err) => {
+    console.error("MongoDB Error:", err);
+  });
 /* =========================
    ✅ ADDED ROUTE (NEW)
    analyzeIngredients route
@@ -33,6 +41,226 @@ console.log("Using DATA_FILE:", DATA_FILE);
 /* =========================
    HELPERS
 ========================= */
+/* ============================================================
+   🧠 PRODUCT ANALYSIS (HASH BASED)
+============================================================ */
+
+const ANALYSIS_FILE = path.join(
+  __dirname,
+  "data",
+  "productAnalysisDB.json"
+);
+
+/* READ ANALYSIS */
+
+function readAnalysis() {
+  try {
+    if (!fs.existsSync(ANALYSIS_FILE)) return [];
+
+    const raw = fs.readFileSync(
+      ANALYSIS_FILE,
+      "utf8"
+    );
+
+    return raw ? JSON.parse(raw) : [];
+
+  } catch (err) {
+
+    console.error(
+      "Error reading productAnalysisDB:",
+      err
+    );
+
+    return [];
+  }
+}
+
+/* WRITE ANALYSIS */
+
+function writeAnalysis(data) {
+
+  fs.writeFileSync(
+    ANALYSIS_FILE,
+    JSON.stringify(data, null, 2),
+    "utf8"
+  );
+
+}
+
+/* ============================================================
+   GET ALL ANALYSIS
+============================================================ */
+
+app.get("/api/product-analysis", (req, res) => {
+
+  res.json(readAnalysis());
+
+});
+
+/* ============================================================
+   GET BY HASH
+============================================================ */
+
+app.get(
+  "/api/product-analysis/hash/:hash",
+  (req, res) => {
+
+    const { hash } = req.params;
+
+    const analysis = readAnalysis();
+
+    const result = analysis.find(
+      (a) =>
+        cleanString(a.ingredient_hash) ===
+        cleanString(hash)
+    );
+
+    if (!result) {
+
+      return res
+        .status(404)
+        .json({
+          message:
+            "Analysis not found",
+        });
+
+    }
+
+    res.json(result);
+
+  }
+);
+
+/* ============================================================
+   ADD NEW ANALYSIS
+============================================================ */
+
+app.post(
+  "/api/product-analysis",
+  (req, res) => {
+
+    const newAnalysis = req.body;
+
+    if (!newAnalysis.ingredient_hash) {
+
+      return res
+        .status(400)
+        .json({
+          message:
+            "ingredient_hash required",
+        });
+
+    }
+
+    const analysis = readAnalysis();
+
+    const exists = analysis.find(
+      (a) =>
+        cleanString(
+          a.ingredient_hash
+        ) ===
+        cleanString(
+          newAnalysis.ingredient_hash
+        )
+    );
+
+    if (exists) {
+
+      return res
+        .status(400)
+        .json({
+          message:
+            "Hash already exists",
+        });
+
+    }
+
+    analysis.push(newAnalysis);
+
+    writeAnalysis(analysis);
+
+    res.json({
+      success: true,
+    });
+
+  }
+);
+
+/* ============================================================
+   UPDATE ANALYSIS
+============================================================ */
+
+app.put(
+  "/api/product-analysis/hash/:hash",
+  (req, res) => {
+
+    const { hash } = req.params;
+
+    const updates = req.body;
+
+    const analysis = readAnalysis();
+
+    const index = analysis.findIndex(
+      (a) =>
+        cleanString(
+          a.ingredient_hash
+        ) ===
+        cleanString(hash)
+    );
+
+    if (index === -1) {
+
+      return res
+        .status(404)
+        .json({
+          message:
+            "Analysis not found",
+        });
+
+    }
+
+    analysis[index] = {
+      ...analysis[index],
+      ...updates,
+    };
+
+    writeAnalysis(analysis);
+
+    res.json({
+      success: true,
+    });
+
+  }
+);
+
+/* ============================================================
+   DELETE ANALYSIS
+============================================================ */
+
+app.delete(
+  "/api/product-analysis/hash/:hash",
+  (req, res) => {
+
+    const { hash } = req.params;
+
+    const analysis = readAnalysis();
+
+    const remaining = analysis.filter(
+      (a) =>
+        cleanString(
+          a.ingredient_hash
+        ) !==
+        cleanString(hash)
+    );
+
+    writeAnalysis(remaining);
+
+    res.json({
+      success: true,
+    });
+
+  }
+);
 function readProducts() {
   try {
     if (!fs.existsSync(DATA_FILE)) return [];
@@ -60,23 +288,36 @@ function cleanNumber(value) {
 /* ============================================================
    🔵 FRONTEND API → PRODUCTS FOR SITE
 ============================================================ */
-app.get("/products", (req, res) => {
-  const data = readProducts();
+app.get("/products", async (req, res) => {
+  try {
 
-  const visibleProducts = data.filter((p) => {
-    const isLive =
-      cleanString(p.Status).toLowerCase() === "live";
+    const data = await Product.find();
 
-    const isInDiscover =
-      p.isNewLaunch ||
-      p.isBestForDailyUse ||
-      p.isTrending ||
-      p.isUnderrated;
+    const visibleProducts = data.filter((p) => {
 
-    return isLive || isInDiscover;
-  });
+      const isLive =
+        cleanString(p.Status).toLowerCase() === "live";
 
-  res.json(visibleProducts);
+      const isInDiscover =
+        p.isNewLaunch ||
+        p.isBestForDailyUse ||
+        p.isTrending ||
+        p.isUnderrated;
+
+      return isLive || isInDiscover;
+    });
+
+    res.json(visibleProducts);
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+
+  }
 });
 
 /* ============================================================
@@ -348,10 +589,11 @@ app.post("/products/bulk-delete", (req, res) => {
     deletedCount: products.length - remaining.length,
   });
 });
-
 /* =========================
    START SERVER
 ========================= */
-app.listen(PORT, () => {
-  console.log(`✅ Backend running at http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(
+    `✅ Backend running at http://localhost:${PORT}`
+  );
 });

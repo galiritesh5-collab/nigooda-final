@@ -1,7 +1,7 @@
 // ai/processingAI.js
 
-const callGrok =
-  require("./grokClient");
+const callLlama =
+  require("./llamaClient");
 
 
 
@@ -21,8 +21,6 @@ function buildProcessingPrompt(
 
   }
 
-
-
   return `
 
 You are a food processing expert.
@@ -33,8 +31,6 @@ Ingredients:
 
 ${ingredientList.join(", ")}
 
-
-
 Return ONLY valid JSON.
 
 Allowed Processing Types:
@@ -44,15 +40,11 @@ extruded
 refined_oil_frying
 moderately_processed
 
-
-
 Processing Level:
 
 minimal
 moderate
 highly_processed
-
-
 
 Return format:
 
@@ -95,8 +87,6 @@ function validateProcessing(
 
   }
 
-
-
   data.processing_types =
     data.processing_types.filter(
 
@@ -105,8 +95,6 @@ function validateProcessing(
 
     );
 
-
-
   if (!data.processing_level) {
 
     data.processing_level =
@@ -114,9 +102,40 @@ function validateProcessing(
 
   }
 
-
-
   return data;
+
+}
+
+
+
+/* =========================================
+   SAFE JSON PARSER
+========================================= */
+
+function safeJSONParse(raw) {
+
+  try {
+
+    return JSON.parse(raw);
+
+  }
+
+  catch {
+
+    console.log(
+      "⚠️ Attempting JSON cleanup..."
+    );
+
+    // Remove markdown if present
+    const cleaned =
+      raw
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+    return JSON.parse(cleaned);
+
+  }
 
 }
 
@@ -132,6 +151,10 @@ async function classifyProcessing(
 
   try {
 
+    console.log(
+      "🧠 Calling Processing AI (Llama)"
+    );
+
     const prompt =
       buildProcessingPrompt(
         ingredientList
@@ -140,30 +163,14 @@ async function classifyProcessing(
 
 
     const raw =
-      await callGrok(
+      await callLlama(
         prompt
       );
 
 
 
-    let parsed;
-
-
-
-    try {
-
-      parsed =
-        JSON.parse(raw);
-
-    }
-
-    catch {
-
-      throw new Error(
-        "Invalid JSON from Grok"
-      );
-
-    }
+    let parsed =
+      safeJSONParse(raw);
 
 
 
@@ -179,8 +186,6 @@ async function classifyProcessing(
       "❌ Processing AI error:",
       error.message
     );
-
-
 
     return {
 

@@ -1,78 +1,32 @@
 // ai/ingredientAI.js
 
-const callGrok =
-  require("./grokClient");
-
-const mapCategories =
-  require("../engine/categoryMapper");
-
-
-
 /* =========================================
-   DEFAULT CATEGORY STRUCTURE
+   ✅ UPDATED: LLAMA CLIENT
 ========================================= */
 
-function getDefaultCategories() {
-
-  return {
-
-    additives: 0,
-    preservatives: 0,
-    sugars: 0,
-    oils: 0,
-    flavors: 0,
-    colors: 0,
-    stabilizers: 0,
-    extracts: 0,
-    animal: 0,
-    whole: 3
-
-  };
-
-}
-
+const callLlama =
+  require("./llamaClient");
 
 
 /* =========================================
-   SAFE CATEGORY VALIDATION
+   SAFE CATEGORY VALIDATION (SPARSE)
 ========================================= */
 
 function sanitizeCategories(categories) {
 
-  const defaults =
-    getDefaultCategories();
-
-  if (!categories) {
-
-    return defaults;
-
-  }
-
-
+  if (!categories) return {};
 
   const safe = {};
 
+  for (let key in categories) {
 
-
-  for (let key in defaults) {
-
-    let value =
-      categories[key];
-
-
+    let value = categories[key];
 
     if (
-      typeof value !== "number" ||
-      value < 0 ||
-      value > 5
+      typeof value === "number" &&
+      value >= 1 &&
+      value <= 5
     ) {
-
-      safe[key] =
-        defaults[key];
-
-    }
-
-    else {
 
       safe[key] =
         Math.round(value);
@@ -81,19 +35,59 @@ function sanitizeCategories(categories) {
 
   }
 
+  return safe;
 
+}
+
+
+/* =========================================
+   SAFE FLAGS CLEANER
+========================================= */
+
+function sanitizeFlags(flags) {
+
+  if (!flags) return {};
+
+  const safe = {};
+
+  for (let key in flags) {
+
+    if (flags[key] === true) {
+
+      safe[key] = true;
+
+    }
+
+  }
 
   return safe;
 
 }
 
 
+/* =========================================
+   SAFE ARRAY CLEANER
+========================================= */
+
+function sanitizeArray(arr) {
+
+  if (!Array.isArray(arr))
+    return [];
+
+  return arr.filter(
+    item =>
+      typeof item === "string" &&
+      item.length > 0
+  );
+
+}
+
 
 /* =========================================
    OUTPUT VALIDATION
 ========================================= */
 
-function validateAIResponse(data) {
+function validateAIResponse(data, ingredientName) {
 
   if (!data) {
 
@@ -104,17 +98,17 @@ function validateAIResponse(data) {
   }
 
 
+  // Canonical name fallback
 
   if (!data.canonical_name) {
 
     data.canonical_name =
-      "unknown";
+      ingredientName;
 
   }
 
 
-
-  // Ensure categories always valid
+  // Sparse categories
 
   data.categories =
     sanitizeCategories(
@@ -122,34 +116,31 @@ function validateAIResponse(data) {
     );
 
 
+  // Sparse flags
 
-  if (!data.penalty_flags) {
-
-    data.penalty_flags = {
-
-      is_trans_fat: false,
-      is_artificial_dye: false,
-      is_artificial_sweetener: false,
-      is_hfcs: false
-
-    };
-
-  }
+  data.flags =
+    sanitizeFlags(
+      data.flags
+    );
 
 
+  // Allergens
 
-  if (!data.derived_flags) {
-
-    data.derived_flags = {
-
-      is_refined_oil: false,
-      is_ultra_processed: false
-
-    };
-
-  }
+  data.allergens =
+    sanitizeArray(
+      data.allergens
+    );
 
 
+  // Nutrition
+
+  data.nutrition_impact =
+    sanitizeFlags(
+      data.nutrition_impact
+    );
+
+
+  // Confidence
 
   if (
     typeof data.confidence_score !== "number"
@@ -160,22 +151,20 @@ function validateAIResponse(data) {
   }
 
 
-
   return data;
 
 }
 
 
-
 /* =========================================
-   PROMPT BUILDER
+   PROMPT BUILDER (SPARSE DESIGN)
 ========================================= */
 
 function buildPrompt(ingredientName) {
 
 return `
 
-You are a food ingredient classification expert.
+You are a professional food ingredient classification expert.
 
 Classify the ingredient below.
 
@@ -184,9 +173,33 @@ Ingredient:
 
 Return ONLY valid JSON.
 
-Use star ratings from 1–5.
 
-If category not relevant → use 0.
+
+IMPORTANT RULES:
+
+- Only include categories that apply
+- Do NOT include categories with 0 values
+- Do NOT default everything to "whole"
+- Oils must NOT be whole
+- Preservatives must include "preservatives"
+- Refined oils must include "oils"
+
+Use category scores from 1 to 5.
+
+
+
+Allowed Categories:
+
+additives
+preservatives
+sugars
+oils
+flavors
+colors
+stabilizers
+extracts
+animal
+whole
 
 
 
@@ -197,35 +210,20 @@ Return format:
 
 "aliases": [],
 
-"categories": {
-"additives": 0,
-"preservatives": 0,
-"sugars": 0,
-"oils": 0,
-"flavors": 0,
-"colors": 0,
-"stabilizers": 0,
-"extracts": 0,
-"animal": 0,
-"whole": 0
-},
+"categories": {},
 
 "risk_level": "low",
 
-"penalty_flags": {
-"is_trans_fat": false,
-"is_artificial_dye": false,
-"is_artificial_sweetener": false,
-"is_hfcs": false
-},
+"flags": {},
 
-"derived_flags": {
-"is_refined_oil": false,
-"is_ultra_processed": false
-},
+"allergens": [],
+
+"nutrition_impact": {},
 
 "confidence_score": 0.9
 }
+
+
 
 Return STRICT JSON only.
 
@@ -234,9 +232,8 @@ Return STRICT JSON only.
 }
 
 
-
 /* =========================================
-   SAFE JSON PARSE
+   SAFE JSON PARSER
 ========================================= */
 
 function safeJSONParse(text) {
@@ -263,7 +260,6 @@ function safeJSONParse(text) {
 }
 
 
-
 /* =========================================
    MAIN FUNCTION
 ========================================= */
@@ -280,19 +276,20 @@ async function classifyIngredientAI(
     );
 
 
-
     const prompt =
       buildPrompt(
         ingredientName
       );
 
 
+    /* =========================================
+       ✅ UPDATED: CALL LLAMA
+    ========================================= */
 
     const rawResponse =
-      await callGrok(
+      await callLlama(
         prompt
       );
-
 
 
     const parsed =
@@ -301,21 +298,11 @@ async function classifyIngredientAI(
       );
 
 
-
-    // Apply category mapping
-
-    parsed.categories =
-      mapCategories(
-        parsed
-      );
-
-
-
     const validated =
       validateAIResponse(
-        parsed
+        parsed,
+        ingredientName
       );
-
 
 
     return validated;
@@ -330,8 +317,7 @@ async function classifyIngredientAI(
     );
 
 
-
-    // SAFE FALLBACK (VERY IMPORTANT)
+    // SAFE FALLBACK (SPARSE)
 
     return {
 
@@ -340,26 +326,15 @@ async function classifyIngredientAI(
 
       aliases: [],
 
-      categories:
-        getDefaultCategories(),
+      categories: {},
 
       risk_level: "low",
 
-      penalty_flags: {
+      flags: {},
 
-        is_trans_fat: false,
-        is_artificial_dye: false,
-        is_artificial_sweetener: false,
-        is_hfcs: false
+      allergens: [],
 
-      },
-
-      derived_flags: {
-
-        is_refined_oil: false,
-        is_ultra_processed: false
-
-      },
+      nutrition_impact: {},
 
       confidence_score: 0.5
 
@@ -368,7 +343,6 @@ async function classifyIngredientAI(
   }
 
 }
-
 
 
 module.exports =

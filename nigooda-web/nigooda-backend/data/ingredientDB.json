@@ -33,7 +33,7 @@
     "notes": "",
     "source_refs": [],
     "confidence_score": 0.5,
-    "usage_frequency": 2,
+    "usage_frequency": 5,
     "status": "ai_generated",
     "created_at": "2026-03-25T16:56:02.213Z",
     "last_updated": "2026-03-25T16:56:02.213Z"
@@ -72,7 +72,7 @@
     "notes": "",
     "source_refs": [],
     "confidence_score": 0.5,
-    "usage_frequency": 2,
+    "usage_frequency": 4,
     "status": "ai_generated",
     "created_at": "2026-03-25T16:56:11.281Z",
     "last_updated": "2026-03-25T16:56:11.281Z"
@@ -111,9 +111,1706 @@
     "notes": "",
     "source_refs": [],
     "confidence_score": 0.5,
-    "usage_frequency": 2,
+    "usage_frequency": 4,
     "status": "ai_generated",
     "created_at": "2026-03-25T16:56:20.325Z",
     "last_updated": "2026-03-25T16:56:20.325Z"
+  },
+  {
+    "ingredient_id": "ING_000004",
+    "canonical_name": "rice bran oil",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:34:51.085Z",
+    "last_updated": "2026-03-25T17:34:51.085Z"
+  },
+  {
+    "ingredient_id": "ING_000005",
+    "canonical_name": "spices",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:35:02.131Z",
+    "last_updated": "2026-03-25T17:35:02.131Z"
+  },
+  {
+    "ingredient_id": "ING_000006",
+    "canonical_name": "iodised salt",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 2,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:35:12.881Z",
+    "last_updated": "2026-03-25T17:35:12.881Z"
+  },
+  {
+    "ingredient_id": "ING_000007",
+    "canonical_name": "maltodextrin",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 9,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:35:21.957Z",
+    "last_updated": "2026-03-25T17:35:21.957Z"
+  },
+  {
+    "ingredient_id": "ING_000008",
+    "canonical_name": "black salt",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:35:30.589Z",
+    "last_updated": "2026-03-25T17:35:30.589Z"
+  },
+  {
+    "ingredient_id": "ING_000009",
+    "canonical_name": "sugar",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 2,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:35:40.568Z",
+    "last_updated": "2026-03-25T17:35:40.568Z"
+  },
+  {
+    "ingredient_id": "ING_000010",
+    "canonical_name": "tomato powder",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:35:49.824Z",
+    "last_updated": "2026-03-25T17:35:49.824Z"
+  },
+  {
+    "ingredient_id": "ING_000011",
+    "canonical_name": "citric acid",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:35:59.083Z",
+    "last_updated": "2026-03-25T17:35:59.083Z"
+  },
+  {
+    "ingredient_id": "ING_000012",
+    "canonical_name": "malic acid",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:36:07.921Z",
+    "last_updated": "2026-03-25T17:36:07.921Z"
+  },
+  {
+    "ingredient_id": "ING_000013",
+    "canonical_name": "tartaric acid",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:36:16.950Z",
+    "last_updated": "2026-03-25T17:36:16.950Z"
+  },
+  {
+    "ingredient_id": "ING_000014",
+    "canonical_name": "natural flavour",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:36:27.699Z",
+    "last_updated": "2026-03-25T17:36:27.699Z"
+  },
+  {
+    "ingredient_id": "ING_000015",
+    "canonical_name": "nature identical flavour",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:36:37.478Z",
+    "last_updated": "2026-03-25T17:36:37.478Z"
+  },
+  {
+    "ingredient_id": "ING_000016",
+    "canonical_name": "silicon dioxide",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:36:47.339Z",
+    "last_updated": "2026-03-25T17:36:47.339Z"
+  },
+  {
+    "ingredient_id": "ING_000017",
+    "canonical_name": "paprika extract",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:36:56.340Z",
+    "last_updated": "2026-03-25T17:36:56.340Z"
+  },
+  {
+    "ingredient_id": "ING_000018",
+    "canonical_name": "onion",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:37:07.314Z",
+    "last_updated": "2026-03-25T17:37:07.314Z"
+  },
+  {
+    "ingredient_id": "ING_000019",
+    "canonical_name": "garlic",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-25T17:37:16.908Z",
+    "last_updated": "2026-03-25T17:37:16.908Z"
+  },
+  {
+    "ingredient_id": "ING_000020",
+    "canonical_name": "palm oil",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:15:10.266Z",
+    "last_updated": "2026-03-26T10:15:10.266Z"
+  },
+  {
+    "ingredient_id": "ING_000021",
+    "canonical_name": "cereal products",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:19:21.133Z",
+    "last_updated": "2026-03-26T10:19:21.133Z"
+  },
+  {
+    "ingredient_id": "ING_000022",
+    "canonical_name": "corn meal",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:19:29.880Z",
+    "last_updated": "2026-03-26T10:19:29.880Z"
+  },
+  {
+    "ingredient_id": "ING_000023",
+    "canonical_name": "edible vegetable oil",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 6,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:19:40.816Z",
+    "last_updated": "2026-03-26T10:19:40.816Z"
+  },
+  {
+    "ingredient_id": "ING_000024",
+    "canonical_name": "seasoning spices condiments",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:19:49.536Z",
+    "last_updated": "2026-03-26T10:19:49.536Z"
+  },
+  {
+    "ingredient_id": "ING_000025",
+    "canonical_name": "acidity regulators 330",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:19:58.114Z",
+    "last_updated": "2026-03-26T10:19:58.114Z"
+  },
+  {
+    "ingredient_id": "ING_000026",
+    "canonical_name": "296",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:20:06.475Z",
+    "last_updated": "2026-03-26T10:20:06.475Z"
+  },
+  {
+    "ingredient_id": "ING_000027",
+    "canonical_name": "flavour",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 9,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:20:14.720Z",
+    "last_updated": "2026-03-26T10:20:14.720Z"
+  },
+  {
+    "ingredient_id": "ING_000028",
+    "canonical_name": "flavour enhancers 627",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 9,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:20:23.255Z",
+    "last_updated": "2026-03-26T10:20:23.255Z"
+  },
+  {
+    "ingredient_id": "ING_000029",
+    "canonical_name": "631",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 9,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:20:32.484Z",
+    "last_updated": "2026-03-26T10:20:32.484Z"
+  },
+  {
+    "ingredient_id": "ING_000030",
+    "canonical_name": "color",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:20:41.895Z",
+    "last_updated": "2026-03-26T10:20:41.895Z"
+  },
+  {
+    "ingredient_id": "ING_000031",
+    "canonical_name": "emulsifier",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:20:51.014Z",
+    "last_updated": "2026-03-26T10:20:51.014Z"
+  },
+  {
+    "ingredient_id": "ING_000032",
+    "canonical_name": "gram meal",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 9,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T10:21:01.136Z",
+    "last_updated": "2026-03-26T10:21:01.136Z"
+  },
+  {
+    "ingredient_id": "ING_000033",
+    "canonical_name": "rice meal",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:31:06.619Z",
+    "last_updated": "2026-03-26T11:31:06.619Z"
+  },
+  {
+    "ingredient_id": "ING_000034",
+    "canonical_name": "seasoning sugar",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:31:15.379Z",
+    "last_updated": "2026-03-26T11:31:15.379Z"
+  },
+  {
+    "ingredient_id": "ING_000035",
+    "canonical_name": "lodised salt",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:31:23.963Z",
+    "last_updated": "2026-03-26T11:31:23.963Z"
+  },
+  {
+    "ingredient_id": "ING_000036",
+    "canonical_name": "spices and condiments",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:31:32.516Z",
+    "last_updated": "2026-03-26T11:31:32.516Z"
+  },
+  {
+    "ingredient_id": "ING_000037",
+    "canonical_name": "milk solids",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:31:41.470Z",
+    "last_updated": "2026-03-26T11:31:41.470Z"
+  },
+  {
+    "ingredient_id": "ING_000038",
+    "canonical_name": "cheese",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:31:50.192Z",
+    "last_updated": "2026-03-26T11:31:50.192Z"
+  },
+  {
+    "ingredient_id": "ING_000039",
+    "canonical_name": "salt replacer",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:31:59.340Z",
+    "last_updated": "2026-03-26T11:31:59.340Z"
+  },
+  {
+    "ingredient_id": "ING_000040",
+    "canonical_name": "acidity regulators 296",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:32:07.975Z",
+    "last_updated": "2026-03-26T11:32:07.975Z"
+  },
+  {
+    "ingredient_id": "ING_000041",
+    "canonical_name": "330",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:32:16.621Z",
+    "last_updated": "2026-03-26T11:32:16.621Z"
+  },
+  {
+    "ingredient_id": "ING_000042",
+    "canonical_name": "emulsifying stabilising agent",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:32:24.961Z",
+    "last_updated": "2026-03-26T11:32:24.961Z"
+  },
+  {
+    "ingredient_id": "ING_000043",
+    "canonical_name": "471",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:32:33.602Z",
+    "last_updated": "2026-03-26T11:32:33.602Z"
+  },
+  {
+    "ingredient_id": "ING_000044",
+    "canonical_name": "327",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:32:42.131Z",
+    "last_updated": "2026-03-26T11:32:42.131Z"
+  },
+  {
+    "ingredient_id": "ING_000045",
+    "canonical_name": "calcium carbonate",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 8,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:32:50.763Z",
+    "last_updated": "2026-03-26T11:32:50.763Z"
+  },
+  {
+    "ingredient_id": "ING_000046",
+    "canonical_name": "ingredients cereal products",
+    "aliases": [],
+    "categories": {
+      "additives": 0,
+      "preservatives": 0,
+      "sugars": 0,
+      "oils": 0,
+      "flavors": 0,
+      "colors": 0,
+      "stabilizers": 0,
+      "extracts": 0,
+      "animal": 0,
+      "whole": 3
+    },
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {
+      "is_trans_fat": false,
+      "is_artificial_dye": false,
+      "is_artificial_sweetener": false,
+      "is_hfcs": false
+    },
+    "derived_flags": {
+      "is_refined_oil": false,
+      "is_ultra_processed": false
+    },
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 1,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T11:40:01.457Z",
+    "last_updated": "2026-03-26T11:40:01.457Z"
+  },
+  {
+    "ingredient_id": "ING_000047",
+    "canonical_name": "2 edible vegetable oil",
+    "aliases": [],
+    "categories": {},
+    "risk_level": "low",
+    "safety_flags": [],
+    "allergens": [],
+    "penalty_flags": {},
+    "derived_flags": {},
+    "processing_flags": {},
+    "nutrition_flags": {},
+    "notes": "",
+    "source_refs": [],
+    "confidence_score": 0.5,
+    "usage_frequency": 3,
+    "status": "ai_generated",
+    "created_at": "2026-03-26T12:03:31.372Z",
+    "last_updated": "2026-03-26T12:03:31.372Z"
   }
 ]
