@@ -35,3 +35,10 @@ export type Product = {
 
   isBestForDailyUse?: boolean;
 };
+export type GroupedProduct = {
+  groupId: string;
+
+  displayProduct: Product;
+
+  variants: Product[];
+};

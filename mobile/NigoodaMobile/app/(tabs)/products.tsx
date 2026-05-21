@@ -41,17 +41,15 @@ export default function ProductsScreen() {
 
       const data = await response.json();
 
-      console.log("DATA LENGTH:", data.length);
-
-      console.log(data);
-
-      setProducts(data.slice(0, 20));
+      setProducts(data);
 
       if (data.length > 0) {
         setSelectedCategory(
           data[0]["Primary Category"]
         );
       }
+
+      setLoading(false);
 
     } catch (error) {
 
@@ -100,11 +98,6 @@ export default function ProductsScreen() {
     ),
   ];
 
-  console.log("PRODUCT COUNT:", products.length);
-  console.log("CATEGORIES:", categories);
-  console.log("SELECTED:", selectedCategory);
-  console.log("SUBCATEGORIES:", subcategories);
-
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -116,14 +109,22 @@ export default function ProductsScreen() {
     );
   }
 
-  console.log("RENDER PRODUCTS:", products);
-  console.log("RENDER LENGTH:", products.length);
-  console.log("RENDER SELECTED:", selectedCategory);
-  console.log("RENDER CATEGORIES:", categories);
-  console.log("RENDER SUBCATEGORIES:", subcategories);
-
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => router.push("/test-grouped")}
+        style={{
+          backgroundColor: "black",
+          padding: 12,
+          margin: 10,
+          borderRadius: 10,
+        }}
+      >
+        <Text style={{ color: "white" }}>
+          OPEN TEST GROUPED
+        </Text>
+      </TouchableOpacity>
+
       {/* SIDEBAR */}
 
       <View style={styles.sidebar}>

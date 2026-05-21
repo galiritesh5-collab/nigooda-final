@@ -291,23 +291,71 @@ function cleanNumber(value) {
 app.get("/products", async (req, res) => {
   try {
 
-    const data = await Product.find();
+    const page =
+      Number(req.query.page) || 1;
 
-    const visibleProducts = data.filter((p) => {
+    const limit =
+      Number(req.query.limit) || 12;
 
-      const isLive =
-        cleanString(p.Status).toLowerCase() === "live";
+    const data =
+      await Product.find();
 
-      const isInDiscover =
-        p.isNewLaunch ||
-        p.isBestForDailyUse ||
-        p.isTrending ||
-        p.isUnderrated;
+    /* =========================
+       FILTER VISIBLE PRODUCTS
+    ========================= */
 
-      return isLive || isInDiscover;
+   const visibleProducts = data;
+
+    /* =========================
+       GROUP VARIANTS
+    ========================= */
+
+    const groupedMap = {};
+
+    visibleProducts.forEach((product) => {
+
+      const groupId =
+        cleanString(
+          product["Variant Group ID"]
+        ) ||
+        cleanString(product.id);
+
+      if (!groupedMap[groupId]) {
+
+        groupedMap[groupId] = {
+          groupId,
+          displayProduct: product,
+          variants: [],
+        };
+      }
+
+      groupedMap[groupId]
+        .variants
+        .push(product);
     });
 
-    res.json(visibleProducts);
+    const groupedProducts =
+      Object.values(groupedMap);
+
+    /* =========================
+       PAGINATION
+    ========================= */
+
+    const start =
+      (page - 1) * limit;
+
+    const end =
+      start + limit;
+
+    const paginated =
+      groupedProducts.slice(start, end);
+
+    const flattened =
+  groupedProducts.flatMap(
+    (group) => group.variants
+  );
+
+res.json(flattened);
 
   } catch (err) {
 
@@ -320,6 +368,201 @@ app.get("/products", async (req, res) => {
   }
 });
 
+/* ============================================================
+   📱 MOBILE PRODUCTS API
+============================================================ */
+
+app.get("/mobile/products", async (req, res) => {
+
+  try {
+
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 12;
+
+    const data =
+      await Product.find();
+
+    /* =========================
+       FILTER
+    ========================= */
+
+    const visibleProducts =
+      data.filter((p) => {
+
+        const isLive =
+          cleanString(p.Status)
+            .toLowerCase() === "live";
+
+        const isInDiscover =
+          p.isNewLaunch ||
+          p.isBestForDailyUse ||
+          p.isTrending ||
+          p.isUnderrated;
+
+        return isLive || isInDiscover;
+      });
+
+    /* =========================
+       GROUP VARIANTS
+    ========================= */
+
+    const groupedMap = {};
+
+    visibleProducts.forEach((product) => {
+
+      const groupId =
+        cleanString(
+          product["Variant Group ID"]
+        ) ||
+        cleanString(product.id);
+
+      if (!groupedMap[groupId]) {
+
+        groupedMap[groupId] = {
+          groupId,
+          displayProduct: product,
+          variants: [],
+        };
+      }
+
+      groupedMap[groupId]
+        .variants
+        .push(product);
+    });
+
+    const groupedProducts =
+      Object.values(groupedMap);
+
+    /* =========================
+       PAGINATION
+    ========================= */
+
+    const start =
+      (page - 1) * limit;
+
+    const end =
+      start + limit;
+
+    const paginated =
+      groupedProducts.slice(start, end);
+
+    const flattened =
+  paginated.flatMap(
+    (group) => group.variants
+  );
+
+res.json(flattened);
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+
+  }
+});
+/* ============================================================
+   📱 MOBILE GROUPED PRODUCTS API
+============================================================ */
+
+app.get("/mobile/grouped-products", async (req, res) => {
+
+  try {
+
+    const page =
+      Number(req.query.page) || 1;
+
+    const limit =
+      Number(req.query.limit) || 12;
+
+    const data =
+      await Product.find();
+
+    /* =========================
+       FILTER
+    ========================= */
+
+    const visibleProducts =
+      data.filter((p) => {
+
+        const isLive =
+          cleanString(p.Status)
+            .toLowerCase() === "live";
+
+        const isInDiscover =
+          p.isNewLaunch ||
+          p.isBestForDailyUse ||
+          p.isTrending ||
+          p.isUnderrated;
+
+        return isLive || isInDiscover;
+      });
+
+    /* =========================
+       GROUP VARIANTS
+    ========================= */
+
+    const groupedMap = {};
+
+    visibleProducts.forEach((product) => {
+
+      const groupId =
+        cleanString(
+          product["Variant Group ID"]
+        ) ||
+        cleanString(product.id);
+
+      if (!groupedMap[groupId]) {
+
+        groupedMap[groupId] = {
+          groupId,
+          displayProduct: product,
+          variants: [],
+        };
+      }
+
+      groupedMap[groupId]
+        .variants
+        .push(product);
+    });
+
+    const groupedProducts =
+      Object.values(groupedMap);
+
+    /* =========================
+       PAGINATION
+    ========================= */
+
+    const start =
+      (page - 1) * limit;
+
+    const end =
+      start + limit;
+
+    const paginated =
+      groupedProducts.slice(start, end);
+
+    /* =========================
+       REAL GROUPED RESPONSE
+    ========================= */
+
+    res.json(paginated);
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+
+  }
+
+});
 /* ============================================================
    🟢 ADMIN API → ALL PRODUCTS
 ============================================================ */

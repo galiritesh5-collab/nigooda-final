@@ -50,35 +50,62 @@ const AppContent = () => {
     const loadProducts = () => {
       fetch("http://localhost:5000/products")
         .then((res) => res.json())
-        .then((data) => {
-          const normalized = data.map((p: any) => {
-            const rawTags = p.tags || p.Tags || "";
+       .then((data) => {
 
-            let cleanTags: string[] = [];
+  data = data.products || data;
 
-            if (Array.isArray(rawTags)) {
-              cleanTags = rawTags.map((t: string) =>
-                t.toLowerCase().trim()
-              );
-            } else if (typeof rawTags === "string") {
-              cleanTags = rawTags
-                .toLowerCase()
-                .split(",")
-                .map((t: string) => t.trim());
-            }
+  const normalized = data.flatMap((group: any) => {
 
-            return {
-              ...p,
-              name: p["Name of Product"] || p.Name || p.name || "",
-              homeSections: p.homeSections,
-              tags: cleanTags,
-            };
-          });
+    return (group.variants || []).map((p: any) => {
 
-          setProducts(normalized);
-        })
-        .catch(() => setProducts([]));
-    };
+      const rawTags =
+        p.tags || p.Tags || "";
+
+      let cleanTags: string[] = [];
+
+      if (Array.isArray(rawTags)) {
+
+        cleanTags = rawTags.map(
+          (t: string) =>
+            t.toLowerCase().trim()
+        );
+
+      } else if (
+        typeof rawTags === "string"
+      ) {
+
+        cleanTags = rawTags
+          .toLowerCase()
+          .split(",")
+          .map((t: string) =>
+            t.trim()
+          );
+      }
+
+      return {
+        ...p,
+
+        name:
+          p["Name of Product"] ||
+          p.Name ||
+          p.name ||
+          "",
+
+        homeSections:
+          p.homeSections,
+
+        tags: cleanTags,
+      };
+    });
+  });
+
+ setProducts(normalized);
+
+})
+
+.catch(() => setProducts([]));
+
+};
 
     loadProducts();
     const interval = setInterval(loadProducts, 3000);
