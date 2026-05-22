@@ -273,7 +273,39 @@ function readProducts() {
 }
 
 function writeProducts(products) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(products, null, 2), "utf8");
+  fs.writeFileSync(
+    DATA_FILE,
+    JSON.stringify(products, null, 2),
+    "utf8"
+  );
+}
+
+/* ============================================================
+   SYNC JSON → MONGO
+============================================================ */
+
+async function syncProductsToMongo() {
+
+  try {
+
+    const products = readProducts();
+
+    await Product.deleteMany({});
+
+    await Product.insertMany(products);
+
+    console.log(
+      "✅ Mongo synced successfully"
+    );
+
+  } catch (err) {
+
+    console.error(
+      "❌ Mongo sync failed:",
+      err
+    );
+
+  }
 }
 
 function cleanString(value) {

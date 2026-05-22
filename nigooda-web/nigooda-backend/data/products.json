@@ -6361,5 +6361,26 @@
     "isBestForDailyUse": false,
     "isTrending": false,
     "isUnderrated": false
+  },
+  {
+    "id": "f244",
+    "Brand": "ritu",
+    "Name of Product": "ritesh",
+    "Main Image URL": "https://www.eggoz.com/cdn/shop/files/pack_of_6_2_fa4439c2-b1ba-4355-a24f-56235891b00a.jpg?v=1764934437&width=713",
+    "Primary Category": "Food",
+    "Sub-Category": "Whole Foods",
+    "Price": 69,
+    "Weight / Size": "6 Eggs",
+    "Short Description": "Eggoz White Eggs are farm-fresh, high-quality eggs sourced from healthy hens. These eggs are UV sanitized to ensure they are free from bacteria and pathogens. They are rich in high-quality protein and essential vitamins, making them a perfect choice for a healthy breakfast or baking needs. Eggoz ensures no antibiotics or hormones are used in the process. These eggs are quality-checked through an 11-step process to ensure safety and freshness. Available in various pack sizes including 6, 10, and 30 eggs.",
+    "Seller Website": "eggoz.com",
+    "Variant Group ID": "EGG-01",
+    "Variant Name": "Eggoz White Eggs",
+    "Tags": "Eggoz, White Eggs, Eggs, Fresh Eggs, High Protein, Breakfast, Healthy, UV Sanitized, Hormone Free, Antibiotic Free, Farm Fresh, Dairy, Poultry, Nutritious, Cooking, Baking, Eggoz Nutrition, Natural, Quality Checked, Kitchen Staples, Protein Rich, Freshness, Daily Essentials",
+    "Status": "Live",
+    "homeSections": [],
+    "isNewLaunch": false,
+    "isBestForDailyUse": false,
+    "isTrending": false,
+    "isUnderrated": false
   }
 ]
