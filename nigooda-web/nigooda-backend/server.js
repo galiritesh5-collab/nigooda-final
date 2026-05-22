@@ -573,7 +573,10 @@ app.get("/admin/products", (req, res) => {
 /* ============================================================
    🔁 UPLOAD EXCEL (STRICT + SAFE)
 ============================================================ */
-app.post("/upload", upload.single("file"), (req, res) => {
+app.post(
+  "/upload",
+  upload.single("file"),
+  async (req, res) => {
   try {
     const category = cleanString(req.body.category);
 
@@ -658,15 +661,45 @@ app.post("/upload", upload.single("file"), (req, res) => {
       addedCount++;
     });
 
-    writeProducts(Object.values(map));
+    /* =========================
+   SAVE JSON
+========================= */
 
-    fs.unlinkSync(req.file.path);
+const finalProducts =
+  Object.values(map);
 
-    res.json({
-      success: true,
-      added: addedCount,
-      totalProducts: Object.keys(map).length,
-    });
+writeProducts(finalProducts);
+
+/* =========================
+   SYNC TO MONGO
+========================= */
+
+await Product.deleteMany({});
+
+await Product.insertMany(
+  finalProducts
+);
+
+console.log(
+  "Mongo synced after upload"
+);
+
+/* =========================
+   CLEANUP
+========================= */
+
+fs.unlinkSync(req.file.path);
+
+/* =========================
+   RESPONSE
+========================= */
+
+res.json({
+  success: true,
+  added: addedCount,
+  totalProducts:
+    finalProducts.length,
+});
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
     if (req.file && fs.existsSync(req.file.path)) {

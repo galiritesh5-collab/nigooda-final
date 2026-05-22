@@ -91,12 +91,17 @@ async function repairIds() {
         const id =
           `${prefix}${counters[prefix]}`;
 
+        console.log(
+          product["Name of Product"],
+          "→",
+          id
+        );
+
         counters[prefix]++;
 
-        return {
-          ...product,
-          id,
-        };
+        product.id = id;
+
+        return product;
       });
 
     /* =========================
