@@ -768,8 +768,8 @@ app.get("/download-products", (req, res) => {
 /* ============================================================
    UPDATE HOME SECTION
 ============================================================ */
-app.post("/products/:id/update-home-section", (req, res) => {
-  const { id } = req.params;
+app.post("/products/:id/update-home-section", async (req, res) => {
+    const { id } = req.params;
   const { sectionKey, action } = req.body;
 
   const products = readProducts();
@@ -801,14 +801,15 @@ app.post("/products/:id/update-home-section", (req, res) => {
   product.isUnderrated = product.homeSections.includes("underrated");
 
   writeProducts(products);
+  await syncProductsToMongo();
   res.json({ success: true });
 });
 
 /* ============================================================
    UPDATE SINGLE PRODUCT
 ============================================================ */
-app.post("/products/:id/update", (req, res) => {
-  const { id } = req.params;
+app.post("/products/:id/update", async (req, res) => {
+    const { id } = req.params;
   const updates = req.body;
 
   const products = readProducts();
@@ -826,14 +827,15 @@ app.post("/products/:id/update", (req, res) => {
   };
 
   writeProducts(products);
+  await syncProductsToMongo();
   res.json({ success: true });
 });
 
 /* ============================================================
    BULK UPDATE
 ============================================================ */
-app.post("/products/bulk-update", (req, res) => {
-  const updatedProducts = req.body;
+app.post("/products/bulk-update", async (req, res) => {
+    const updatedProducts = req.body;
 
   if (!Array.isArray(updatedProducts)) {
     return res.status(400).json({ message: "Invalid payload" });
@@ -857,13 +859,14 @@ app.post("/products/bulk-update", (req, res) => {
   });
 
   writeProducts(Object.values(map));
+  await syncProductsToMongo();
   res.json({ success: true });
 });
 
 /* ============================================================
    DELETE SINGLE
 ============================================================ */
-app.delete("/products/:id", (req, res) => {
+app.delete("/products/:id", async (req, res) => {
   const { id } = req.params;
 
   const products = readProducts();
@@ -872,13 +875,14 @@ app.delete("/products/:id", (req, res) => {
   );
 
   writeProducts(remaining);
+  await syncProductsToMongo();
   res.json({ success: true });
 });
 
 /* ============================================================
    BULK DELETE
 ============================================================ */
-app.post("/products/bulk-delete", (req, res) => {
+app.post("/products/bulk-delete", async (req, res) => {
   const ids = (req.body.ids || []).map(cleanString);
 
   if (!Array.isArray(ids) || ids.length === 0) {
@@ -891,6 +895,7 @@ app.post("/products/bulk-delete", (req, res) => {
   );
 
   writeProducts(remaining);
+  await syncProductsToMongo();
 
   res.json({
     success: true,
@@ -900,6 +905,28 @@ app.post("/products/bulk-delete", (req, res) => {
 /* =========================
    START SERVER
 ========================= */
+app.get("/force-sync", async (req, res) => {
+
+  try {
+
+    await syncProductsToMongo();
+
+    res.json({
+      success: true,
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+
+  }
+
+});
 app.listen(PORT, "0.0.0.0", () => {
   console.log(
     `✅ Backend running at http://localhost:${PORT}`
