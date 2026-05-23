@@ -927,6 +927,26 @@ app.get("/force-sync", async (req, res) => {
   }
 
 });
+app.get("/debug-first-product", async (req, res) => {
+
+  try {
+
+    const product =
+      await Product.findOne().lean();
+
+    res.json(product);
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      error: err.message,
+    });
+
+  }
+
+});
 app.listen(PORT, "0.0.0.0", () => {
   console.log(
     `✅ Backend running at http://localhost:${PORT}`
