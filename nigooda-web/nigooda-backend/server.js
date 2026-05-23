@@ -716,7 +716,107 @@ app.get(
     }
   }
 );
+/* ============================================================
+   📱 MOBILE CATEGORIES API
+============================================================ */
 
+app.get(
+  "/mobile/categories",
+  async (req, res) => {
+
+    try {
+
+      const data =
+        await Product.find()
+          .select(
+            "Primary Category Sub-Category Status isNewLaunch isBestForDailyUse isTrending isUnderrated"
+          )
+          .lean();
+
+      /*
+        FILTER VISIBLE PRODUCTS
+      */
+
+      const visibleProducts =
+        data.filter((p) => {
+
+          const isLive =
+            cleanString(p.Status)
+              .toLowerCase() === "live";
+
+          const isInDiscover =
+            p.isNewLaunch ||
+            p.isBestForDailyUse ||
+            p.isTrending ||
+            p.isUnderrated;
+
+          return isLive || isInDiscover;
+        });
+
+      /*
+        BUILD CATEGORY MAP
+      */
+
+      const categoryMap = {};
+
+      visibleProducts.forEach((product) => {
+
+        const category =
+          cleanString(
+            product["Primary Category"]
+          );
+
+        const subcategory =
+          cleanString(
+            product["Sub-Category"]
+          );
+
+        if (!category || !subcategory) {
+          return;
+        }
+
+        if (!categoryMap[category]) {
+
+          categoryMap[category] = new Set();
+
+        }
+
+        categoryMap[category]
+          .add(subcategory);
+
+      });
+
+      /*
+        FINAL RESPONSE
+      */
+
+      const result =
+        Object.entries(categoryMap)
+          .map(
+            ([category, subcategories]) => ({
+
+              category,
+
+              subcategories:
+                Array.from(subcategories)
+                  .sort(),
+
+            })
+          );
+
+      res.json(result);
+
+    } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+        message: "Server Error",
+      });
+
+    }
+  }
+);
 
 /* ============================================================
    🟢 ADMIN API → ALL PRODUCTS

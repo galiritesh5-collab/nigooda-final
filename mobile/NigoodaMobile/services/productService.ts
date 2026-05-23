@@ -21,3 +21,23 @@ export const getGroupedProducts = async () => {
 
   return data || [];
 };
+
+/* ============================================================
+   GET GROUPED PRODUCTS BY SUBCATEGORY
+============================================================ */
+
+export const getGroupedProductsBySubcategory =
+  async (
+    subcategory: string
+  ) => {
+
+    const response = await fetch(
+      `${API_URL}/mobile/grouped-products/subcategory/${encodeURIComponent(
+        subcategory
+      )}`
+    );
+
+    const data = await response.json();
+
+    return data || [];
+  };

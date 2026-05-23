@@ -17,7 +17,7 @@ import {
 import { COLORS } from "../../constants/colors";
 
 import {
-  getGroupedProducts,
+  getGroupedProductsBySubcategory,
 } from "../../services/productService";
 
 import GroupedProductCard from "../../components/GroupedProductCard";
@@ -46,32 +46,11 @@ export default function SubcategoryScreen() {
     try {
 
       const data =
-        await getGroupedProducts();
+        await getGroupedProductsBySubcategory(
+          String(subcategory)
+        );
 
-      /*
-        FILTER BY SUBCATEGORY
-      */
-
-      const filtered = data.filter(
-        (group: GroupedProduct) => {
-
-          const display =
-            group.displayProduct;
-
-          return (
-            String(
-              display["Sub-Category"] || ""
-            )
-              .trim()
-              .toLowerCase() ===
-            String(subcategory || "")
-              .trim()
-              .toLowerCase()
-          );
-        }
-      );
-
-      setGroupedProducts(filtered);
+      setGroupedProducts(data);
 
     } catch (error) {
 
@@ -142,6 +121,7 @@ export default function SubcategoryScreen() {
       />
 
     </View>
+
   );
 }
 
