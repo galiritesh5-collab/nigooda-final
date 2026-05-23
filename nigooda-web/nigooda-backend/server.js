@@ -533,7 +533,71 @@ app.get("/mobile/grouped-products", async (req, res) => {
 
         return isLive || isInDiscover;
       });
-      /* ============================================================
+      
+
+    /* =========================
+       GROUP VARIANTS
+    ========================= */
+
+    const groupedMap = {};
+
+    visibleProducts.forEach((product) => {
+
+      const groupId =
+        cleanString(
+          product["Variant Group ID"]
+        ) ||
+        cleanString(product.id);
+
+      if (!groupedMap[groupId]) {
+
+        groupedMap[groupId] = {
+          groupId,
+          displayProduct: product,
+          variants: [],
+        };
+      }
+
+      groupedMap[groupId]
+        .variants
+        .push(product);
+    });
+
+    const groupedProducts =
+      Object.values(groupedMap);
+
+    /* =========================
+       PAGINATION
+    ========================= */
+
+    const start =
+      (page - 1) * limit;
+
+    const end =
+      start + limit;
+
+    const paginated =
+      groupedProducts.slice(start, end);
+
+    /* =========================
+       REAL GROUPED RESPONSE
+    ========================= */
+
+    res.json(paginated);
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      message: "Server Error",
+    });
+
+  }
+
+});
+});
+/* ============================================================
    📱 MOBILE GROUPED PRODUCTS BY SUBCATEGORY
 ============================================================ */
 
@@ -654,67 +718,7 @@ app.get(
   }
 );
 
-    /* =========================
-       GROUP VARIANTS
-    ========================= */
 
-    const groupedMap = {};
-
-    visibleProducts.forEach((product) => {
-
-      const groupId =
-        cleanString(
-          product["Variant Group ID"]
-        ) ||
-        cleanString(product.id);
-
-      if (!groupedMap[groupId]) {
-
-        groupedMap[groupId] = {
-          groupId,
-          displayProduct: product,
-          variants: [],
-        };
-      }
-
-      groupedMap[groupId]
-        .variants
-        .push(product);
-    });
-
-    const groupedProducts =
-      Object.values(groupedMap);
-
-    /* =========================
-       PAGINATION
-    ========================= */
-
-    const start =
-      (page - 1) * limit;
-
-    const end =
-      start + limit;
-
-    const paginated =
-      groupedProducts.slice(start, end);
-
-    /* =========================
-       REAL GROUPED RESPONSE
-    ========================= */
-
-    res.json(paginated);
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.status(500).json({
-      message: "Server Error",
-    });
-
-  }
-
-});
 /* ============================================================
    🟢 ADMIN API → ALL PRODUCTS
 ============================================================ */
