@@ -727,11 +727,7 @@ app.get(
     try {
 
       const data =
-        await Product.find()
-          .select(
-            "Primary Category Sub-Category Status isNewLaunch isBestForDailyUse isTrending isUnderrated"
-          )
-          .lean();
+  await Product.find().lean();
 
       /*
         FILTER VISIBLE PRODUCTS
