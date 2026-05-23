@@ -596,7 +596,6 @@ app.get("/mobile/grouped-products", async (req, res) => {
   }
 
 });
-});
 /* ============================================================
    📱 MOBILE GROUPED PRODUCTS BY SUBCATEGORY
 ============================================================ */
