@@ -533,6 +533,126 @@ app.get("/mobile/grouped-products", async (req, res) => {
 
         return isLive || isInDiscover;
       });
+      /* ============================================================
+   📱 MOBILE GROUPED PRODUCTS BY SUBCATEGORY
+============================================================ */
+
+app.get(
+  "/mobile/grouped-products/subcategory/:subcategory",
+  async (req, res) => {
+
+    try {
+
+      const { subcategory } =
+        req.params;
+
+      const data =
+        await Product.find().lean();
+
+      /*
+        FILTER
+      */
+
+      const visibleProducts =
+        data.filter((p) => {
+
+          const isLive =
+            cleanString(p.Status)
+              .toLowerCase() === "live";
+
+          const isInDiscover =
+            p.isNewLaunch ||
+            p.isBestForDailyUse ||
+            p.isTrending ||
+            p.isUnderrated;
+
+          const matchesSubcategory =
+            cleanString(
+              p["Sub-Category"]
+            )
+              .toLowerCase() ===
+            cleanString(
+              subcategory
+            )
+              .toLowerCase();
+
+          return (
+            (isLive || isInDiscover) &&
+            matchesSubcategory
+          );
+        });
+
+      /*
+        SORT IDS
+      */
+
+      visibleProducts.sort((a, b) => {
+
+        const idA =
+          String(a.id || "");
+
+        const idB =
+          String(b.id || "");
+
+        return idA.localeCompare(
+          idB,
+          undefined,
+          {
+            numeric: true,
+            sensitivity: "base",
+          }
+        );
+      });
+
+      /*
+        GROUP VARIANTS
+      */
+
+      const groupedMap = {};
+
+      visibleProducts.forEach(
+        (product) => {
+
+          const groupId =
+            cleanString(
+              product[
+                "Variant Group ID"
+              ]
+            ) ||
+            cleanString(product.id);
+
+          if (!groupedMap[groupId]) {
+
+            groupedMap[groupId] = {
+              groupId,
+              displayProduct:
+                product,
+              variants: [],
+            };
+          }
+
+          groupedMap[groupId]
+            .variants
+            .push(product);
+        }
+      );
+
+      const groupedProducts =
+        Object.values(groupedMap);
+
+      res.json(groupedProducts);
+
+    } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+        message: "Server Error",
+      });
+
+    }
+  }
+);
 
     /* =========================
        GROUP VARIANTS
