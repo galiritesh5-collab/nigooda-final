@@ -1,8 +1,15 @@
 const mongoose = require("mongoose");
 
 const ProductSchema = new mongoose.Schema(
-  {},
-  { strict: false }
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    strict: false,
+  }
 );
 
 module.exports = mongoose.model(
