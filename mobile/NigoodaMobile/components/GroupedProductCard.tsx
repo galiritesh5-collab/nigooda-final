@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   View,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+
+import { router } from "expo-router";
 
 import { GroupedProduct } from "../types/product";
 
@@ -19,23 +21,59 @@ export default function GroupedProductCard({
 }: Props) {
 
   const [
-    selectedVariantIndex,
-    setSelectedVariantIndex,
-  ] = useState(0);
+    selectedVariantId,
+    setSelectedVariantId,
+  ] = useState(
+    item.displayProduct.id
+  );
+
+  /*
+    RESET STATE
+    WHEN CARD CHANGES
+  */
+
+  useEffect(() => {
+
+    setSelectedVariantId(
+      item.displayProduct.id
+    );
+
+  }, [item.groupId]);
+
+  /*
+    FIND ACTIVE PRODUCT
+  */
 
   const product =
-    item.variants[selectedVariantIndex];
+    item.variants.find(
+      (variant) =>
+        variant.id ===
+        selectedVariantId
+    ) || item.displayProduct;
 
   return (
 
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.9}
+      onPress={() =>
+        router.push(
+          `/product/${product.id}`
+        )
+      }
+    >
+
+      {/* PRODUCT IMAGE */}
 
       <Image
         source={{
-          uri: product["Main Image URL"],
+          uri:
+            product["Main Image URL"],
         }}
         style={styles.image}
       />
+
+      {/* INFO */}
 
       <View style={styles.info}>
 
@@ -54,23 +92,25 @@ export default function GroupedProductCard({
           ₹{product.Price}
         </Text>
 
-        {/* VARIANT SELECTORS */}
+        {/* VARIANTS */}
 
         <View style={styles.variantRow}>
 
           {item.variants.map(
-            (variant, index) => {
+            (variant) => {
 
               const isSelected =
-                index ===
-                selectedVariantIndex;
+                variant.id ===
+                selectedVariantId;
 
               return (
 
                 <TouchableOpacity
-                  key={index}
+                  key={variant.id}
                   onPress={() =>
-                    setSelectedVariantIndex(index)
+                    setSelectedVariantId(
+                      variant.id
+                    )
                   }
                   style={[
                     styles.variantCircle,
@@ -83,9 +123,13 @@ export default function GroupedProductCard({
                   <Image
                     source={{
                       uri:
-                        variant["Main Image URL"],
+                        variant[
+                          "Main Image URL"
+                        ],
                     }}
-                    style={styles.variantImage}
+                    style={
+                      styles.variantImage
+                    }
                   />
 
                 </TouchableOpacity>
@@ -147,6 +191,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    flexWrap: "wrap",
   },
 
   variantCircle: {
@@ -157,22 +202,17 @@ const styles = StyleSheet.create({
     borderColor: "#CCC",
     justifyContent: "center",
     alignItems: "center",
+    overflow: "hidden",
   },
 
   activeVariant: {
-    borderColor: "black",
+    borderColor: "#5B4CF0",
     borderWidth: 2,
   },
 
-  variantText: {
-    fontSize: 11,
-    fontWeight: "700",
-  },
-
   variantImage: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: "100%",
+    height: "100%",
   },
 
 });

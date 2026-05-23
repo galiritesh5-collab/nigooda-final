@@ -5,26 +5,34 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Image,
-  TouchableOpacity,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 
-import { useLocalSearchParams } from "expo-router";
+import {
+  useLocalSearchParams,
+  router,
+} from "expo-router";
 
 import { COLORS } from "../../constants/colors";
 
-import { getProducts } from "../../services/productService";
+import {
+  getGroupedProducts,
+} from "../../services/productService";
 
-import { Product } from "../../types/product";
+import GroupedProductCard from "../../components/GroupedProductCard";
+
+import { GroupedProduct } from "../../types/product";
 
 export default function SubcategoryScreen() {
+
   const { subcategory } =
     useLocalSearchParams();
 
-  const [products, setProducts] = useState<
-    Product[]
-  >([]);
+  const [
+    groupedProducts,
+    setGroupedProducts,
+  ] = useState<GroupedProduct[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -34,79 +42,49 @@ export default function SubcategoryScreen() {
   }, []);
 
   const fetchProducts = async () => {
+
     try {
-      const data = await getProducts();
 
-  const filtered = data.filter(
-  (product: Product) =>
-    String(product["Sub-Category"] || "")
-      .trim()
-      .toLowerCase() ===
-    String(subcategory || "")
-      .trim()
-      .toLowerCase()
-);
+      const data =
+        await getGroupedProducts();
 
-      /* REMOVE DUPLICATE VARIANTS */
+      /*
+        FILTER BY SUBCATEGORY
+      */
 
-      const seenGroups = new Set();
+      const filtered = data.filter(
+        (group: GroupedProduct) => {
 
-      const uniqueProducts = filtered.filter(
-        (product) => {
+          const display =
+            group.displayProduct;
 
-          const rawGroupId = String(
-            product["Variant Group ID"] || ""
-          )
-            .trim()
-            .toLowerCase();
-
-          const productName = String(
-            product["Name of Product"] || ""
-          )
-            .trim()
-            .toLowerCase();
-
-          /*
-            INVALID GROUP IDS
-          */
-
-          const invalidGroupIds = [
-            "",
-            "null",
-            "undefined",
-            "-"
-          ];
-
-          /*
-            FALLBACK KEY
-            If group id missing,
-            use product name
-          */
-
-          const finalGroupKey =
-            invalidGroupIds.includes(rawGroupId)
-              ? productName
-              : rawGroupId;
-
-          if (seenGroups.has(finalGroupKey)) {
-            return false;
-          }
-
-          seenGroups.add(finalGroupKey);
-
-          return true;
+          return (
+            String(
+              display["Sub-Category"] || ""
+            )
+              .trim()
+              .toLowerCase() ===
+            String(subcategory || "")
+              .trim()
+              .toLowerCase()
+          );
         }
       );
 
-      setProducts(uniqueProducts);
+      setGroupedProducts(filtered);
+
     } catch (error) {
+
       console.log(error);
+
     } finally {
+
       setLoading(false);
     }
   };
 
   if (loading) {
+
     return (
       <View style={styles.loader}>
         <ActivityIndicator
@@ -118,53 +96,57 @@ export default function SubcategoryScreen() {
   }
 
   return (
+
     <View style={styles.container}>
-      <Text style={styles.heading}>
-        {subcategory}
-      </Text>
+
+      {/* TOP BAR */}
+
+      <View style={styles.topBar}>
+
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+        >
+          <Text style={styles.backText}>
+            ←
+          </Text>
+        </TouchableOpacity>
+
+        <Text style={styles.heading}>
+          {subcategory}
+        </Text>
+
+      </View>
+
+      {/* GROUPED PRODUCTS */}
 
       <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
+        data={groupedProducts}
+        keyExtractor={(item) =>
+          item.groupId
+        }
         numColumns={2}
         columnWrapperStyle={{
-          justifyContent: "space-between",
+          justifyContent:
+            "space-between",
+        }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 120,
         }}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-          >
-            <Image
-              source={{
-                uri: item["Main Image URL"],
-              }}
-              style={styles.image}
-            />
-
-            <View style={styles.info}>
-              <Text style={styles.brand}>
-                {item.Brand}
-              </Text>
-
-              <Text
-                style={styles.name}
-                numberOfLines={2}
-              >
-                {item["Name of Product"]}
-              </Text>
-
-              <Text style={styles.price}>
-                ₹{item.Price}
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <GroupedProductCard
+            item={item}
+          />
         )}
       />
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
   loader: {
     flex: 1,
     justifyContent: "center",
@@ -173,68 +155,32 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-
     backgroundColor: COLORS.background,
+    paddingHorizontal: 16,
+    paddingTop: 18,
+  },
 
-    padding: 16,
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
+  backButton: {
+    marginRight: 16,
+  },
+
+  backText: {
+    fontSize: 30,
+    fontWeight: "700",
+    color: COLORS.text,
   },
 
   heading: {
     fontSize: 28,
     fontWeight: "800",
-
     color: COLORS.text,
-
-    marginBottom: 20,
+    flex: 1,
   },
 
-  card: {
-    width: "48%",
-
-    backgroundColor: "#FFFFFF",
-
-    borderRadius: 18,
-
-    overflow: "hidden",
-
-    marginBottom: 16,
-
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-
-  image: {
-    width: "100%",
-    height: 150,
-
-    resizeMode: "cover",
-  },
-
-  info: {
-    padding: 12,
-  },
-
-  brand: {
-    fontSize: 12,
-
-    color: COLORS.textLight,
-
-    marginBottom: 5,
-  },
-
-  name: {
-    fontSize: 14,
-    fontWeight: "700",
-
-    color: COLORS.text,
-
-    marginBottom: 10,
-  },
-
-  price: {
-    fontSize: 16,
-    fontWeight: "800",
-
-    color: COLORS.primary,
-  },
 });

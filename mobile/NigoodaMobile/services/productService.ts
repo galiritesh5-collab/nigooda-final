@@ -1,7 +1,9 @@
+import { API_URL } from "../constants/api";
+
 export const getProducts = async () => {
 
   const response = await fetch(
-    "http://192.168.0.154:5000/mobile/products?page=1&limit=5000"
+    `${API_URL}/mobile/products?page=1&limit=5000`
   );
 
   const data = await response.json();
@@ -12,7 +14,7 @@ export const getProducts = async () => {
 export const getGroupedProducts = async () => {
 
   const response = await fetch(
-    "http://192.168.0.154:5000/mobile/grouped-products?page=1&limit=20"
+    `${API_URL}/mobile/grouped-products?page=1&limit=5000`
   );
 
   const data = await response.json();

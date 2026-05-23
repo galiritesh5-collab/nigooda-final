@@ -4,6 +4,7 @@ import {
   View,
   FlatList,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 
 import GroupedProductCard
@@ -23,6 +24,9 @@ export default function TestGroupedScreen() {
     GroupedProduct[]
   >([]);
 
+  const [loading, setLoading] =
+    useState(true);
+
   useEffect(() => {
 
     fetchProducts();
@@ -36,16 +40,34 @@ export default function TestGroupedScreen() {
       const data =
         await getGroupedProducts();
 
-      console.log(data);
-
       setProducts(data);
 
     } catch (err) {
 
       console.log(err);
 
+    } finally {
+
+      setLoading(false);
+
     }
   };
+
+  if (loading) {
+
+    return (
+
+      <View style={styles.loader}>
+
+        <ActivityIndicator
+          size="large"
+          color="black"
+        />
+
+      </View>
+
+    );
+  }
 
   return (
 
@@ -65,6 +87,7 @@ export default function TestGroupedScreen() {
           />
 
         )}
+        showsVerticalScrollIndicator={false}
       />
 
     </View>
@@ -80,4 +103,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
 
-}); 
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+});

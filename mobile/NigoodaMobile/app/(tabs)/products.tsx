@@ -13,49 +13,44 @@ import { router } from "expo-router";
 
 import { COLORS } from "../../constants/colors";
 
-import { getProducts } from "../../services/productService";
-
 import { Product } from "../../types/product";
 
 export default function ProductsScreen() {
-  const [products, setProducts] = useState<
-    Product[]
-  >([]);
+
+  const [products, setProducts] =
+    useState<Product[]>([]);
 
   const [loading, setLoading] =
     useState(true);
 
-  const [selectedCategory, setSelectedCategory] =
-    useState("");
+  const [
+    selectedCategory,
+    setSelectedCategory,
+  ] = useState("Food");
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
   const fetchProducts = async () => {
+
     try {
 
       const response = await fetch(
-        "http://192.168.0.154:5000/admin/products"
+        "https://nigooda-final.onrender.com/admin/products"
       );
 
       const data = await response.json();
 
       setProducts(data);
 
-      if (data.length > 0) {
-        setSelectedCategory(
-          data[0]["Primary Category"]
-        );
-      }
-
-      setLoading(false);
-
     } catch (error) {
 
-      console.log("FETCH ERROR");
-
       console.log(error);
+
+    } finally {
+
+      setLoading(false);
     }
   };
 
@@ -99,6 +94,7 @@ export default function ProductsScreen() {
   ];
 
   if (loading) {
+
     return (
       <View style={styles.loader}>
         <ActivityIndicator
@@ -110,87 +106,75 @@ export default function ProductsScreen() {
   }
 
   return (
+
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => router.push("/test-grouped")}
-        style={{
-          backgroundColor: "black",
-          padding: 12,
-          margin: 10,
-          borderRadius: 10,
-        }}
+
+      {/* LEFT CATEGORY SIDEBAR */}
+
+      <ScrollView
+        style={styles.sidebar}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={{ color: "white" }}>
-          OPEN TEST GROUPED
-        </Text>
-      </TouchableOpacity>
 
-      {/* SIDEBAR */}
+        {categories.map((category) => {
 
-      <View style={styles.sidebar}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-        >
-          {categories.map((category) => {
-            const isSelected =
-              String(selectedCategory)
-                .trim()
-                .toLowerCase() ===
-              String(category)
-                .trim()
-                .toLowerCase();
+          const isSelected =
+            category === selectedCategory;
 
-            return (
-              <TouchableOpacity
-                key={category}
+          return (
+
+            <TouchableOpacity
+              key={category}
+              style={[
+                styles.categoryItem,
+
+                isSelected &&
+                  styles.selectedCategory,
+              ]}
+              onPress={() =>
+                setSelectedCategory(category)
+              }
+            >
+
+              <Text
                 style={[
-                  styles.categoryItem,
+                  styles.categoryText,
 
                   isSelected &&
-                    styles.selectedCategory,
+                    styles.selectedCategoryText,
                 ]}
-                onPress={() =>
-                  setSelectedCategory(category)
-                }
               >
-                <Text
-                  style={[
-                    styles.categoryText,
+                {category}
+              </Text>
 
-                    isSelected &&
-                      styles.selectedCategoryText,
-                  ]}
-                >
-                  {category}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
+            </TouchableOpacity>
 
-      {/* CONTENT */}
+          );
+        })}
+
+      </ScrollView>
+
+      {/* RIGHT CONTENT */}
 
       <View style={styles.content}>
-        <Text>
-          PRODUCTS: {products.length}
-        </Text>
 
-        <Text>
-          CATEGORY: {selectedCategory}
-        </Text>
+        {/* TOP BAR */}
 
-        <Text>
-          CATEGORIES: {JSON.stringify(categories)}
-        </Text>
+        <View style={styles.topBar}>
 
-        <Text>
-          SUBCATEGORIES: {JSON.stringify(subcategories)}
-        </Text>
+          <Text style={styles.topTitle}>
+            Products
+          </Text>
+
+        </View>
+
+        {/* CATEGORY TITLE */}
 
         <Text style={styles.heading}>
           {selectedCategory}
         </Text>
+
+        {/* SUBCATEGORIES */}
 
         <ScrollView
           contentContainerStyle={
@@ -198,8 +182,10 @@ export default function ProductsScreen() {
           }
           showsVerticalScrollIndicator={false}
         >
+
           {subcategories.map(
             (subcategory, index) => (
+
               <TouchableOpacity
                 key={index}
                 style={styles.subcategoryCard}
@@ -209,21 +195,28 @@ export default function ProductsScreen() {
                   )
                 }
               >
+
                 <Text
                   style={styles.subcategoryText}
                 >
                   {subcategory}
                 </Text>
+
               </TouchableOpacity>
+
             )
           )}
+
         </ScrollView>
+
       </View>
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
   loader: {
     flex: 1,
     justifyContent: "center",
@@ -233,85 +226,81 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
-
     backgroundColor: COLORS.background,
   },
 
+  /* SIDEBAR */
+
   sidebar: {
-    width: 115,
-
-    backgroundColor: "#FAFAFA",
-
+    width: 110,
+    backgroundColor: "#FFFFFF",
     borderRightWidth: 1,
     borderRightColor: COLORS.border,
-
-    paddingTop: 14,
+    paddingTop: 18,
   },
 
   categoryItem: {
     paddingVertical: 18,
     paddingHorizontal: 10,
-
-    marginHorizontal: 8,
-    marginBottom: 6,
-
-    borderRadius: 14,
+    borderLeftWidth: 4,
+    borderLeftColor: "transparent",
   },
 
   selectedCategory: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: "#F5F3FF",
+    borderLeftColor: COLORS.primary,
   },
 
   categoryText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "600",
-
-    textAlign: "center",
-
-    color: COLORS.text,
+    color: COLORS.textLight,
   },
 
   selectedCategoryText: {
-    color: "#FFFFFF",
+    color: COLORS.primary,
+    fontWeight: "800",
   },
+
+  /* RIGHT CONTENT */
 
   content: {
     flex: 1,
-
     paddingHorizontal: 16,
     paddingTop: 18,
+  },
+
+  topBar: {
+    marginBottom: 20,
+  },
+
+  topTitle: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: COLORS.text,
   },
 
   heading: {
     fontSize: 24,
     fontWeight: "800",
-
     color: COLORS.text,
-
     marginBottom: 20,
   },
 
   subcategoryGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-
     gap: 12,
-
     paddingBottom: 120,
   },
 
   subcategoryCard: {
     width: "46%",
-
     height: 110,
-
     backgroundColor: "#FFFFFF",
-
     borderRadius: 20,
-
     justifyContent: "center",
     alignItems: "center",
-
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -319,9 +308,9 @@ const styles = StyleSheet.create({
   subcategoryText: {
     fontSize: 14,
     fontWeight: "700",
-
     textAlign: "center",
-
     color: COLORS.text,
+    paddingHorizontal: 8,
   },
+
 });
