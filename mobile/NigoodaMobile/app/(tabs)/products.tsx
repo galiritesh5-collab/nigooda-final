@@ -1,24 +1,48 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { subcategoryIcons }
+  from "../../constants/subcategoryIcons";
 
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
+
+import {
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+
+import { categoryIcons }
+  from "../../constants/categoryIcons";
 
 import { router } from "expo-router";
 
 import { COLORS } from "../../constants/colors";
 
-import { Product } from "../../types/product";
+import {
+  getMobileCategories,
+} from "../../services/productService";
+
+const SCREEN_WIDTH =
+  Dimensions.get("window").width;
+
+const IS_WEB_LAYOUT =
+  SCREEN_WIDTH >= 768;
+
+type CategoryItem = {
+  category: string;
+  subcategories: string[];
+};
 
 export default function ProductsScreen() {
 
-  const [products, setProducts] =
-    useState<Product[]>([]);
+  const [categories, setCategories] =
+    useState<CategoryItem[]>([]);
 
   const [loading, setLoading] =
     useState(true);
@@ -26,23 +50,34 @@ export default function ProductsScreen() {
   const [
     selectedCategory,
     setSelectedCategory,
-  ] = useState("Food");
+  ] = useState("");
 
   useEffect(() => {
-    fetchProducts();
+
+    fetchCategories();
+
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchCategories = async () => {
 
     try {
 
-      const response = await fetch(
-        "https://nigooda-final.onrender.com/admin/products"
-      );
+      const data =
+        await getMobileCategories();
 
-      const data = await response.json();
+      setCategories(data);
 
-      setProducts(data);
+      /*
+        DEFAULT CATEGORY
+      */
+
+      if (data?.length > 0) {
+
+        setSelectedCategory(
+          data[0].category
+        );
+
+      }
 
     } catch (error) {
 
@@ -51,47 +86,47 @@ export default function ProductsScreen() {
     } finally {
 
       setLoading(false);
+
     }
   };
 
-  /* UNIQUE CATEGORIES */
+  /*
+    CATEGORY LIST
+  */
 
-  const categories = [
-    ...new Set(
-      products
-        .map((p) =>
-          String(
-            p["Primary Category"] || ""
-          ).trim()
-        )
-        .filter(Boolean)
-    ),
-  ];
+  const categoryNames =
+    useMemo(() => {
 
-  /* UNIQUE SUBCATEGORIES */
+      return categories.map(
+        (item) => item.category
+      );
 
-  const subcategories = [
-    ...new Set(
-      products
-        .filter(
-          (p) =>
-            String(
-              p["Primary Category"] || ""
-            )
+    }, [categories]);
+
+  /*
+    CURRENT SUBCATEGORIES
+  */
+
+  const subcategories =
+    useMemo(() => {
+
+      const current =
+        categories.find(
+          (item) =>
+            item.category
               .trim()
               .toLowerCase() ===
-            String(selectedCategory || "")
+            selectedCategory
               .trim()
               .toLowerCase()
-        )
-        .map((p) =>
-          String(
-            p["Sub-Category"] || ""
-          ).trim()
-        )
-        .filter(Boolean)
-    ),
-  ];
+        );
+
+      return current?.subcategories || [];
+
+    }, [
+      categories,
+      selectedCategory,
+    ]);
 
   if (loading) {
 
@@ -116,7 +151,28 @@ export default function ProductsScreen() {
         showsVerticalScrollIndicator={false}
       >
 
-        {categories.map((category) => {
+        {IS_WEB_LAYOUT && (
+
+  <TouchableOpacity
+    style={styles.logoContainer}
+    activeOpacity={0.85}
+    onPress={() =>
+      router.push("/")
+    }
+  >
+
+    <Image
+      source={require(
+        "../../assets/logo.png"
+      )}
+      style={styles.logoImage}
+      resizeMode="contain"
+    />
+
+  </TouchableOpacity>
+
+)}
+        {categoryNames.map((category) => {
 
           const isSelected =
             category === selectedCategory;
@@ -135,6 +191,24 @@ export default function ProductsScreen() {
                 setSelectedCategory(category)
               }
             >
+
+              <View style={styles.categoryIconBox}>
+
+                <MaterialCommunityIcons
+                  name={
+                    categoryIcons[
+                      category
+                    ] || "shape-outline"
+                  }
+                  size={22}
+                  color={
+                    isSelected
+                      ? "#5B4CF0"
+                      : "#666"
+                  }
+                />
+
+              </View>
 
               <Text
                 style={[
@@ -196,11 +270,35 @@ export default function ProductsScreen() {
                 }
               >
 
-                <Text
-                  style={styles.subcategoryText}
-                >
-                  {subcategory}
-                </Text>
+                <View style={styles.subcategoryLeft}>
+
+                  <View style={styles.subcategoryIconBox}>
+
+                    <MaterialCommunityIcons
+                      name={
+                        subcategoryIcons[
+                          subcategory
+                        ] || "shape-outline"
+                      }
+                      size={22}
+                      color="#5B4CF0"
+                    />
+
+                  </View>
+
+                  <Text
+                    style={styles.subcategoryText}
+                  >
+                    {subcategory}
+                  </Text>
+
+                </View>
+
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={24}
+                  color="#8B80F8"
+                />
 
               </TouchableOpacity>
 
@@ -231,30 +329,103 @@ const styles = StyleSheet.create({
 
   /* SIDEBAR */
 
+  logoContainer: {
+    paddingTop: 20,
+    paddingBottom: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  logoImage: {
+    width: 150,
+    height: 60,
+  },
+
   sidebar: {
-    width: 110,
+    width: IS_WEB_LAYOUT
+      ? 260
+      : 78,
+
     backgroundColor: "#FFFFFF",
+
     borderRightWidth: 1,
+
     borderRightColor: COLORS.border,
+
     paddingTop: 18,
   },
 
   categoryItem: {
-    paddingVertical: 18,
-    paddingHorizontal: 10,
-    borderLeftWidth: 4,
-    borderLeftColor: "transparent",
+
+    flexDirection:
+      IS_WEB_LAYOUT
+        ? "row"
+        : "column",
+
+    alignItems: "center",
+
+    justifyContent: "center",
+
+    gap:
+      IS_WEB_LAYOUT
+        ? 12
+        : 6,
+
+    paddingVertical:
+      IS_WEB_LAYOUT
+        ? 16
+        : 12,
+
+    paddingHorizontal:
+      IS_WEB_LAYOUT
+        ? 14
+        : 6,
+
+    marginHorizontal: 6,
+
+    marginBottom: 10,
+
+    borderRadius: 18,
   },
 
   selectedCategory: {
-    backgroundColor: "#F5F3FF",
-    borderLeftColor: COLORS.primary,
+    backgroundColor: "#F4F1FF",
+    borderLeftColor: "#5B4CF0",
+  },
+
+  categoryIconBox: {
+
+    width:
+      IS_WEB_LAYOUT
+        ? 42
+        : 36,
+
+    height:
+      IS_WEB_LAYOUT
+        ? 42
+        : 36,
+
+    borderRadius: 12,
+
+    backgroundColor: "#F7F5FF",
+
+    justifyContent: "center",
+
+    alignItems: "center",
   },
 
   categoryText: {
-    fontSize: 14,
-    fontWeight: "600",
+
+    fontSize:
+      IS_WEB_LAYOUT
+        ? 18
+        : 11,
+
+    fontWeight: "700",
+
     color: COLORS.textLight,
+
+    textAlign: "center",
   },
 
   selectedCategoryText: {
@@ -266,7 +437,7 @@ const styles = StyleSheet.create({
 
   content: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingTop: 18,
   },
 
@@ -288,29 +459,79 @@ const styles = StyleSheet.create({
   },
 
   subcategoryGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
     paddingBottom: 120,
+    gap: 12,
   },
 
   subcategoryCard: {
-    width: "46%",
-    height: 110,
+
+    width: "100%",
+
+    minHeight: 82,
+
     backgroundColor: "#FFFFFF",
+
     borderRadius: 20,
+
+    flexDirection: "row",
+
+    alignItems: "center",
+
+    justifyContent: "space-between",
+
+    paddingHorizontal: 14,
+
+    marginBottom: 12,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.04,
+
+    shadowRadius: 6,
+
+    elevation: 2,
+  },
+
+  subcategoryLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+
+  subcategoryIconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: "#F6F4FF",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    marginRight: 14,
   },
 
   subcategoryText: {
-    fontSize: 14,
+
+    flex: 1,
+
+    fontSize:
+      IS_WEB_LAYOUT
+        ? 18
+        : 16,
+
     fontWeight: "700",
-    textAlign: "center",
+
     color: COLORS.text,
-    paddingHorizontal: 8,
+
+    lineHeight:
+      IS_WEB_LAYOUT
+        ? 26
+        : 22,
+
+    paddingRight: 10,
   },
 
 });

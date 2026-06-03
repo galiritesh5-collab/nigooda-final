@@ -1,5 +1,16 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+
 import { useEffect, useState, useMemo } from "react";
+
+import FoodBarcodePage from "./pages/FoodBarcodePage";
+import FoodDrinkPage from "./pages/FoodDrinkPage";
+import ProductIntelligencePage from "./pages/ProductIntelligencePage";
+import AnalyzeProductPage from "./pages/AnalyzeProductPage";
 
 import { WishlistProvider } from "./context/WishlistContext";
 
@@ -15,131 +26,201 @@ import SubCategoryPage from "./pages/SubCategoryPage";
 import AdminPage from "./pages/AdminPage";
 import ProductPage from "./pages/ProductPage";
 import WishlistPage from "./pages/WishlistPage";
-import IngredientTextInput from "./pages/IngredientTextInput";
-import IngredientImageUpload from "./pages/IngredientImageUpload";
-
-/* ✅ ADDED IMPORT */
-import FoodScanPage from "./pages/FoodScanPage";
 
 const AppContent = () => {
+
   const location = useLocation();
 
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [products, setProducts] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] =
+    useState<string | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [products, setProducts] =
+    useState<any[]>([]);
+
+  const [searchQuery, setSearchQuery] =
+    useState("");
 
   const searchedProducts = useMemo(() => {
+
     if (!searchQuery.trim()) return [];
 
-    const terms = searchQuery.toLowerCase().split(" ").filter(Boolean);
+    const terms =
+      searchQuery
+        .toLowerCase()
+        .split(" ")
+        .filter(Boolean);
 
     return products.filter((product) => {
-      const name = product.name.toLowerCase();
-      const tagText = product.tags.join(" ");
+
+      const name =
+        (product.name || "")
+          .toLowerCase();
+
+      const tagText =
+        Array.isArray(product.tags)
+          ? product.tags.join(" ")
+          : "";
 
       return terms.some(
         (term) =>
           name.includes(term) ||
           tagText.includes(term)
       );
+
     });
+
   }, [searchQuery, products]);
 
   useEffect(() => {
+
     const loadProducts = () => {
+
       fetch("http://localhost:5000/products")
+
         .then((res) => res.json())
-       .then((data) => {
 
-  data = data.products || data;
+        .then((data) => {
 
-  const normalized = data.flatMap((group: any) => {
+          data =
+            data.products || data;
 
-    return (group.variants || []).map((p: any) => {
+          const normalized =
+            data.flatMap((group: any) => {
 
-      const rawTags =
-        p.tags || p.Tags || "";
+              return (
+                group.variants || []
+              ).map((p: any) => {
 
-      let cleanTags: string[] = [];
+                const rawTags =
+                  p.tags ||
+                  p.Tags ||
+                  "";
 
-      if (Array.isArray(rawTags)) {
+                let cleanTags: string[] =
+                  [];
 
-        cleanTags = rawTags.map(
-          (t: string) =>
-            t.toLowerCase().trim()
+                if (
+                  Array.isArray(rawTags)
+                ) {
+
+                  cleanTags =
+                    rawTags.map(
+                      (t: string) =>
+                        t
+                          .toLowerCase()
+                          .trim()
+                    );
+
+                } else if (
+                  typeof rawTags ===
+                  "string"
+                ) {
+
+                  cleanTags =
+                    rawTags
+                      .toLowerCase()
+                      .split(",")
+                      .map((t: string) =>
+                        t.trim()
+                      );
+
+                }
+
+                return {
+                  ...p,
+
+                  name:
+                    p[
+                      "Name of Product"
+                    ] ||
+                    p.Name ||
+                    p.name ||
+                    "",
+
+                  homeSections:
+                    p.homeSections,
+
+                  tags: cleanTags,
+                };
+
+              });
+
+            });
+
+          setProducts(normalized);
+
+        })
+
+        .catch(() =>
+          setProducts([])
         );
 
-      } else if (
-        typeof rawTags === "string"
-      ) {
-
-        cleanTags = rawTags
-          .toLowerCase()
-          .split(",")
-          .map((t: string) =>
-            t.trim()
-          );
-      }
-
-      return {
-        ...p,
-
-        name:
-          p["Name of Product"] ||
-          p.Name ||
-          p.name ||
-          "",
-
-        homeSections:
-          p.homeSections,
-
-        tags: cleanTags,
-      };
-    });
-  });
-
- setProducts(normalized);
-
-})
-
-.catch(() => setProducts([]));
-
-};
+    };
 
     loadProducts();
-    const interval = setInterval(loadProducts, 3000);
-    return () => clearInterval(interval);
+
+    const interval =
+      setInterval(
+        loadProducts,
+        3000
+      );
+
+    return () =>
+      clearInterval(interval);
+
   }, []);
 
   useEffect(() => {
+
     setActiveCategory(null);
+
   }, [location.pathname]);
 
   return (
+
     <div className="min-h-screen font-sans text-slate-900">
+
       <Navbar
-        activeCategory={activeCategory}
-        onCategoryClick={(id) =>
-          setActiveCategory(activeCategory === id ? null : id)
+        activeCategory={
+          activeCategory
         }
-        onCloseCategory={() => setActiveCategory(null)}
+        onCategoryClick={(id) =>
+          setActiveCategory(
+            activeCategory === id
+              ? null
+              : id
+          )
+        }
+        onCloseCategory={() =>
+          setActiveCategory(null)
+        }
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={
+          setSearchQuery
+        }
         products={products}
       />
 
       <div className="h-24" />
 
-      {activeCategory && location.pathname === "/" && (
-        <ExpandedCategoryPanel categoryId={activeCategory} />
+      {activeCategory &&
+        location.pathname === "/" && (
+
+          <ExpandedCategoryPanel
+            categoryId={
+              activeCategory
+            }
+          />
+
       )}
 
       <Routes>
+
         <Route
           path="/"
           element={
             <>
+
               <Hero />
 
               <DiscoverSection
@@ -169,65 +250,126 @@ const AppContent = () => {
                 sectionKey="underrated"
                 products={products}
               />
+
             </>
           }
         />
 
         <Route
+          path="/food-drink"
+          element={<FoodDrinkPage />}
+        />
+
+        <Route
+          path="/product-intelligence"
+          element={
+            <ProductIntelligencePage />
+          }
+        />
+
+      <Route
+  path="/analyze/:category"
+  element={<AnalyzeProductPage />}
+/>
+
+<Route
+  path="/analyze/:category/:section/:product"
+  element={<AnalyzeProductPage />}
+/>
+
+        <Route
           path="/discover/:sectionKey"
-          element={<DiscoverPage products={products} />}
+          element={
+            <DiscoverPage
+              products={products}
+            />
+          }
+        />
+
+        <Route
+          path="/scan/barcode"
+          element={
+            <FoodBarcodePage />
+          }
         />
 
         <Route
           path="/search"
-          element={<SearchResultsPage products={products} />}
+          element={
+            <SearchResultsPage
+              products={products}
+            />
+          }
         />
 
         <Route
           path="/category/:categoryId"
-          element={<CategoryPage products={products} />}
+          element={
+            <CategoryPage
+              products={products}
+            />
+          }
+        />
+
+        <Route
+          path="/food-barcode"
+          element={
+            <FoodBarcodePage />
+          }
         />
 
         <Route
           path="/category/:categoryId/:subCategory"
-          element={<SubCategoryPage products={products} />}
+          element={
+            <SubCategoryPage
+              products={products}
+            />
+          }
         />
 
         <Route
           path="/product/:id"
-          element={<ProductPage products={products} />}
+          element={
+            <ProductPage
+              products={products}
+            />
+          }
         />
 
         <Route
           path="/wishlist"
-          element={<WishlistPage products={products} />}
+          element={
+            <WishlistPage
+              products={products}
+            />
+          }
         />
+
         <Route
-         path="/scan/text"
-        element={<IngredientTextInput />}
+          path="/admin"
+          element={<AdminPage />}
         />
-
-      <Route
-        path="/scan/image"
-        element={<IngredientImageUpload />}
-      />
-
-        <Route path="/admin" element={<AdminPage />} />
-
-        {/* ✅ ADDED ROUTE */}
-        <Route path="/scan" element={<FoodScanPage />} />
 
       </Routes>
+
     </div>
+
   );
+
 };
 
 const App = () => {
+
   return (
+
     <WishlistProvider>
+
       <AppContent />
+
     </WishlistProvider>
+
   );
+
 };
 
 export default App;

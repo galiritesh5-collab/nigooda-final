@@ -83,8 +83,19 @@ export default function SubcategoryScreen() {
       <View style={styles.topBar}>
 
         <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
+onPress={() => {
+
+  if (router.canGoBack()) {
+
+    router.back();
+
+  } else {
+
+    router.push("/products");
+
+  }
+
+}}          style={styles.backButton}
         >
           <Text style={styles.backText}>
             ←

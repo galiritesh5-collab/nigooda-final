@@ -8,9 +8,94 @@ const xlsx = require("xlsx");
 const XLSX = require("xlsx");
 const mongoose = require("mongoose");
 const Product = require("./models/Product");
+
 const app = express();
+
+const barcodeRoutes = require(
+  "./routes/food/analyzeBarcode"
+);
+const analyzeFaceWashRoute =
+require("./routes/analyzeFaceWash");
+const analyzeMoisturizer =
+require("./routes/analyzeMoisturizer");
+const analyzeSunscreen =
+require("./routes/analyzeSunscreen");
+const analyzeToner =
+require("./routes/analyzeToner");
+const analyzeSerum =
+require("./routes/analyzeSerum");
+const analyzeDayCream =
+require("./routes/analyzeDayCream");
+const analyzeNightCream =
+require("./routes/analyzeNightCream");
+const analyzeEyeCream =
+require("./routes/analyzeEyeCream");
+const analyzeLipBalm =
+require("./routes/analyzeLipBalm");
+const analyzeFaceMask =
+require("./routes/analyzeFaceMask");
+
+
+
+
+
 app.use(cors());
-app.use(express.json());
+
+app.use(express.json({
+  limit: "50mb"
+}));
+
+app.use(express.urlencoded({
+  limit: "50mb",
+  extended: true
+}));
+
+
+app.use(
+  "/api",
+  analyzeFaceWashRoute
+);
+app.use(
+  "/api",
+  analyzeMoisturizer
+);
+app.use(
+  "/api",
+  analyzeSunscreen
+);
+app.use(
+  "/api",
+  analyzeToner
+);
+app.use(
+  "/api",
+  analyzeSerum
+);
+app.use(
+"/api",
+analyzeDayCream
+);
+app.use(
+"/api",
+analyzeNightCream
+);
+app.use(
+"/api",
+analyzeEyeCream
+);
+app.use(
+"/api",
+analyzeLipBalm
+);
+app.use(
+"/api",
+analyzeFaceMask
+);
+app.use(
+  "/api/food",
+  barcodeRoutes
+);
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
@@ -19,15 +104,6 @@ mongoose
   .catch((err) => {
     console.error("MongoDB Error:", err);
   });
-/* =========================
-   ✅ ADDED ROUTE (NEW)
-   analyzeIngredients route
-========================= */
-
-const analyzeRoute =
-  require("./routes/analyzeIngredients");
-
-app.use("/api", analyzeRoute);
 
 /* =========================
    EXISTING CODE CONTINUES

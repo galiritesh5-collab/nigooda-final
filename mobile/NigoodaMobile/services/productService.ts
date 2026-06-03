@@ -41,3 +41,18 @@ export const getGroupedProductsBySubcategory =
 
     return data || [];
   };
+  /* ============================================================
+   GET MOBILE CATEGORIES
+============================================================ */
+
+export const getMobileCategories =
+  async () => {
+
+    const response = await fetch(
+      `${API_URL}/mobile/categories`
+    );
+
+    const data = await response.json();
+
+    return data || [];
+  };

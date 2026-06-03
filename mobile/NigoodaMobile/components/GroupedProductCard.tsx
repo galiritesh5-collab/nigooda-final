@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 
 import { router } from "expo-router";
@@ -27,6 +28,12 @@ export default function GroupedProductCard({
     item.displayProduct.id
   );
 
+  const [imageLoading, setImageLoading] =
+    useState(true);
+
+  const [imageError, setImageError] =
+    useState(false);
+
   /*
     RESET STATE
     WHEN CARD CHANGES
@@ -37,6 +44,10 @@ export default function GroupedProductCard({
     setSelectedVariantId(
       item.displayProduct.id
     );
+
+    setImageLoading(true);
+
+    setImageError(false);
 
   }, [item.groupId]);
 
@@ -65,13 +76,63 @@ export default function GroupedProductCard({
 
       {/* PRODUCT IMAGE */}
 
-      <Image
-        source={{
-          uri:
-            product["Main Image URL"],
-        }}
-        style={styles.image}
-      />
+      <View style={styles.imageContainer}>
+
+        {imageLoading && !imageError && (
+
+          <View style={styles.imageLoader}>
+
+            <ActivityIndicator
+              size="small"
+              color="#5B4CF0"
+            />
+
+          </View>
+
+        )}
+
+        <Image
+          key={product.id}
+          source={{
+            uri:
+              product["Main Image URL"],
+            cache: "force-cache",
+          }}
+          style={styles.image}
+          onLoadStart={() => {
+
+            setImageLoading(true);
+
+            setImageError(false);
+
+          }}
+          onLoadEnd={() => {
+
+            setImageLoading(false);
+
+          }}
+          onError={() => {
+
+            setImageLoading(false);
+
+            setImageError(true);
+
+          }}
+        />
+
+        {imageError && (
+
+          <View style={styles.imageFallback}>
+
+            <Text style={styles.imageFallbackText}>
+              No Image
+            </Text>
+
+          </View>
+
+        )}
+
+      </View>
 
       {/* INFO */}
 
@@ -148,6 +209,32 @@ export default function GroupedProductCard({
 }
 
 const styles = StyleSheet.create({
+
+  imageContainer: {
+    width: "100%",
+    height: 150,
+    backgroundColor: "#F5F5F5",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+
+  imageLoader: {
+    position: "absolute",
+    zIndex: 2,
+  },
+
+  imageFallback: {
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  imageFallbackText: {
+    color: "#999",
+    fontSize: 12,
+    fontWeight: "600",
+  },
 
   card: {
     width: "48%",
