@@ -1,8 +1,13 @@
 import { useState } from "react";
 
-import { useParams } from "react-router-dom";
+import {
+  useParams,
+  useNavigate
+} from "react-router-dom";
 
 const AnalyzeProductPage = () => {
+
+  const navigate = useNavigate();
 
   const {
     category,
@@ -104,48 +109,59 @@ const AnalyzeProductPage = () => {
           "SENDING REQUEST"
         );
 
-        const endpointMap: Record<string, string> = {
+        const endpointMap: Record<
+          string,
+          string
+        > = {
 
-  "face-wash":
-    "analyze-facewash",
+          "face-wash":
+            "analyze-facewash",
 
-  moisturizer:
-    "analyze-moisturizer",
-   sunscreen:
-    "analyze-sunscreen",
-    toner:
-    "analyze-toner",
-    serum:
-    "analyze-serum",
-    "day-cream":
-"analyze-daycream",
+          moisturizer:
+            "analyze-moisturizer",
 
-"night-cream":
-"analyze-nightcream",
-"eye-cream":
-"analyze-eyecream",
-"lip-balm":
-"analyze-lipbalm",
-"face-mask":
-"analyze-faceMask",
-};
+          sunscreen:
+            "analyze-sunscreen",
 
-const endpoint =
-  endpointMap[
-    product || ""
-  ];
+          toner:
+            "analyze-toner",
 
-if (!endpoint) {
+          serum:
+            "analyze-serum",
 
-  throw new Error(
-    "Unsupported product type"
-  );
+          "day-cream":
+            "analyze-daycream",
 
-}
+          "night-cream":
+            "analyze-nightcream",
 
-const response =
-  await fetch(
-    `http://localhost:5000/api/${endpoint}`,
+          "eye-cream":
+            "analyze-eyecream",
+
+          "lip-balm":
+            "analyze-lipbalm",
+
+          "face-mask":
+            "analyze-faceMask",
+
+        };
+
+        const endpoint =
+          endpointMap[
+            product || ""
+          ];
+
+        if (!endpoint) {
+
+          throw new Error(
+            "Unsupported product type"
+          );
+
+        }
+
+        const response =
+          await fetch(
+            `http://localhost:5000/api/${endpoint}`,
             {
               method: "POST",
 
@@ -189,8 +205,14 @@ const response =
 
         }
 
-        setAnalysisResult(
-          data.result
+        navigate(
+          "/product-analysis-result",
+          {
+            state: {
+              analysisResult:
+                data.result
+            }
+          }
         );
 
       }

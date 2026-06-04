@@ -11,6 +11,7 @@ import FoodBarcodePage from "./pages/FoodBarcodePage";
 import FoodDrinkPage from "./pages/FoodDrinkPage";
 import ProductIntelligencePage from "./pages/ProductIntelligencePage";
 import AnalyzeProductPage from "./pages/AnalyzeProductPage";
+import ProductAnalysisResultPage from "./pages/ProductAnalysisResultPage";
 
 import { WishlistProvider } from "./context/WishlistContext";
 
@@ -266,6 +267,10 @@ const AppContent = () => {
             <ProductIntelligencePage />
           }
         />
+        <Route
+  path="/product-analysis-result"
+  element={<ProductAnalysisResultPage />}
+/>
 
       <Route
   path="/analyze/:category"

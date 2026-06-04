@@ -8,7 +8,7 @@ const OCRAndTypeDetection =
 require("../utils/intelligence/product/personalCare/skinCare/faceMask/ocrAndTypeDetection");
 
 router.post(
-"/analyze-facemask",
+  "/analyze-faceMask",
 
 async (
 req,
