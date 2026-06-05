@@ -1,165 +1,69 @@
 const FoodAI = require("./FoodAI");
 const FoodDeterministic = require("./FoodDeterministic");
 const openai =
-  require("../../ai/openaiClient");
+require("../../ai/openaiClient");
 /*
 ===========================================================
 NIGOODA FINAL FOOD ANALYSIS ENGINE
 ===========================================================
-
-RESPONSIBILITIES
-
+RESPONSIBILITIES:
 1. Connect FoodAI
 2. Connect FoodDeterministic
 3. Generate Ingredient Analysis Output
 4. Generate Nutrition Analysis Output
 5. Detect Pure Natural Products
 6. Generate Final Frontend-Ready Response
-
 ===========================================================
 */
 
 class FinalFoodAnalysis {
-  /*
-  ===========================================================
-  MAIN PIPELINE
-  ===========================================================
-  */
+  // ─── MAIN PIPELINE ───────────────────────────────────────────────────────────
 
   async run(productInput) {
     try {
-      /*
-      =======================================================
-      STEP 1 — AI ENGINE
-      =======================================================
-      */
+      const aiOutput = await FoodAI.run(productInput);
+      const deterministicOutput = FoodDeterministic.run(aiOutput);
 
-      const aiOutput =
-        await FoodAI.run(productInput);
+      delete deterministicOutput.nutrition?.["nova-group"];
 
-      /*
-      =======================================================
-      STEP 2 — DETERMINISTIC ENGINE
-      =======================================================
-      */
-
-      const deterministicOutput =
-        FoodDeterministic.run(aiOutput);
-        /*
-=======================================================
-REMOVE NOVA
-=======================================================
-*/
-
-delete deterministicOutput
-  .nutrition?.["nova-group"];
-
-      /*
-      =======================================================
-      STEP 3 — PURE PRODUCT DETECTION
-      =======================================================
-      */
-
-      const pureProductAnalysis =
-        this.detectPureProduct(
-          deterministicOutput
-        );
-
-      /*
-      =======================================================
-      STEP 4 — INGREDIENT ANALYSIS
-      =======================================================
-      */
-
-      const ingredientAnalysis =
-        await this.generateIngredientAnalysis(
-          deterministicOutput,
-          pureProductAnalysis
-        );
-
-      /*
-      =======================================================
-      STEP 5 — NUTRITION ANALYSIS
-      =======================================================
-      */
-
-      const nutritionAnalysis =
-        await this.generateNutritionAnalysis(
-          deterministicOutput
-        );
-
-      /*
-      =======================================================
-      FINAL RESPONSE
-      =======================================================
-      */
+      const pureProductAnalysis  = this.detectPureProduct(deterministicOutput);
+      const ingredientAnalysis   = await this.generateIngredientAnalysis(deterministicOutput, pureProductAnalysis);
+      const nutritionAnalysis    = await this.generateNutritionAnalysis(deterministicOutput);
 
       return {
-        product:
-          deterministicOutput.product,
 
-        nutrition:
-          deterministicOutput.nutrition,
+  productType:
+    "FOOD",
 
-        ingredient_analysis:
-          ingredientAnalysis,
+  analysis: `
 
-        nutrition_analysis:
-          nutritionAnalysis,
+${ingredientAnalysis}
 
-        raw_analysis:
-          deterministicOutput,
-      };
+---
+
+${nutritionAnalysis}
+
+`,
+
+  raw_analysis:
+    deterministicOutput,
+
+};
     } catch (error) {
-      console.error(
-        "FINAL FOOD ANALYSIS ERROR:",
-        error.message
-      );
-
+      console.error("FINAL FOOD ANALYSIS ERROR:", error.message);
       throw error;
     }
   }
 
-  /*
-  ===========================================================
-  PURE PRODUCT DETECTION
-  ===========================================================
-  */
+  // ─── PURE PRODUCT DETECTION ───────────────────────────────────────────────────
 
   detectPureProduct(data) {
-    const ingredients =
-      data.ingredients || [];
-
-    const finalRating =
-      data.final_rating || 0;
-
-    const ingredientCount =
-      ingredients.length;
-
-    const ultraProcessed =
-      ingredients.some(
-        (ingredient) =>
-          ingredient.ultra_processed
-      );
-
-    const hasNegativeTraits =
-      ingredients.some(
-        (ingredient) =>
-          ingredient.negative_traits
-            ?.length > 0
-      );
-
-    const hasCriticalPenalties =
-      data.penalties?.some(
-        (penalty) =>
-          penalty.penalty <= -0.6
-      );
-
-    /*
-    =======================================================
-    PURE PRODUCT RULE
-    =======================================================
-    */
+    const ingredients     = data.ingredients || [];
+    const finalRating     = data.final_rating || 0;
+    const ingredientCount = ingredients.length;
+    const ultraProcessed  = ingredients.some((i) => i.ultra_processed);
+    const hasNegativeTraits   = ingredients.some((i) => i.negative_traits?.length > 0);
+    const hasCriticalPenalties= data.penalties?.some((p) => p.penalty <= -0.6);
 
     const isPureNatural =
       ingredientCount <= 3 &&
@@ -168,88 +72,30 @@ delete deterministicOutput
       !hasNegativeTraits &&
       !hasCriticalPenalties;
 
-    return {
-      is_pure_natural:
-        isPureNatural,
-    };
+    return { is_pure_natural: isPureNatural };
   }
 
-  /*
-  ===========================================================
-  INGREDIENT ANALYSIS GENERATION
-  ===========================================================
-  */
+  // ─── INGREDIENT ANALYSIS ──────────────────────────────────────────────────────
 
-  async generateIngredientAnalysis(
-    data,
-    pureProductAnalysis
-  ) {
+  async generateIngredientAnalysis(data, pureProductAnalysis) {
     try {
-      const prompt = `
-You are the Nigooda Final Ingredient Analysis Engine.
+      const prompt = `You are the Nigooda Final Ingredient Analysis Engine.
 
-You are given:
-1. Final deterministic ingredient analysis
-2. AI ingredient intelligence
-3. Penalties
-4. Bonuses
-5. Risks
-6. Processing analysis
+You are given: final deterministic ingredient analysis, AI ingredient intelligence, penalties, bonuses, risks, processing analysis.
 
-==================================================
+TASK: Generate a FINAL professional ingredient analysis.
 
-TASK
-
-Generate a FINAL professional ingredient analysis.
-
-==================================================
-
-IMPORTANT RULES
-
-- Use ONLY provided JSON data
-- Do NOT invent ingredient facts
-IMPORTANT:
-
-Ingredients must be interpreted
-within product context.
-
-Example:
-Rice meal inside extruded fried snacks
-is NOT equivalent to intact whole grain rice.
-- Do NOT calculate scores
-- Do NOT change ratings
-- Keep concise and professional
+RULES:
+- Use ONLY provided JSON data — do NOT invent ingredient facts
+- Ingredients must be interpreted within product context (e.g. rice meal inside extruded fried snacks ≠ intact whole grain rice)
+- Do NOT calculate scores or change ratings
+- Keep concise and professional | consumer-friendly tone | scientifically grounded | no fearmongering
 - Use markdown formatting
-- Consumer-friendly tone
-- Scientifically grounded
-- No fearmongering
 
-==================================================
+PURE PRODUCT RULE:
+If "is_pure_natural": true → mention: "Pure Product", "Minimal ingredient processing", "Naturally ingredient-focused" — still include advantages, consumption guidance, positives.
 
-PURE PRODUCT RULE
-
-If:
-"is_pure_natural": true
-
-Then:
-
-- Mention:
-"Pure Product"
-
-- Mention:
-"Minimal ingredient processing"
-
-- Mention:
-"Naturally ingredient-focused"
-
-- Still include:
-advantages
-consumption guidance
-positives
-
-==================================================
-
-OUTPUT FORMAT
+OUTPUT FORMAT:
 
 # Ingredient Analysis
 
@@ -258,6 +104,7 @@ OUTPUT FORMAT
 
 ## ⚖ Ingredient Quality
 [Excellent / Very Good / Good / Moderate / Poor / Very Poor]
+
 ## 🏭 Processing Level
 [level]
 
@@ -265,160 +112,57 @@ OUTPUT FORMAT
 
 # 📊 Category Breakdown
 
-Generate expandable-style category analysis.
-
-For EACH category inside:
-deterministic_analysis.category_scores
-
-Generate:
-
-- category name
-- rating out of 5
-- quality label
-- short scientific reason
-
-FORMAT:
+For EACH category in deterministic_analysis.category_scores:
 
 ## [Category Name]
 ⭐ [rating] / 5 — [quality]
 
 Reason:
-[short category explanation]
+[Short explanation based on actual ingredients, processing context, penalties — NOT generic. Explain WHY that rating was given.]
 
 RULES:
+- Context matters: refined cereal inside ultra-processed snacks → reduce category quality
+- Highly processed foods should NOT receive overly positive category reasoning
 
-1. Reasons MUST be based on:
-- actual ingredients
-- processing context
-- penalties
-- ingredient quality
-
-2. Do NOT generate generic reasons.
-
-3. Reasons should explain:
-WHY the category received that rating.
-
-4. Examples:
-
-## Sugars
-⭐ 2 / 5 — Poor
-
-Reason:
-Contains refined starch-derived carbohydrates and maltodextrin with high glycemic impact.
-
-## Oils
-⭐ 1.5 / 5 — Very Poor
-
-Reason:
-Contains refined palmolein oil used in deep-fried processing.
-
-## Additives
-⭐ 2.5 / 5 — Moderate
-
-Reason:
-Contains multiple acidity regulators and flavor enhancers indicating higher processing intensity.
-
-5. Keep concise but meaningful.
-
-6. Context matters:
-Refined cereal ingredients inside ultra-processed snacks should reduce category quality.
-
-7. Highly processed foods should NOT receive overly positive category reasoning.
 ---
 
 # ⚠ Quality Concerns
-
 Only triggered concerns.
-
-Examples:
-- Deep-fried processing
-- Refined oils used
-- Multiple sugar sources
-- Ultra-processed pattern
-- Maltodextrin present
 
 ---
 
 # 🎁 Positive Factors
-
 Only positive triggers.
-IMPORTANT:
-
-If:
-- highly processed
-- ultra processed
-- multiple penalties exist
-- final rating < 2.5
-
-Then:
-reduce positive emphasis.
-
-Do NOT over-highlight tiny positives
-inside unhealthy products.
-
-Examples:
-- Contains real whole ingredients
-- Natural spices present
-- Low ingredient complexity
-- No additives detected
+IMPORTANT: If highly/ultra processed OR multiple penalties OR final rating < 2.5 → reduce positive emphasis. Do NOT over-highlight tiny positives inside unhealthy products.
 
 ---
 
 # 🚨 Critical Ingredient Alerts
-
 Only if present.
 
 ---
 
 # ⚠ Allergen Advisory
-
 Only if present.
 
 ---
 
 # ⚠ Safety Advisory
+Prioritize: children, hypertension, diabetes, heart health, weight management. Only if scientifically relevant.
 
-Prioritize:
-- children
-- hypertension
-- diabetes
-- heart health
-- weight management
-
-ONLY if scientifically relevant.
 ---
 
 # 📊 Consumption Recommendation
 
-Examples:
-- Consume occasionally
-- Suitable for moderate consumption
-- Best in small portions
-
 ---
 
 # 🔬 Key Ingredients
-
-List key ingredients only.
-Prioritize:
-- dominant ingredients
-- major refined bases
-- oils
-- sugars
-- flavor enhancers
-- major functional additives
-
-Avoid insignificant micro-ingredients.
+Prioritize: dominant ingredients, major refined bases, oils, sugars, flavor enhancers, major functional additives. Avoid insignificant micro-ingredients.
 
 ---
 
 # 🧠 Why This Rating
-
-Explain:
-- major positive drivers
-- major negative drivers
-
-Keep concise.
+Explain major positive and negative drivers. Keep concise.
 
 ---
 
@@ -426,92 +170,45 @@ Keep concise.
 
 ## Positives
 - point
-- point
 
 ## Concerns
 - point
-- point
 
-==================================================
+INPUT JSON:
+${JSON.stringify({ deterministic_analysis: data, pure_product_analysis: pureProductAnalysis }, null, 2)}`;
 
-INPUT JSON
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        temperature: 0.2,
+        messages: [
+          { role: "system", content: "You are a strict professional food ingredient analysis engine." },
+          { role: "user", content: prompt },
+        ],
+      });
 
-${JSON.stringify(
-  {
-    deterministic_analysis:
-      data,
-
-    pure_product_analysis:
-      pureProductAnalysis,
-  },
-  null,
-  2
-)}
-`;
-
-      const response =
-        await openai.chat.completions.create({
-          model: "gpt-4o",
-
-          temperature: 0.2,
-
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a strict professional food ingredient analysis engine.",
-            },
-
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-        });
-
-      return response.choices[0]
-        .message.content;
+      return response.choices[0].message.content;
     } catch (error) {
-      console.error(
-        "INGREDIENT ANALYSIS ERROR:",
-        error.message
-      );
-
+      console.error("INGREDIENT ANALYSIS ERROR:", error.message);
       throw error;
     }
   }
 
-  /*
-  ===========================================================
-  NUTRITION ANALYSIS GENERATION
-  ===========================================================
-  */
+  // ─── NUTRITION ANALYSIS ───────────────────────────────────────────────────────
 
-  async generateNutritionAnalysis(
-    data
-  ) {
+  async generateNutritionAnalysis(data) {
     try {
-      const prompt = `
-You are an advanced food nutrition and scientific health analysis engine.
+      const prompt = `You are an advanced food nutrition and scientific health analysis engine.
 
-Your task is to analyze food products using:
-- WHO ideal daily intake recommendations
-- scientific nutrition principles
-- evidence-based health reasoning
+Analyze food products using WHO ideal daily intake recommendations and evidence-based health reasoning.
 
-IMPORTANT OUTPUT RULES:
-- Always use WHO IDEAL LIMITS only
-- Never show calculations/formulas
-- Never show reasoning steps
-- Never mention AI assumptions
-- Never include NOVA group analysis
-- Never include overall product rating
-- Keep output clean, professional, scientific, and consumer-friendly
-- Use structured markdown formatting exactly
+OUTPUT RULES:
+- Use WHO IDEAL LIMITS only
+- Never show calculations, formulas, reasoning steps, AI assumptions
+- Never include NOVA group analysis or overall product rating
+- Clean, professional, scientific, consumer-friendly
+- Structured markdown formatting
 
-==================================================
-OUTPUT FORMAT
-==================================================
+OUTPUT FORMAT:
 
 # Nutrition Analysis
 
@@ -522,69 +219,43 @@ OUTPUT FORMAT
 
 # Daily Intake Percentage
 
-Create a table:
-
 | Nutrient | Amount | Daily Intake % |
 |---|---|---|
 
 Rules:
-- Use WHO ideal limits wherever applicable
-- Include only nutrients that have meaningful standardized intake percentages
-- Do NOT calculate calories/energy percentages because they vary by person
-- Do NOT include nutrients if data is unavailable
-- Keep percentages simple and rounded
+- Use WHO ideal limits
+- Include only nutrients with meaningful standardized intake percentages
+- Do NOT calculate energy/calorie percentages (vary by person)
+- Do NOT include nutrients if data unavailable
+- Simple rounded percentages
 
 ---
 
 # Nutrition Breakdown
 
-Create a table:
-
 | Nutrient | Amount | Analysis |
 |---|---|---|
 
 Rules:
-- Give concise scientific analysis
-- Mention if nutrient is high/low/moderate
-- Mention health relevance briefly
-- Focus on nutritional quality
+- Concise scientific analysis per nutrient
+- Note if high/low/moderate + health relevance briefly
 
 ---
 
 # Scientific Health Rating
 
-Create a table:
-
 | Category | Rating |
 |---|---|
 
-Possible categories:
-- Sugar Load
-- Metabolic Health
-- Heart Health
-- Weight Management
-- Satiety
-- Ingredient Quality
-- Electrolyte Profile
-- Protein Quality
-- Fiber Quality
-- Fat Quality
+Possible categories: Sugar Load | Metabolic Health | Heart Health | Weight Management | Satiety | Ingredient Quality | Electrolyte Profile | Protein Quality | Fiber Quality | Fat Quality
 
 Rules:
-- Ratings must be out of 5
-- Use half ratings where appropriate
-- Include only relevant categories based on product type
+- Ratings out of 5 (half ratings allowed)
+- Include only relevant categories for this product type
 
 ---
 
 # Positives
-
-Rules:
-- Use bullet-style sections with ✅
-- Mention scientifically beneficial aspects only
-- Keep concise but meaningful
-
-Format:
 
 ## ✅ [Title]
 Short scientific explanation.
@@ -593,82 +264,38 @@ Short scientific explanation.
 
 # Negatives
 
-Rules:
-- Use bullet-style sections with ❌
-- Mention evidence-based concerns only
-- Explain WHY nutritionally
-
-Format:
-
 ## ❌ [Title]
-Short scientific explanation.
+Short scientific explanation (explain WHY nutritionally).
 
 ---
 
 # Final Verdict
 
-Rules:
-- Give balanced scientific conclusion
-- Mention:
-  - strongest positives
-  - biggest nutritional concern
-  - ideal consumption pattern
-  - who should avoid/limit it
+- Strongest positives
+- Biggest nutritional concern
+- Ideal consumption pattern
+- Who should avoid/limit it
 - Do NOT give overall score
-- Keep professional and evidence-based
+- Professional and evidence-based
 
-==================================================
+INPUT JSON:
+${JSON.stringify({ product: data.product, nutrition: data.nutrition, ingredients: data.ingredients, processing_analysis: data.processing_analysis }, null, 2)}`;
 
-INPUT JSON
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        temperature: 0.2,
+        messages: [
+          { role: "system", content: "You are a strict scientific food nutrition analysis engine." },
+          { role: "user", content: prompt },
+        ],
+      });
 
-${JSON.stringify(
-  {
-    product: data.product,
-
-    nutrition: data.nutrition,
-
-    ingredients: data.ingredients,
-
-    processing_analysis:
-      data.processing_analysis,
-  },
-  null,
-  2
-)}
-`;
-
-      const response =
-        await openai.chat.completions.create({
-          model: "gpt-4o",
-
-          temperature: 0.2,
-
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a strict scientific food nutrition analysis engine.",
-            },
-
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-        });
-
-      return response.choices[0]
-        .message.content;
+      return response.choices[0].message.content;
     } catch (error) {
-      console.error(
-        "NUTRITION ANALYSIS ERROR:",
-        error.message
-      );
-
+      console.error("NUTRITION ANALYSIS ERROR:", error.message);
       throw error;
     }
   }
 }
 
-module.exports =
-  new FinalFoodAnalysis();
+module.exports = new FinalFoodAnalysis();

@@ -11,9 +11,11 @@ const Product = require("./models/Product");
 
 const app = express();
 
-const barcodeRoutes = require(
-  "./routes/food/analyzeBarcode"
-);
+const analyzeFood =
+require("./routes/food/analyzeFood");
+
+
+
 const analyzeFaceWashRoute =
 require("./routes/analyzeFaceWash");
 const analyzeMoisturizer =
@@ -34,6 +36,23 @@ const analyzeLipBalm =
 require("./routes/analyzeLipBalm");
 const analyzeFaceMask =
 require("./routes/analyzeFaceMask");
+const shampooRoutes =
+require("./routes/shampooRoutes");
+const conditionerRoutes =
+require("./routes/conditionerRoutes");
+const hairMaskRoutes =
+require("./routes/hairMaskRoutes");
+const hairDyeRoutes =
+require("./routes/hairDyeRoutes");
+const hairStylingProductRoutes =
+require("./routes/hairStylingProductRoutes");
+const bodyCareSoapRoutes =
+require("./routes/bodyCareSoapRoutes");
+
+
+
+
+
 
 
 
@@ -91,9 +110,31 @@ app.use(
 "/api",
 analyzeFaceMask
 );
+app.use("/api",
+analyzeFood);
 app.use(
-  "/api/food",
-  barcodeRoutes
+  "/api",
+  shampooRoutes
+);
+app.use(
+  "/api",
+  conditionerRoutes
+);
+app.use(
+  "/api",
+  hairMaskRoutes
+);
+app.use(
+  "/api",
+  hairDyeRoutes
+);
+app.use(
+  "/api",
+  hairStylingProductRoutes
+);
+app.use(
+  "/api",
+  bodyCareSoapRoutes
 );
 
 mongoose

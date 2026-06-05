@@ -14,7 +14,8 @@ import AnalyzeProductPage from "./pages/AnalyzeProductPage";
 import ProductAnalysisResultPage from "./pages/ProductAnalysisResultPage";
 
 import { WishlistProvider } from "./context/WishlistContext";
-
+import AnalyzeFoodPage
+from "./pages/AnalyzeFoodPage";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ExpandedCategoryPanel from "./components/ExpandedCategoryPanel";
@@ -267,6 +268,10 @@ const AppContent = () => {
             <ProductIntelligencePage />
           }
         />
+        <Route
+  path="/analyze/food"
+  element={<AnalyzeFoodPage />}
+/>
         <Route
   path="/product-analysis-result"
   element={<ProductAnalysisResultPage />}

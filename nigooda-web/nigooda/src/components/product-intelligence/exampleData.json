@@ -1,93 +1,38 @@
+[
 {
-  "pageType": "product-analysis",
-  "productId": "NIG-SKIN-001",
-  "blocks": [
-    {
-      "type": "structural-summary",
-      "id": "block-1",
-      "title": "AI Executive Insight",
-      "summary": "This premium retinoid serum demonstrates exceptional formulation stability and high efficacy for anti-aging. Our AI detected advanced encapsulation technology and a balanced pH of 5.5, making it suitable for sensitive skin despite the high active concentration.",
-      "highlights": [
-        "Clinically proven 0.3% pure retinol",
-        "Multi-molecular weight hyaluronic acid",
-        "Niacinamide for barrier protection",
-        "Airless pump packaging ensures stability"
-      ]
-    },
-    {
-      "type": "hero-rating",
-      "id": "block-2",
-      "title": "NIGOODA Efficacy Rating",
-      "rating": 4.8,
-      "maxRating": 5,
-      "summary": "Highly Advanced Anti-Aging Formula",
-      "tags": ["Dermatologist Tested", "Clean Beauty", "Anti-Aging Gold Standard"]
-    },
-    {
-      "type": "critical-alerts",
-      "id": "block-3",
-      "alerts": [
-        {
-          "type": "Usage Protocol",
-          "message": "Photosensitivity increases significantly with this product.",
-          "action": "Always apply SPF 30+ daytime when using this serum at night."
-        }
-      ]
-    },
-    {
-      "type": "score-grid",
-      "id": "block-4",
-      "title": "Core Intelligence Metrics",
-      "items": [
-        { "label": "Efficacy", "score": 4.9, "reason": "High active concentration with proven delivery." },
-        { "label": "Safety", "score": 4.2, "reason": "Retinol can cause initial purging." },
-        { "label": "Skin Barrier", "score": 4.5, "reason": "Excellent inclusion of ceramides." },
-        { "label": "Sustainability", "score": 4.0, "reason": "Recyclable glass bottle." }
-      ]
-    },
-    {
-      "type": "insight-split",
-      "id": "block-5",
-      "title": "Pros & Considerations",
-      "left": {
-        "title": "Strengths",
-        "variant": "positive",
-        "content": [
-          "Visible reduction in fine lines in 4 weeks",
-          "Stabilized formula prevents oxidation",
-          "Non-greasy, fast-absorbing texture"
-        ]
-      },
-      "right": {
-        "title": "Limitations",
-        "variant": "negative",
-        "content": [
-          "Not recommended for pregnant individuals",
-          "Initial dryness may occur during 'retinization'",
-          "Premium price point"
-        ]
-      }
-    },
-    {
-      "type": "ingredient-list",
-      "id": "block-6",
-      "title": "Key Actives & Safety",
-      "ingredients": [
-        { "name": "Retinol", "purpose": "Cell Turnover", "riskLevel": 3, "description": "Highly effective anti-aging active." },
-        { "name": "Niacinamide", "purpose": "Soothing", "riskLevel": 1, "description": "Vitamin B3 reduces redness." },
-        { "name": "Ceramide NP", "purpose": "Barrier Repair", "riskLevel": 1, "description": "Strengthens skin's moisture barrier." },
-        { "name": "Phenoxyethanol", "purpose": "Preservative", "riskLevel": 2, "description": "Standard synthetic preservative." }
-      ]
-    },
-    {
-      "type": "compatibility-grid",
-      "id": "block-7",
-      "title": "Skin Type Compatibility",
-      "items": [
-        { "label": "Oily Skin", "compatible": true, "reason": "Non-comedogenic formulation." },
-        { "label": "Dry Skin", "compatible": true, "reason": "Contains hydrating ceramides." },
-        { "label": "Sensitive Skin", "compatible": false, "reason": "Active retinol may cause irritation." }
-      ]
-    }
-  ]
+"pageType": "product-analysis",
+"productId": "NIG-001",
+"blocks": [
+{
+"type": "hero-rating",
+"id": "hero-1",
+"title": "NIGOODA Rating",
+"rating": 4.7,
+"maxRating": 5,
+"summary": "Advanced Multi-Active Serum",
+"tags": [
+"Serum",
+"Anti-Aging",
+"Barrier Support"
+]
+},
+{
+"type": "score-grid",
+"id": "score-1",
+"title": "Core Scores",
+"items": [
+{
+"label": "Safety",
+"score": 4.5,
+"reason": "Low irritation profile"
+},
+{
+"label": "Effectiveness",
+"score": 4.8,
+"reason": "Strong active architecture"
 }
+]
+}
+]
+}
+]

@@ -143,6 +143,18 @@ const AnalyzeProductPage = () => {
 
           "face-mask":
             "analyze-faceMask",
+              shampoo:
+    "analyze-shampoo",
+    conditioner:
+    "analyze-conditioner",
+       "hair-mask":
+       "analyze-hairMask",
+       "hair-dye":
+  "analyze-hairDye",
+  "hair-styling-product":
+  "analyze-hairStylingProduct",
+  "body-care-soap":
+  "analyze-bodyCareSoap",
 
         };
 
