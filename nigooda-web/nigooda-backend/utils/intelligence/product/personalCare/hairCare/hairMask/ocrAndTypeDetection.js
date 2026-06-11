@@ -6,107 +6,210 @@ require("./clinical");
 
 class OCRAndTypeDetection {
 
-  async run(imageBase64) {
+  async run({
+    imageBase64,
+    pastedIngredients,
+  }) {
 
     try {
 
-      console.log(
-        "HAIR MASK OCR STARTED"
-      );
+      let extractedData;
 
-      const response =
-        await openai.chat.completions.create({
+      if (imageBase64) {
 
-          model: "gpt-4o",
+        extractedData =
+          await this.extractFromImage(
+            imageBase64
+          );
 
-          response_format: {
-            type: "json_object"
-          },
+      }
 
-          messages: [
+      else if (pastedIngredients) {
 
-            {
-              role: "system",
+        extractedData =
+          await this.detectFromText(
+            pastedIngredients
+          );
 
-              content:
-                `You are a professional OCR extraction engine.
+      }
 
-Return ONLY valid JSON.
+      else {
 
-Extract ONLY the ingredient list from the product label.
-
-Rules:
-- Preserve ingredient order
-- Remove marketing text
-- Remove instructions
-- Remove claims
-- Remove usage text
-- Remove headings
-- Fix OCR spelling mistakes
-- Return ingredients as array
-
-JSON FORMAT:
-
-{
-  "ingredients": []
-}`
-            },
-
-            {
-              role: "user",
-
-              content: [
-
-                {
-                  type: "text",
-
-                  text:
-                    "Extract the ingredients from this hair mask product image."
-                },
-
-                {
-                  type: "image_url",
-
-                  image_url: {
-                    url: imageBase64
-                  }
-                }
-
-              ]
-            }
-
-          ]
-
-        });
-
-      const parsed =
-        JSON.parse(
-          response.choices[0].message.content
+        throw new Error(
+          "No ingredients input provided."
         );
 
-      const ingredients =
-        parsed.ingredients || [];
+      }
 
       console.log(
-        "HAIR MASK INGREDIENTS EXTRACTED"
+        "EXTRACTED DATA:",
+        extractedData
       );
 
       return await ClinicalEngine.run(
-        ingredients
+        extractedData
       );
 
     }
 
-    catch(error) {
+    catch (error) {
 
-      console.log(
-        "HAIR MASK OCR ERROR",
+      console.error(
+        "OCR ERROR:",
         error.message
       );
 
       throw error;
 
     }
+
+  }
+
+  async extractFromImage(
+    imageBase64
+  ) {
+
+    const response =
+      await openai.chat.completions.create({
+
+        model: "gpt-4o",
+
+        temperature: 0,
+
+        response_format: {
+          type: "json_object"
+        },
+
+        messages: [
+
+          {
+            role: "system",
+
+            content: `
+You are a HairMask OCR engine.
+
+TASKS:
+1. Extract ONLY ingredients.
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
+
+Return ONLY valid JSON.
+
+OUTPUT:
+{
+  "ingredients": [
+    "Water",
+    "Glycerin"
+  ]
+}
+`
+          },
+
+          {
+            role: "user",
+
+            content: [
+
+              {
+                type: "text",
+
+                text:
+                  "Extract ingredients."
+              },
+
+              {
+                type: "image_url",
+
+                image_url: {
+                  url:
+                    imageBase64
+                }
+              }
+
+            ]
+          }
+
+        ]
+
+      });
+
+    console.log(
+      "HAIR MASK OCR STARTED",
+      response.usage
+    );
+
+    return JSON.parse(
+      response.choices[0]
+        .message.content
+    );
+
+  }
+
+  async detectFromText(
+    pastedIngredients
+  ) {
+
+    const response =
+      await openai.chat.completions.create({
+
+        model: "gpt-4o",
+
+        temperature: 0,
+
+        response_format: {
+          type: "json_object"
+        },
+
+        messages: [
+
+          {
+            role: "system",
+
+            content: `
+You are a HairMask ingredient cleaning engine.
+
+TASKS:
+1. Clean ingredients.
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove duplicates.
+5. Fix OCR mistakes.
+
+Return ONLY valid JSON.
+
+OUTPUT:
+{
+  "ingredients": [
+    "Water",
+    "Glycerin"
+  ]
+}
+`
+          },
+
+          {
+            role: "user",
+
+            content:
+              pastedIngredients
+          }
+
+        ]
+
+      });
+
+    console.log(
+      "HAIR MASK INGREDIENTS EXTRACTED:",
+      response.usage
+    );
+
+    return JSON.parse(
+      response.choices[0]
+        .message.content
+    );
 
   }
 

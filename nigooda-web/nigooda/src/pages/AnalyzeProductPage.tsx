@@ -109,55 +109,183 @@ const AnalyzeProductPage = () => {
           "SENDING REQUEST"
         );
 
-        const endpointMap: Record<
-          string,
-          string
-        > = {
+const endpointMap: Record<string, string> = {
 
-          "face-wash":
-            "analyze-facewash",
+  // SKIN CARE
 
-          moisturizer:
-            "analyze-moisturizer",
+  "face-wash-cleanser":
+    "analyze-facewash",
 
-          sunscreen:
-            "analyze-sunscreen",
+  moisturizer:
+    "analyze-moisturizer",
 
-          toner:
-            "analyze-toner",
+  sunscreen:
+    "analyze-sunscreen",
 
-          serum:
-            "analyze-serum",
+  toner:
+    "analyze-toner",
 
-          "day-cream":
-            "analyze-daycream",
+  serum:
+    "analyze-serum",
 
-          "night-cream":
-            "analyze-nightcream",
+  "day-cream":
+    "analyze-daycream",
 
-          "eye-cream":
-            "analyze-eyecream",
+  "night-cream":
+    "analyze-nightcream",
 
-          "lip-balm":
-            "analyze-lipbalm",
+  "eye-cream":
+    "analyze-eyecream",
 
-          "face-mask":
-            "analyze-faceMask",
-              shampoo:
+  "lip-balm":
+    "analyze-lipbalm",
+
+  "face-mask":
+    "analyze-faceMask",
+
+  // HAIR CARE
+
+  shampoo:
     "analyze-shampoo",
-    conditioner:
+
+  conditioner:
     "analyze-conditioner",
-       "hair-mask":
-       "analyze-hairMask",
-       "hair-dye":
-  "analyze-hairDye",
+
   "hair-styling-product":
-  "analyze-hairStylingProduct",
-  "body-care-soap":
-  "analyze-bodyCareSoap",
+    "analyze-hairStylingProduct",
 
-        };
+  "hair-color-dye":
+    "analyze-hairColorDye",
 
+  "hair-oil":
+    "analyze-hairOil",
+
+  "hair-mask":
+    "analyze-hairMask",
+
+  "hair-serum":
+    "analyze-hairSerum",
+
+  "beard-growth-serum":
+    "analyze-beardGrowthSerum",
+
+  // BODY CARE
+
+  "soap-body-wash":
+    "analyze-soapBodyWash",
+
+  "body-lotion":
+    "analyze-bodyLotion",
+
+  "body-scrub":
+    "analyze-bodyScrub",
+
+  "body-powder":
+    "analyze-bodyPowder",
+
+  "deodorant-antiperspirant":
+    "analyze-deodorantAntiperspirant",
+
+  "toothpaste-tooth-powder":
+    "analyze-toothpasteToothPowder",
+
+  mouthwash:
+    "analyze-mouthwash",
+
+  "teeth-whitening-product":
+    "analyze-teethWhiteningProduct",
+
+  "gum-care-product":
+    "analyze-gumCareProduct",
+
+  "hand-wash":
+    "analyze-handWash",
+
+  "hand-sanitizer":
+    "analyze-handSanitizer",
+
+  "intimate-wash":
+    "analyze-intimateWash",
+
+  "foot-care":
+    "analyze-footCare",
+
+  "antiseptic-liquid":
+    "analyze-antisepticLiquid",
+
+  "hygiene-wipes":
+    "analyze-hygieneWipes",
+
+  // BABY CARE
+
+  "baby-wash-soap":
+    "analyze-babyWashSoap",
+
+  "baby-shampoo":
+    "analyze-babyShampoo",
+
+  "baby-lotion":
+    "analyze-babyLotion",
+
+  "baby-oil":
+    "analyze-babyOil",
+
+  "baby-powder":
+    "analyze-babyPowder",
+
+  "baby-sunscreen":
+    "analyze-babySunscreen",
+
+  "baby-wipes":
+    "analyze-babyWipes",
+
+  // HOME CARE
+
+  "dishwash-cleaner":
+    "analyze-dishwashCleaner",
+
+  "laundry-soap":
+    "analyze-laundrySoap",
+
+  "laundry-liquid-powder":
+    "analyze-laundryLiquidPowder",
+
+  "floor-cleaner":
+    "analyze-floorCleaner",
+
+  "bathroom-toilet-cleaner":
+    "analyze-bathroomToiletCleaner",
+
+  "mosquito-repellent":
+    "analyze-mosquitoRepellent",
+
+  "insect-spray":
+    "analyze-insectSpray",
+
+  "air-freshener":
+    "analyze-airFreshener",
+
+  // PET CARE
+
+  "pet-shampoo":
+    "analyze-petShampoo",
+
+  "pet-soap":
+    "analyze-petSoap",
+
+  "pet-dental-gel":
+    "analyze-petDentalGel",
+
+  "tick-flea-treatment":
+    "analyze-tickFleaTreatment",
+
+  "pet-deodorant":
+    "analyze-petDeodorant",
+
+  "pet-grooming-spray":
+    "analyze-petGroomingSpray",
+
+};
         const endpoint =
           endpointMap[
             product || ""
@@ -203,8 +331,30 @@ const AnalyzeProductPage = () => {
           "RESPONSE RECEIVED"
         );
 
-        const data =
-          await response.json();
+        const rawResponse =
+  await response.text();
+
+console.log(
+  "RAW RESPONSE:",
+  rawResponse
+);
+
+let data;
+
+try {
+
+  data =
+    JSON.parse(rawResponse);
+
+}
+
+catch {
+
+  throw new Error(
+    "Backend returned invalid JSON. Check backend terminal."
+  );
+
+}
 
         console.log(data);
 

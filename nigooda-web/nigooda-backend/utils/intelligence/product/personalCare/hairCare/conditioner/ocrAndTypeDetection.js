@@ -1,205 +1,219 @@
+const openai =
+require("../../../../../../ai/openaiClient");
 
-const OpenAI =
-require("openai");
-
-const clinicalEngine =
+const ClinicalEngine =
 require("./clinical");
 
-const client =
-new OpenAI({
+class OCRAndTypeDetection {
 
-  apiKey:
-    process.env.OPENAI_API_KEY,
+  async run({
+    imageBase64,
+    pastedIngredients,
+  }) {
 
-});
+    try {
 
-/*
-=====================================================
-EXTRACT INGREDIENTS
-=====================================================
-*/
+      let extractedData;
 
-async function extractIngredients({
+      if (imageBase64) {
 
-  imageBase64,
-  pastedIngredients,
+        extractedData =
+          await this.extractFromImage(
+            imageBase64
+          );
 
-}) {
+      }
 
-  /*
-  =====================================================
-  USER PASTED INGREDIENTS
-  =====================================================
-  */
+      else if (pastedIngredients) {
 
-  if (
-    pastedIngredients &&
-    pastedIngredients.trim()
-  ) {
+        extractedData =
+          await this.detectFromText(
+            pastedIngredients
+          );
 
-    return pastedIngredients
-      .split(",")
-      .map(item =>
-        item.trim()
-      )
-      .filter(Boolean);
+      }
+
+      else {
+
+        throw new Error(
+          "No ingredients input provided."
+        );
+
+      }
+
+      console.log(
+        "EXTRACTED DATA:",
+        extractedData
+      );
+
+      return await ClinicalEngine.run(
+        extractedData
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "OCR ERROR:",
+        error.message
+      );
+
+      throw error;
+
+    }
 
   }
 
-  /*
-  =====================================================
-  OCR FROM IMAGE
-  =====================================================
-  */
+  async extractFromImage(
+    imageBase64
+  ) {
 
-  if (!imageBase64) {
+    const response =
+      await openai.chat.completions.create({
 
-    throw new Error(
-      "No image or ingredients provided"
+        model: "gpt-4o",
+
+        temperature: 0,
+
+        response_format: {
+          type: "json_object"
+        },
+
+        messages: [
+
+          {
+            role: "system",
+
+            content: `
+You are a Conditioner OCR engine.
+
+TASKS:
+1. Extract ONLY ingredients.
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
+
+Return ONLY valid JSON.
+
+OUTPUT:
+{
+  "ingredients": [
+    "Water",
+    "Glycerin"
+  ]
+}
+`
+          },
+
+          {
+            role: "user",
+
+            content: [
+
+              {
+                type: "text",
+
+                text:
+                  "Extract ingredients."
+              },
+
+              {
+                type: "image_url",
+
+                image_url: {
+                  url:
+                    imageBase64
+                }
+              }
+
+            ]
+          }
+
+        ]
+
+      });
+
+    console.log(
+      "CONDITIONER OCR ENGINE STARTED",
+      response.usage
+    );
+
+    return JSON.parse(
+      response.choices[0]
+        .message.content
     );
 
   }
 
-  const response =
-    await client.chat.completions.create({
+  async detectFromText(
+    pastedIngredients
+  ) {
 
-      model: "gpt-4.1-mini",
+    const response =
+      await openai.chat.completions.create({
 
-      messages: [
+        model: "gpt-4o",
 
-        {
-          role: "system",
+        temperature: 0,
 
-          content: `
-
-You are an OCR ingredient extraction engine.
-
-Extract ONLY cosmetic ingredients.
-
-RULES:
-
-- Return plain text only
-- No markdown
-- No explanations
-- Preserve ingredient order
-- Correct OCR spelling mistakes carefully
-- Remove non ingredient text
-- Separate ingredients using commas only
-
-          `,
+        response_format: {
+          type: "json_object"
         },
 
-        {
-          role: "user",
+        messages: [
 
-          content: [
+          {
+            role: "system",
 
-            {
-              type: "text",
+            content: `
+You are a Conditioner ingredient cleaning engine.
 
-              text:
-                "Extract conditioner ingredients from this image"
-            },
+TASKS:
+1. Clean ingredients.
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove duplicates.
+5. Fix OCR mistakes.
 
-            {
-              type: "image_url",
+Return ONLY valid JSON.
 
-              image_url: {
+OUTPUT:
+{
+  "ingredients": [
+    "Water",
+    "Glycerin"
+  ]
+}
+`
+          },
 
-                url:
-                  imageBase64,
+          {
+            role: "user",
 
-              },
+            content:
+              pastedIngredients
+          }
 
-            },
+        ]
 
-          ],
+      });
 
-        },
+    console.log(
+      "CONDITIONER INGREDIENTS EXTRACTED",
+      response.usage
+    );
 
-      ],
+    return JSON.parse(
+      response.choices[0]
+        .message.content
+    );
 
-      temperature: 0.1,
-
-    });
-
-  const extractedText =
-    response
-      .choices?.[0]
-      ?.message?.content || "";
-
-  return extractedText
-    .split(",")
-    .map(item =>
-      item.trim()
-    )
-    .filter(Boolean);
+  }
 
 }
 
-/*
-=====================================================
-MAIN RUNNER
-=====================================================
-*/
-
-async function run({
-
-  imageBase64,
-  pastedIngredients,
-
-}) {
-
-  console.log(
-    "CONDITIONER OCR ENGINE STARTED"
-  );
-
-  /*
-  =====================================================
-  EXTRACT INGREDIENTS
-  =====================================================
-  */
-
-  const ingredients =
-    await extractIngredients({
-
-      imageBase64,
-
-      pastedIngredients,
-
-    });
-
-  console.log(
-    "CONDITIONER INGREDIENTS EXTRACTED"
-  );
-
-  /*
-  =====================================================
-  RUN CLINICAL ENGINE
-  =====================================================
-  */
-
-  console.log(
-    "USING CLINICAL ENGINE"
-  );
-
-  const result =
-    await clinicalEngine.run({
-
-      ingredients,
-
-    });
-
-  console.log(
-    "CONDITIONER ENGINE COMPLETED"
-  );
-
-  return result;
-
-}
-
-module.exports = {
-
-  run,
-
-};
+module.exports =
+new OCRAndTypeDetection();

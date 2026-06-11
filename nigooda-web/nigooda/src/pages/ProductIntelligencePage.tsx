@@ -16,11 +16,6 @@ const productData = {
         "Eye Cream",
         "Lip Balm",
         "Face Mask",
-        "Exfoliator",
-        "Spot Treatment",
-        "Face Oil",
-        "Essence / Mist",
-        "Cleansing Oil / Balm",
       ],
     },
 
@@ -32,40 +27,28 @@ const productData = {
         "Hair Oil",
         "Hair Serum",
         "Hair Mask",
-        "Beard Oil",
-        "Beard Wash",
         "Beard Growth Serum",
         "Hair Styling Product",
-        "Hair Spray",
-        "Heat Protection Spray",
         "Hair Color / Dye",
-        "Hair Treatment (Growth / Anti-Dandruff / Scalp)",
       ],
     },
 
     {
       title: "Body Care",
       items: [
-        "Soap",
-        "Body Wash",
+        "Soap / Body Wash",
         "Body Lotion",
-        "Body Cream",
-        "Body Oil",
-        "Body Sunscreen",
         "Body Scrub",
         "Body Powder",
         "Deodorant / Antiperspirant",
-        "Body Mist",
-        "Massage Oil",
       ],
     },
 
     {
       title: "Oral Care",
       items: [
-        "Toothpaste",
+        "Toothpaste / Tooth Powder",
         "Mouthwash",
-        "Tooth Powder",
         "Teeth Whitening Product",
         "Gum Care Product",
       ],
@@ -77,11 +60,9 @@ const productData = {
         "Hand Wash",
         "Hand Sanitizer",
         "Intimate Wash",
-        "Hand Cream",
         "Foot Care",
         "Antiseptic Liquid",
         "Hygiene Wipes",
-        "Disinfectant Liquid",
       ],
     },
 
@@ -108,14 +89,11 @@ const productData = {
     {
       title: "Baby Care",
       items: [
-        "Baby Wash",
+        "Baby Wash / Soap",
         "Baby Shampoo",
-        "Baby Soap",
         "Baby Lotion",
-        "Baby Cream",
         "Baby Oil",
         "Baby Powder",
-        "Baby Rash Cream",
         "Baby Sunscreen",
         "Baby Wipes",
       ],
@@ -126,19 +104,15 @@ const productData = {
     {
       title: "Kitchen Care",
       items: [
-        "Dish Wash Liquid",
-        "Dish Wash Bar",
-        "Dish Cleaning Tablets",
+        "Dishwash Cleaner",
       ],
     },
 
     {
       title: "Laundry Care",
       items: [
-        "Laundry Liquid",
-        "Laundry Powder",
-        "Fabric Softener",
-        "Stain Remover",
+        "Laundry Soap",
+        "Laundry Liquid / Powder",
       ],
     },
 
@@ -146,19 +120,7 @@ const productData = {
       title: "Home Cleaning",
       items: [
         "Floor Cleaner",
-        "Bathroom Cleaner",
-        "Toilet Cleaner",
-        "Multipurpose Cleaner",
-        "Glass Cleaner",
-      ],
-    },
-
-    {
-      title: "Disinfectant & Sanitization",
-      items: [
-        "Disinfectant Liquid",
-        "Surface Disinfectant",
-        "Antibacterial Cleaner",
+        "Bathroom / Toilet Cleaner",
       ],
     },
 
@@ -177,20 +139,15 @@ const productData = {
       title: "Pet Cleaning",
       items: [
         "Pet Shampoo",
-        "Pet Conditioner",
         "Pet Soap",
-        "Pet Wipes",
+        "Pet Dental Gel",
       ],
     },
 
     {
       title: "Pet Health & Treatment",
       items: [
-        "Tick Treatment",
-        "Flea Treatment",
-        "Pet Ear Cleaner",
-        "Pet Eye Cleaner",
-        "Pet Dental Gel",
+        "Tick / Flea Treatment",
       ],
     },
 
@@ -199,7 +156,6 @@ const productData = {
       items: [
         "Pet Deodorant",
         "Pet Grooming Spray",
-        "Pet Sanitizer",
       ],
     },
   ],
@@ -212,13 +168,16 @@ const tabs = [
 ];
 
 const ProductIntelligencePage = () => {
+
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] =
     useState("Personal Care");
 
   return (
+
     <div className="min-h-screen bg-slate-50">
+
       <div className="max-w-[1600px] mx-auto flex">
 
         {/* SIDEBAR */}
@@ -268,8 +227,7 @@ const ProductIntelligencePage = () => {
             </h1>
 
             <p className="mt-5 text-lg text-slate-600 max-w-3xl leading-relaxed">
-              AI-powered ingredient analysis
-              and intelligent safety ratings
+              AI-powered ingredient analysis and intelligent safety ratings
               with modern AI workspace design.
             </p>
 
@@ -303,19 +261,22 @@ const ProductIntelligencePage = () => {
                     <button
                       key={item}
                       onClick={() => {
+
                         navigate(
-                          `/analyze/${activeTab
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")}/${section.title
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")
-                            .replace(/&/g, "and")}/${item
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")
-                            .replace(/\//g, "-")
-                            .replace(/&/g, "and")
-                            .replace(/[()]/g, "")}`
-                        );
+  `/analyze/${activeTab
+    .toLowerCase()
+    .replace(/\s+/g, "-")}/${section.title
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/&/g, "and")}/${item
+    .toLowerCase()
+    .replace(/\s*\/\s*/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/&/g, "and")
+    .replace(/[()]/g, "")}`
+);
+
                       }}
                       className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 cursor-pointer text-left"
                     >
@@ -339,8 +300,11 @@ const ProductIntelligencePage = () => {
         </div>
 
       </div>
+
     </div>
+
   );
+
 };
 
 export default ProductIntelligencePage;

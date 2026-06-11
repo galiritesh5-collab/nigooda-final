@@ -1,9 +1,6 @@
 const openai =
 require("../../../../../../ai/openaiClient");
 
-const OrganicEngine =
-require("./organic");
-
 const ClinicalEngine =
 require("./clinical");
 
@@ -45,59 +42,7 @@ class OCRAndTypeDetection {
       }
 
       console.log(
-        "DETECTED LIP BALM TYPE:",
-        extractedData.type
-      );
-
-      const detectedType =
-        String(
-          extractedData.type || ""
-        )
-        .trim()
-        .toUpperCase();
-
-      if (
-
-        detectedType.includes(
-          "ORGANIC"
-        )
-
-        ||
-
-        detectedType.includes(
-          "HERBAL"
-        )
-
-      ) {
-
-        return await OrganicEngine.run(
-          extractedData
-        );
-
-      }
-
-      if (
-
-        detectedType.includes(
-          "CLINICAL"
-        )
-
-        ||
-
-        detectedType.includes(
-          "CHEMICAL"
-        )
-
-      ) {
-
-        return await ClinicalEngine.run(
-          extractedData
-        );
-
-      }
-
-      console.log(
-        "INVALID TYPE RESPONSE:",
+        "EXTRACTED DATA:",
         extractedData
       );
 
@@ -136,52 +81,29 @@ class OCRAndTypeDetection {
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a skincare OCR and lip balm classification engine.
+You are a LipBalm OCR engine.
 
 TASKS:
-
 1. Extract ONLY ingredients.
 2. Preserve ingredient order.
-3. Detect lip balm type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
-
-IMPORTANT:
-
-Petroleum jelly
-Silicones
-Synthetic flavors
-Lab-created actives
-Synthetic UV filters
-
-= CLINICAL_CHEMICAL
-
-Natural waxes
-Beeswax
-Plant oils
-Ayurvedic herbs
-Botanical extracts
-Essential oils
-
-= ORGANIC_HERBAL
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
-    "Petrolatum",
-    "Beeswax"
-  ],
-  "type": "CLINICAL_CHEMICAL"
+    "Water",
+    "Glycerin"
+  ]
 }
 `
           },
@@ -190,11 +112,12 @@ OUTPUT:
             role: "user",
 
             content: [
+
               {
                 type: "text",
 
                 text:
-                  "Extract ingredients and classify lip balm type."
+                  "Extract ingredients."
               },
 
               {
@@ -205,10 +128,18 @@ OUTPUT:
                     imageBase64
                 }
               }
+
             ]
           }
+
         ]
+
       });
+
+    console.log(
+      "DETECTED LIP BALM TYPE:",
+      response.usage
+    );
 
     return JSON.parse(
       response.choices[0]
@@ -233,51 +164,28 @@ OUTPUT:
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a lip balm classification engine.
+You are a LipBalm ingredient cleaning engine.
 
 TASKS:
-
 1. Clean ingredients.
-2. Detect lip balm type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
-
-IMPORTANT:
-
-Petroleum jelly
-Silicones
-Synthetic flavors
-Synthetic UV filters
-Lab-created actives
-
-= CLINICAL_CHEMICAL
-
-Natural waxes
-Beeswax
-Plant oils
-Ayurvedic herbs
-Botanical extracts
-Essential oils
-
-= ORGANIC_HERBAL
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove duplicates.
+5. Fix OCR mistakes.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
-    "Petrolatum",
-    "Beeswax"
-  ],
-  "type": "CLINICAL_CHEMICAL"
+    "Water",
+    "Glycerin"
+  ]
 }
 `
           },
@@ -288,11 +196,13 @@ OUTPUT:
             content:
               pastedIngredients
           }
+
         ]
+
       });
 
     console.log(
-      "LIP BALM OCR TOKEN USAGE:",
+      "INVALID TYPE RESPONSE:",
       response.usage
     );
 

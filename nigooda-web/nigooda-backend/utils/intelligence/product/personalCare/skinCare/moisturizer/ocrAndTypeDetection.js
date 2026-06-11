@@ -1,9 +1,6 @@
 const openai =
 require("../../../../../../ai/openaiClient");
 
-const OrganicEngine =
-require("./organic");
-
 const ClinicalEngine =
 require("./clinical");
 
@@ -44,30 +41,14 @@ class OCRAndTypeDetection {
 
       }
 
-      if (
-        extractedData.type ===
-        "ORGANIC_HERBAL"
-      ) {
+      console.log(
+        "EXTRACTED DATA:",
+        extractedData
+      );
 
-        return await OrganicEngine.run(
-          extractedData
-        );
-
-      }
-
-      if (
-        extractedData.type ===
-        "CLINICAL_CHEMICAL"
-      ) {
-
-        return await ClinicalEngine.run(
-          extractedData
-        );
-
-      }
-
-      throw new Error(
-        "Invalid moisturizer type."
+      // SEND FULL OBJECT
+      return await ClinicalEngine.run(
+        extractedData
       );
 
     }
@@ -101,33 +82,29 @@ class OCRAndTypeDetection {
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a skincare OCR and moisturizer classification engine.
+You are a Moisturizer OCR engine.
 
 TASKS:
-
 1. Extract ONLY ingredients.
 2. Preserve ingredient order.
-3. Detect moisturizer type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
+3. Preserve percentages, units, and concentration formatting exactly if they exist.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
     "Glycerin"
-  ],
-  "type": "ORGANIC_HERBAL"
+  ]
 }
 `
           },
@@ -136,11 +113,12 @@ OUTPUT:
             role: "user",
 
             content: [
+
               {
                 type: "text",
 
                 text:
-                  "Extract ingredients and classify moisturizer type."
+                  "Extract ingredients."
               },
 
               {
@@ -151,18 +129,23 @@ OUTPUT:
                     imageBase64
                 }
               }
+
             ]
           }
+
         ]
+
       });
 
-    const parsed =
-      JSON.parse(
-        response.choices[0]
-          .message.content
-      );
+    console.log(
+      "OCR TOKEN USAGE:",
+      response.usage
+    );
 
-    return parsed;
+    return JSON.parse(
+      response.choices[0]
+        .message.content
+    );
 
   }
 
@@ -182,32 +165,28 @@ OUTPUT:
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a moisturizer classification engine.
+You are a Moisturizer ingredient cleaning engine.
 
 TASKS:
-
 1. Clean ingredients.
-2. Detect moisturizer type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist.
+4. Remove duplicates.
+5. Fix OCR mistakes.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
     "Glycerin"
-  ],
-  "type": "CLINICAL_CHEMICAL"
+  ]
 }
 `
           },
@@ -218,21 +197,20 @@ OUTPUT:
             content:
               pastedIngredients
           }
+
         ]
+
       });
 
-    const parsed =
-      JSON.parse(
-        response.choices[0]
-          .message.content
-      );
-
     console.log(
-      "ocr TOKEN USAGE:",
+      "CLEAN TOKEN USAGE:",
       response.usage
     );
 
-    return parsed;
+    return JSON.parse(
+      response.choices[0]
+        .message.content
+    );
 
   }
 

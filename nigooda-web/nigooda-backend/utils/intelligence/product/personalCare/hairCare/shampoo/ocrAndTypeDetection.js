@@ -86,24 +86,23 @@ class OCRAndTypeDetection {
             role: "system",
 
             content: `
-You are a haircare OCR engine.
+You are a Shampoo OCR engine.
 
 TASKS:
-
 1. Extract ONLY ingredients.
 2. Preserve ingredient order.
-3. Remove marketing text.
-4. Clean OCR mistakes.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
-    "Sodium Laureth Sulfate",
-    "Cocamidopropyl Betaine"
+    "Glycerin"
   ]
 }
 `
@@ -118,7 +117,7 @@ OUTPUT:
                 type: "text",
 
                 text:
-                  "Extract haircare ingredients."
+                  "Extract ingredients."
               },
 
               {
@@ -138,7 +137,7 @@ OUTPUT:
       });
 
     console.log(
-      "HAIRCARE OCR TOKEN USAGE:",
+      "EXTRACTED DATA:",
       response.usage
     );
 
@@ -170,24 +169,22 @@ OUTPUT:
             role: "system",
 
             content: `
-You are a haircare ingredient cleaning engine.
+You are a Shampoo ingredient cleaning engine.
 
 TASKS:
-
 1. Clean ingredients.
 2. Preserve ingredient order.
-3. Remove duplicates.
-4. Fix OCR mistakes.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove duplicates.
+5. Fix OCR mistakes.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
-    "Sodium Laureth Sulfate",
-    "Cocamidopropyl Betaine"
+    "Glycerin"
   ]
 }
 `
@@ -205,7 +202,7 @@ OUTPUT:
       });
 
     console.log(
-      "HAIRCARE CLEAN TOKEN USAGE:",
+      "HAIRCARE OCR TOKEN USAGE:",
       response.usage
     );
 

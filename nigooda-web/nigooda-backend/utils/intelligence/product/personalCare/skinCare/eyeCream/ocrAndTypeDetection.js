@@ -41,9 +41,14 @@ class OCRAndTypeDetection {
 
       }
 
-      return await ClinicalEngine.run(
+      console.log(
+        "EXTRACTED DATA:",
         extractedData
       );
+
+     return await ClinicalEngine.run(
+       extractedData
+     );
 
     }
 
@@ -76,23 +81,24 @@ class OCRAndTypeDetection {
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a skincare OCR engine.
+You are a EyeCream OCR engine.
 
 TASKS:
-
 1. Extract ONLY ingredients.
 2. Preserve ingredient order.
-3. Clean OCR mistakes.
-4. Remove duplicates.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
@@ -106,11 +112,12 @@ OUTPUT:
             role: "user",
 
             content: [
+
               {
                 type: "text",
 
                 text:
-                  "Extract eye cream ingredients."
+                  "Extract ingredients."
               },
 
               {
@@ -121,10 +128,18 @@ OUTPUT:
                     imageBase64
                 }
               }
+
             ]
           }
+
         ]
+
       });
+
+    console.log(
+      "EYE CREAM OCR TOKEN USAGE:",
+      response.usage
+    );
 
     return JSON.parse(
       response.choices[0]
@@ -149,23 +164,23 @@ OUTPUT:
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a skincare ingredient cleaning engine.
+You are a EyeCream ingredient cleaning engine.
 
 TASKS:
-
 1. Clean ingredients.
 2. Preserve ingredient order.
-3. Remove OCR noise.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
 4. Remove duplicates.
+5. Fix OCR mistakes.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
@@ -181,11 +196,13 @@ OUTPUT:
             content:
               pastedIngredients
           }
+
         ]
+
       });
 
     console.log(
-      "EYE CREAM OCR TOKEN USAGE:",
+      "CLEAN TOKEN USAGE:",
       response.usage
     );
 

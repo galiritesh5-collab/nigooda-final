@@ -40,14 +40,71 @@ const shampooRoutes =
 require("./routes/shampooRoutes");
 const conditionerRoutes =
 require("./routes/conditionerRoutes");
-const hairMaskRoutes =
-require("./routes/hairMaskRoutes");
-const hairDyeRoutes =
-require("./routes/hairDyeRoutes");
+
+
+const hairColorDyeRoutes =
+require("./routes/hairColorDyeRoutes");
 const hairStylingProductRoutes =
 require("./routes/hairStylingProductRoutes");
-const bodyCareSoapRoutes =
-require("./routes/bodyCareSoapRoutes");
+const hairOilRoutes =
+require("./routes/hairOilRoutes");
+const hairMaskRoutes =
+require("./routes/hairMaskRoutes");
+const beardGrowthSerumRoutes =
+require("./routes/beardGrowthSerumRoutes");
+const soapBodyWashRoutes =
+require("./routes/soapBodyWashRoutes");
+const bodyLotionRoutes =
+require("./routes/bodyLotionRoutes");
+const hairSerumRoutes = require("./routes/hairSerumRoutes");
+const bodyScrubRoutes = require("./routes/bodyScrubRoutes");
+const bodyPowderRoutes = require("./routes/bodyPowderRoutes");
+const deodorantAntiperspirantRoutes = require("./routes/deodorantAntiperspirantRoutes");
+const toothpasteToothPowderRoutes = require("./routes/toothpasteToothPowderRoutes");
+const mouthwashRoutes = require("./routes/mouthwashRoutes");
+const teethWhiteningProductRoutes = require("./routes/teethWhiteningProductRoutes");
+const gumCareProductRoutes = require("./routes/gumCareProductRoutes");
+const handWashRoutes = require("./routes/handWashRoutes");
+const handSanitizerRoutes = require("./routes/handSanitizerRoutes");
+const intimateWashRoutes = require("./routes/intimateWashRoutes");
+const footCareRoutes = require("./routes/footCareRoutes");
+const antisepticLiquidRoutes = require("./routes/antisepticLiquidRoutes");
+const hygieneWipesRoutes = require("./routes/hygieneWipesRoutes");
+const babyWashSoapRoutes = require("./routes/babyWashSoapRoutes");
+const babyShampooRoutes = require("./routes/babyShampooRoutes");
+const babyLotionRoutes = require("./routes/babyLotionRoutes");
+const babyOilRoutes = require("./routes/babyOilRoutes");
+const babyPowderRoutes = require("./routes/babyPowderRoutes");
+const babySunscreenRoutes = require("./routes/babySunscreenRoutes");
+const babyWipesRoutes = require("./routes/babyWipesRoutes");
+const dishwashCleanerRoutes = require("./routes/dishwashCleanerRoutes");
+const laundrySoapRoutes = require("./routes/laundrySoapRoutes");
+const laundryLiquidPowderRoutes = require("./routes/laundryLiquidPowderRoutes");
+const floorCleanerRoutes = require("./routes/floorCleanerRoutes");
+const bathroomToiletCleanerRoutes = require("./routes/bathroomToiletCleanerRoutes");
+const mosquitoRepellentRoutes = require("./routes/mosquitoRepellentRoutes");
+const insectSprayRoutes = require("./routes/insectSprayRoutes");
+const airFreshenerRoutes = require("./routes/airFreshenerRoutes");
+const petShampooRoutes = require("./routes/petShampooRoutes");
+const petSoapRoutes = require("./routes/petSoapRoutes");
+const petDentalGelRoutes = require("./routes/petDentalGelRoutes");
+const tickFleaTreatmentRoutes = require("./routes/tickFleaTreatmentRoutes");
+const petDeodorantRoutes = require("./routes/petDeodorantRoutes");
+const petGroomingSprayRoutes = require("./routes/petGroomingSprayRoutes");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -120,22 +177,75 @@ app.use(
   "/api",
   conditionerRoutes
 );
+
+
+
+app.use(
+  "/api",
+  hairColorDyeRoutes
+);
+app.use(
+  "/api",
+  hairStylingProductRoutes
+);
+
+app.use(
+  "/api",
+  hairOilRoutes
+);
+
 app.use(
   "/api",
   hairMaskRoutes
 );
 app.use(
   "/api",
-  hairDyeRoutes
+  beardGrowthSerumRoutes
+);
+
+app.use(
+  "/api",
+  soapBodyWashRoutes
 );
 app.use(
   "/api",
-  hairStylingProductRoutes
-);
-app.use(
-  "/api",
-  bodyCareSoapRoutes
-);
+  bodyLotionRoutes
+);  
+app.use("/api", hairSerumRoutes);
+app.use("/api", bodyScrubRoutes);
+app.use("/api", bodyPowderRoutes);
+app.use("/api", deodorantAntiperspirantRoutes);
+app.use("/api", toothpasteToothPowderRoutes);
+app.use("/api", mouthwashRoutes);
+app.use("/api", teethWhiteningProductRoutes);
+app.use("/api", gumCareProductRoutes);
+app.use("/api", handWashRoutes);
+app.use("/api", handSanitizerRoutes);
+app.use("/api", intimateWashRoutes);
+app.use("/api", footCareRoutes);
+app.use("/api", antisepticLiquidRoutes);
+app.use("/api", hygieneWipesRoutes);
+app.use("/api", babyWashSoapRoutes);
+app.use("/api", babyShampooRoutes);
+app.use("/api", babyLotionRoutes);
+app.use("/api", babyOilRoutes);
+app.use("/api", babyPowderRoutes);
+app.use("/api", babySunscreenRoutes);
+app.use("/api", babyWipesRoutes);
+app.use("/api", dishwashCleanerRoutes);
+app.use("/api", laundrySoapRoutes);
+app.use("/api", laundryLiquidPowderRoutes);
+app.use("/api", floorCleanerRoutes);
+app.use("/api", bathroomToiletCleanerRoutes);
+app.use("/api", mosquitoRepellentRoutes);
+app.use("/api", insectSprayRoutes);
+app.use("/api", airFreshenerRoutes);
+app.use("/api", petShampooRoutes);
+app.use("/api", petSoapRoutes);
+app.use("/api", petDentalGelRoutes);
+app.use("/api", tickFleaTreatmentRoutes);
+app.use("/api", petDeodorantRoutes);
+app.use("/api", petGroomingSprayRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

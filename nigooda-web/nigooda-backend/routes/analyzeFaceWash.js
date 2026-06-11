@@ -5,7 +5,7 @@ const router =
   express.Router();
 
 const OCRAndTypeDetection =
-  require("../utils/intelligence/product/personalCare/skinCare/faceWash/ocrAndTypeDetection");
+ require("../utils/intelligence/product/personalCare/skinCare/faceWash/ocrAndTypeDetection");
 
 /*
 =====================================================

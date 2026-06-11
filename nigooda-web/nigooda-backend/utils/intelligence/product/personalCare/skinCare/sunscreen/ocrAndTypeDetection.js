@@ -1,9 +1,6 @@
 const openai =
 require("../../../../../../ai/openaiClient");
 
-const OrganicEngine =
-require("./organic");
-
 const ClinicalEngine =
 require("./clinical");
 
@@ -49,51 +46,9 @@ class OCRAndTypeDetection {
         extractedData
       );
 
-      const detectedType =
-        String(
-          extractedData.type || ""
-        )
-          .trim()
-          .toUpperCase();
-
-      console.log(
-        "DETECTED TYPE:",
-        detectedType
-      );
-
-      if (
-        detectedType.includes(
-          "ORGANIC"
-        ) ||
-        detectedType.includes(
-          "HERBAL"
-        )
-      ) {
-
-        return await OrganicEngine.run(
-          extractedData
-        );
-
-      }
-
-      if (
-        detectedType.includes(
-          "CLINICAL"
-        ) ||
-        detectedType.includes(
-          "CHEMICAL"
-        )
-      ) {
-
-        return await ClinicalEngine.run(
-          extractedData
-        );
-
-      }
-
-      throw new Error(
-        "Invalid sunscreen type."
-      );
+     return await ClinicalEngine.run(
+       extractedData
+     );
 
     }
 
@@ -126,33 +81,29 @@ class OCRAndTypeDetection {
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a skincare OCR and sunscreen classification engine.
+You are a Sunscreen OCR engine.
 
 TASKS:
-
 1. Extract ONLY ingredients.
 2. Preserve ingredient order.
-3. Detect sunscreen type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
     "Glycerin"
-  ],
-  "type": "CLINICAL_CHEMICAL"
+  ]
 }
 `
           },
@@ -161,11 +112,12 @@ OUTPUT:
             role: "user",
 
             content: [
+
               {
                 type: "text",
 
                 text:
-                  "Extract ingredients and classify sunscreen type."
+                  "Extract ingredients."
               },
 
               {
@@ -176,10 +128,18 @@ OUTPUT:
                     imageBase64
                 }
               }
+
             ]
           }
+
         ]
+
       });
+
+    console.log(
+      "EXTRACTED DATA:",
+      response.usage
+    );
 
     return JSON.parse(
       response.choices[0]
@@ -204,32 +164,28 @@ OUTPUT:
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a sunscreen classification engine.
+You are a Sunscreen ingredient cleaning engine.
 
 TASKS:
-
 1. Clean ingredients.
-2. Detect sunscreen type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove duplicates.
+5. Fix OCR mistakes.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
     "Water",
     "Glycerin"
-  ],
-  "type": "CLINICAL_CHEMICAL"
+  ]
 }
 `
           },
@@ -240,11 +196,13 @@ OUTPUT:
             content:
               pastedIngredients
           }
+
         ]
+
       });
 
     console.log(
-      "SUNSCREEN OCR TOKEN USAGE:",
+      "DETECTED TYPE:",
       response.usage
     );
 

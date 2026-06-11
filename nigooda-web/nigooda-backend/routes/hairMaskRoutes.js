@@ -5,12 +5,19 @@ const router =
 express.Router();
 
 const OCRAndTypeDetection =
-require("../intelligence/product/personalCare/hairCare/hairMask/ocrAndTypeDetection");
+require("../utils/intelligence/product/personalCare/hairCare/hairMask/ocrAndTypeDetection");
+
+/*
+=====================================================
+HAIR MASK ANALYSIS ROUTE
+=====================================================
+*/
 
 router.post(
+
   "/analyze-hairMask",
 
-  async(req, res) => {
+  async (req, res) => {
 
     try {
 
@@ -19,60 +26,52 @@ router.post(
       );
 
       const {
-        imageBase64
+        imageBase64,
+        pastedIngredients,
       } = req.body;
 
-      if(!imageBase64) {
+      const result =
+        await OCRAndTypeDetection.run({
 
-        return res.status(400).json({
+          imageBase64,
 
-          success: false,
-
-          message:
-            "imageBase64 is required"
+          pastedIngredients,
 
         });
 
-      }
-
-      const result =
-        await OCRAndTypeDetection.run(
-          imageBase64
-        );
+      console.log(
+        "HAIR MASK ENGINE COMPLETED"
+      );
 
       return res.json({
 
         success: true,
 
-        data: result
+        result,
 
       });
 
     }
 
-    catch(error) {
+    catch (error) {
 
-      console.log(
-        "HAIR MASK ROUTE ERROR",
-        error.message
+      console.error(
+        "HAIR MASK ANALYSIS ERROR:",
+        error
       );
 
       return res.status(500).json({
 
         success: false,
 
-        message:
-          "Hair mask analysis failed",
-
         error:
-          error.message
+          error.message,
 
       });
 
     }
 
   }
-
 );
 
 module.exports =

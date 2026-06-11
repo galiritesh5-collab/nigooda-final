@@ -1,9 +1,6 @@
 const openai =
 require("../../../../../../ai/openaiClient");
 
-const OrganicEngine =
-require("./organic");
-
 const ClinicalEngine =
 require("./clinical");
 
@@ -45,59 +42,7 @@ class OCRAndTypeDetection {
       }
 
       console.log(
-        "DETECTED FACE PACK TYPE:",
-        extractedData.type
-      );
-
-      const detectedType =
-        String(
-          extractedData.type || ""
-        )
-        .trim()
-        .toUpperCase();
-
-      if (
-
-        detectedType.includes(
-          "ORGANIC"
-        )
-
-        ||
-
-        detectedType.includes(
-          "HERBAL"
-        )
-
-      ) {
-
-        return await OrganicEngine.run(
-          extractedData
-        );
-
-      }
-
-      if (
-
-        detectedType.includes(
-          "CLINICAL"
-        )
-
-        ||
-
-        detectedType.includes(
-          "CHEMICAL"
-        )
-
-      ) {
-
-        return await ClinicalEngine.run(
-          extractedData
-        );
-
-      }
-
-      console.log(
-        "INVALID TYPE RESPONSE:",
+        "EXTRACTED DATA:",
         extractedData
       );
 
@@ -136,53 +81,29 @@ class OCRAndTypeDetection {
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a skincare OCR and face pack classification engine.
+You are a FaceMask OCR engine.
 
 TASKS:
-
 1. Extract ONLY ingredients.
 2. Preserve ingredient order.
-3. Detect face pack type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
-
-IMPORTANT:
-
-Clay systems
-Acids
-Dermatological actives
-Silicones
-Synthetic exfoliants
-Lab-created actives
-
-= CLINICAL_CHEMICAL
-
-Multani mitti
-Herbal powders
-Plant extracts
-Ayurvedic herbs
-Botanical systems
-Natural clays
-
-= ORGANIC_HERBAL
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove marketing text and garbage OCR text.
+5. Remove duplicate ingredients.
+6. Correct OCR mistakes safely.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
-    "Kaolin",
-    "Niacinamide"
-  ],
-  "type": "CLINICAL_CHEMICAL"
+    "Water",
+    "Glycerin"
+  ]
 }
 `
           },
@@ -191,11 +112,12 @@ OUTPUT:
             role: "user",
 
             content: [
+
               {
                 type: "text",
 
                 text:
-                  "Extract ingredients and classify face pack type."
+                  "Extract ingredients."
               },
 
               {
@@ -206,10 +128,18 @@ OUTPUT:
                     imageBase64
                 }
               }
+
             ]
           }
+
         ]
+
       });
+
+    console.log(
+      "DETECTED FACE PACK TYPE:",
+      response.usage
+    );
 
     return JSON.parse(
       response.choices[0]
@@ -234,51 +164,28 @@ OUTPUT:
         },
 
         messages: [
+
           {
             role: "system",
 
             content: `
-You are a face pack classification engine.
+You are a FaceMask ingredient cleaning engine.
 
 TASKS:
-
 1. Clean ingredients.
-2. Detect face pack type.
-
-CLASSIFY ONLY:
-
-- ORGANIC_HERBAL
-- CLINICAL_CHEMICAL
-
-IMPORTANT:
-
-Clay systems
-Acids
-Dermatological actives
-Silicones
-Synthetic exfoliants
-
-= CLINICAL_CHEMICAL
-
-Multani mitti
-Herbal powders
-Plant extracts
-Ayurvedic herbs
-Botanical systems
-Natural clays
-
-= ORGANIC_HERBAL
+2. Preserve ingredient order.
+3. Preserve percentages, units, and concentration formatting exactly if they exist (e.g., "Aloe Vera 5%", "Tea Tree Oil 2%", "Niacinamide 10%", "Chlorhexidine 0.3% w/v"). Do NOT remove percentages, estimate percentages, alter units, or split percentages away from ingredients.
+4. Remove duplicates.
+5. Fix OCR mistakes.
 
 Return ONLY valid JSON.
 
 OUTPUT:
-
 {
   "ingredients": [
-    "Kaolin",
-    "Niacinamide"
-  ],
-  "type": "CLINICAL_CHEMICAL"
+    "Water",
+    "Glycerin"
+  ]
 }
 `
           },
@@ -289,11 +196,13 @@ OUTPUT:
             content:
               pastedIngredients
           }
+
         ]
+
       });
 
     console.log(
-      "FACE PACK OCR TOKEN USAGE:",
+      "INVALID TYPE RESPONSE:",
       response.usage
     );
 

@@ -8,7 +8,7 @@ class ClinicalEngine {
     try {
 
       const ingredients =
-        data.ingredients || [];
+        Array.isArray(data) ? data : (data.ingredients || []);
 
       const analysis =
         await this.generateAnalysis(
@@ -46,1256 +46,401 @@ class ClinicalEngine {
   ) {
 
     const prompt = `
-
-================================================
-SHAMPOO / HAIR CLEANSER EVALUATION ALGORITHM — V1.0
-
-════════════════════════════════════════════════════════════
-
+SHAMPOO / HAIR CLEANSER EVALUATION ALGORITHM — V2.0
 LAYER 0 — FOUNDATION ENGINE
-
-SYSTEM OBJECTIVE
-
-Reward shampoos that demonstrate:
-
-• Effective scalp and hair cleansing with minimal scalp barrier disruption
-• Appropriate surfactant architecture for scalp and fiber contact
-• Scalp barrier preservation under repeated use
-• Physiological scalp pH compatibility (4.5–5.5)
-• Long-term scalp microbiome compatibility
-• Evidence-based formulation design
-• Low cumulative irritation and sensitization risk
-• Hair fiber integrity preservation
-• Honest active ingredient use (anti-dandruff, scalp actives)
-
-Mandatory penalties apply for:
-
-• Foam-first cleansing architecture marketed as performance
-• Fragrance-driven "clean hair" perception engineering
-• Decorative botanical loading
-• Harsh surfactant systems marketed as "deep cleansing" or "clarifying"
-• Leave-on active inflation in rinse-off systems
-• Silicone buildup systems masking underlying damage
-• Marketing-driven sensory engineering over structural balance
-• Aggressive antimicrobial systems without scalp justification
-
+SYSTEM OBJECTIVE Reward shampoos demonstrating: effective scalp and hair cleansing with minimal barrier disruption · appropriate surfactant architecture · scalp barrier preservation under repeated use · physiological pH compatibility (4.5–5.5) · long-term microbiome compatibility · evidence-based formulation design · low cumulative irritation and sensitization risk · hair fiber integrity preservation · honest active ingredient use.
+Mandatory penalties apply for: foam-first cleansing architecture marketed as performance · fragrance-driven "clean hair" perception engineering · decorative botanical loading · harsh surfactant systems marketed as "deep cleansing" · leave-on active inflation in rinse-off systems · silicone masking of underlying damage · marketing-driven sensory engineering · unjustified broad-spectrum antimicrobials.
 Basic hair cleansing alone cannot achieve high scores.
-
----
-
-TRANSPARENCY PRIORITY RULE
-
-Ignore:
-
-• Branding and luxury positioning
-• Foam lather richness
-• Fragrance freshness and "clean hair" perception
-• "Natural/organic/botanical" marketing
-• Trend-driven active loading (keratin, biotin, caffeine, collagen)
-• Ingredient-count inflation
-• Salon/professional positioning
-• Silicone-driven slip and cosmetic feel
-
-Evaluate only:
-
-• Cleansing efficiency vs scalp barrier cost
-• Surfactant harshness profile (scalp and fiber contact)
-• pH compatibility with scalp acid mantle
-• Post-wash scalp and hair impact
-• Repeated-use tolerance
-• Scalp microbiome stability
-• Hair fiber cuticle integrity
-• Structural formulation honesty
-
-Any shampoo format (syndet bar, liquid, co-wash, micellar, clarifying) receives credibility only when cleansing balance, scalp health, and fiber integrity are demonstrated.
-
----
-
-GLOBAL ENFORCEMENT RULES
-
-• Surfactant architecture is the dominant shampoo structure
-• Safety penalties override functional bonuses
-• Rinse-off actives cannot compensate for harsh surfactant systems
-• Late-position ingredients cannot neutralize structural harshness
-• Foam ≠ cleansing effectiveness
-• Fragrance freshness ≠ scalp health
-• Post-wash scalp tightness / dryness = barrier disruption signal
-• Post-wash hair squeakiness = cuticle damage signal
-• Silicone masking of underlying damage must be identified and penalized
-• Excess antimicrobial activity without scalp condition justification reduces credibility
-• Non-physiological pH reduces Safety and Barrier Preservation
-• Rinse-off active inflation must be penalized
-• Protein overload risk in certain hair types must be evaluated contextually
-
----
-
-STRUCTURE DOMINANCE RULE
-
-Primary shampoo surfactant architecture determines:
-
-• Scalp barrier disruption
-• Scalp lipid depletion
-• Scalp recovery speed
-• Scalp microbiome stability
-• Hair cuticle swelling and protein loss
-• Long-term tolerance
-• Repeated-use safety
-• pH impact on scalp acid mantle
-
-Minor additives, decorative botanicals, and rinse-off actives cannot override a harsh surfactant backbone.
-
-Ingredient evaluation must consider:
-
-• Surfactant tier
-• Rinse-off concentration realism
-• Formulation pH
-• Functional relevance to scalp vs hair fiber
-• Repeated-use scalp exposure
-• Silicone type and buildup potential
-
----
-
-RINSE-OFF CONTEXT RULE
-
-Shampoos have limited scalp contact time (~60–120 seconds). Active ingredients must be evaluated accordingly.
-
-FULL CREDIT (Scalp Actives):
-• Zinc Pyrithione
-• Ketoconazole
-• Selenium Sulfide
-• Piroctone Olamine
-• Salicylic Acid (scalp exfoliation)
-• Ciclopirox
-• Coal Tar
-
-PARTIAL CREDIT:
-• Glycerin
-• Panthenol
-• Niacinamide
-• Zinc derivatives (non-dandruff)
-• Urea
-
-DECORATIVE / MINIMAL CREDIT:
-• Biotin
-• Caffeine (topical)
-• Keratin (rinse-off)
-• Collagen
-• Hyaluronic Acid
-• Vitamin C
-• Retinoids
-• Most antioxidant botanicals
-• Peptides
-
-Actives requiring prolonged scalp or fiber contact cannot receive full efficacy credit in rinse-off systems.
-
-Decorative active marketing reduces:
-• Ingredient Quality
-• Formulation Honesty
-
----
-
-LATE-INGREDIENT LIMIT RULE
-
-Late-position ingredients may provide:
-• Minor conditioning
-• Mild scalp soothing
-• Sensory enhancement
-• Temporary cosmetic fiber feel
-
-They cannot offset:
-• Harsh surfactant systems
-• High-pH formulations
-• Soap-dominant architecture
-• Repeated SLS/SLES scalp barrier stress
-• Fragrance-heavy irritation burden
-
----
-
-BASIC CLEANSING LIMIT RULE
-
-Basic dirt and sebum removal alone cannot achieve high structural scores.
-
-Soap-based or simplistic surfactant systems lacking:
-• Scalp barrier consideration
-• pH optimization
-• Microbiome compatibility
-• Hair fiber integrity consideration
-
-receive moderate score ceilings regardless of cleansing ability.
-
----
-
-════════════════════════════════════════════════════════════
-
+TRANSPARENCY PRIORITY RULE Ignore: branding · foam lather · fragrance freshness · "natural/organic" marketing · trend-driven active loading (biotin, caffeine, collagen) · ingredient-count inflation · salon positioning · silicone-driven cosmetic feel.
+Evaluate only: cleansing efficiency vs barrier cost · surfactant harshness · pH compatibility · post-wash scalp and hair impact · repeated-use tolerance · microbiome stability · fiber cuticle integrity · formulation honesty.
+GLOBAL ENFORCEMENT RULES Surfactant architecture is the dominant structure. Safety penalties override functional bonuses. Rinse-off actives cannot compensate for harsh surfactant systems. Foam ≠ cleansing effectiveness. Fragrance freshness ≠ scalp health. Post-wash scalp tightness = barrier disruption signal. Post-wash hair squeakiness = cuticle damage signal. Silicone masking must be identified and penalized. Non-physiological pH reduces Safety and Barrier Preservation. Rinse-off active inflation must be penalized.
+STRUCTURE DOMINANCE RULE Primary surfactant architecture determines: scalp barrier disruption · scalp lipid depletion · scalp recovery speed · microbiome stability · hair cuticle swelling · protein loss · long-term tolerance.
+Minor additives and rinse-off actives cannot override a harsh surfactant backbone.
+HARDNESS VS FAILURE SEPARATION RULE (new) Structural harshness ≠ product failure. A harsh shampoo may still cleanse effectively, suit oily scalps, or succeed clinically. Output language must reflect context: "less ideal for frequent sensitive use" — not "bad shampoo." Score within the product's intended use context.
+RINSE-OFF CONTEXT RULE Shampoos have ~60–120 seconds scalp contact. Actives must be evaluated accordingly.
+Full credit (scalp actives): Zinc Pyrithione · Ketoconazole · Selenium Sulfide · Piroctone Olamine · Salicylic Acid · Ciclopirox · Coal Tar
+Partial credit: Glycerin · Panthenol · Niacinamide · Zinc derivatives · Urea · Polyquats · Hydrolyzed proteins (minor fiber deposition)
+Decorative / minimal credit: Biotin · Caffeine (topical) · Keratin (rinse-off) · Collagen · Hyaluronic Acid · Vitamin C · Retinoids · Most antioxidant botanicals · Peptides
+Note: Panthenol, hydrolyzed proteins, and polyquats provide minor but real supportive cosmetic function and are not equivalent to fully decorative ingredients like biotin or collagen.
+Decorative active marketing reduces Ingredient Quality and Formulation Honesty.
+LATE-INGREDIENT LIMIT RULE Late-position ingredients may provide minor conditioning, mild scalp soothing, or sensory enhancement. They cannot offset harsh surfactant systems, high-pH formulations, or repeated SLS scalp barrier stress. Avoid both over-crediting and over-penalizing low-concentration trace ingredients.
 LAYER 1 — SURFACTANT HARSHNESS TIER SYSTEM
-
-MANDATORY RULE:
-All surfactants must be classified by harshness tier before scoring.
-
-Shampoo surfactant structure is the primary determinant of:
-• Scalp barrier disruption
-• Scalp TEWL increase
-• Scalp lipid depletion
-• Scalp protein denaturation
-• Hair cuticle swelling
-• Hair protein loss (especially from chemically treated or porous hair)
-• Long-term scalp and fiber tolerance
-
-Note: Shampoo surfactants affect BOTH scalp skin AND hair fiber simultaneously. Harshness tier must account for both surfaces.
-
-Anionic surfactants are generally harsher on both scalp and fiber.
-Amphoteric, nonionic, amino acid, and glucoside systems demonstrate superior scalp and fiber compatibility.
-
----
-
-SURFACTANT TIER TABLE
-
-TIER 1 — HARSH
-
-Examples:
-• SLS (Sodium Lauryl Sulfate)
-• SLES (primary surfactant — Sodium Laureth Sulfate)
-• ALS (Ammonium Lauryl Sulfate)
-• ALES (Ammonium Laureth Sulfate) — primary use
-• Sodium C14-16 Olefin Sulfonate
-• Traditional soap/saponified oil systems (pH ≥9)
-• TEA-Lauryl Sulfate
-
-Characteristics:
-• High TEWL increase on scalp
-• Significant scalp barrier disruption
-• Scalp lipid and NMF depletion
-• High hair cuticle swelling
-• High protein loss from chemically treated/porous hair
-• Irritation potential on sensitive scalps
-• Microbiome disruption at repeated use
-
-Scoring Impact:
-• Mandatory Safety penalties
-• Barrier Preservation ceiling reduction
-• High Cumulative Irritation Risk
-• Hair Fiber Integrity penalties
-
----
-
-TIER 2 — MODERATE
-
-Examples:
-• SCI (Sodium Cocoyl Isethionate)
-• Sodium Lauroyl Methyl Isethionate
-• Disodium Laureth Sulfosuccinate
-• SLES in blended systems with Tier 3/4 support
-• Sodium Lauryl Sulfoacetate (SLSA — note: less harsh than SLS)
-
-Characteristics:
-• Moderate scalp barrier disruption
-• Lower cuticle swelling than Tier 1
-• Blend-dependent tolerance
-• Improved scalp compatibility vs. Tier 1
-
-Scoring Impact:
-• Moderate Safety penalties
-• Improved tolerance when combined with Tier 3–4 systems
-• Moderate Barrier Preservation ceiling
-
----
-
-TIER 3 — MILD
-
-Examples:
-• CAPB (Cocamidopropyl Betaine)
-• Lauryl Betaine
-• Sodium Cocoamphoacetate
-• Disodium Cocoamphodiacetate
-• Sodium Cocoyl Glycinate
-• Sodium Cocoyl Apple Amino Acids
-• Sodium Lauroamphoacetate
-
-Characteristics:
-• Low TEWL disruption on scalp
-• Good scalp barrier compatibility
-• Minimal cuticle swelling
-• Widely tolerated on diverse hair types
-
-Note:
-CAPB sensitization risk affects Allergy Risk, not Safety tier.
-
-Scoring Impact:
-• Eligible for good Barrier Preservation
-• Strong compatibility with Tier 4 systems
-• Preferred secondary/co-surfactant in gentle formulations
-
----
-
-TIER 4 — VERY MILD
-
-Examples:
-• Decyl Glucoside
-• Coco Glucoside
-• Lauryl Glucoside
-• Sodium Cocoyl Glutamate
-• Disodium Cocoyl Glutamate
-• Sodium Lauroyl Sarcosinate
-• Sodium Cocoyl Alaninate
-• Sodium Cocoyl Methyl Alaninate (Amisoft)
-• Sodium Cocoyl Taurate
-• Amino acid/glucoside blends
-
-Characteristics:
-• Minimal scalp barrier disruption
-• Lowest cuticle swelling
-• Lowest protein extraction from hair fiber
-• Strongest scalp and hair compatibility
-• Biodegradability advantage
-
-Scoring Impact:
-• Eligible for maximum Barrier Preservation
-• Transparency bonus eligible
-• Preferred primary surfactant in gentle/scalp-sensitive shampoos
-
----
-
-SURFACTANT SYSTEM RULE
-
-Primary surfactant determines system harshness.
-Blending modifies but does not eliminate harshness.
-
-SYSTEM CLASSIFICATION:
-
-• Tier 1 alone → Severe
-• Tier 1 + Tier 3/4 → Moderate-High
-• Tier 2 alone → Moderate
-• Tier 2 + Tier 3/4 → Moderate-Low
-• Tier 3/4 dominant → Low
-• Tier 4 dominant → Very Low
-
-Additional Rules:
-• High-foam Tier 1 systems cannot qualify as "gentle" or "scalp-safe"
-• Tier 3–4 syndet systems receive Scalp Barrier Preservation credit
-• Co-wash systems (conditioner-only washing) must be evaluated separately for cleansing adequacy
-• Clarifying shampoos with Tier 1 architecture receive explicit high-frequency use penalties
-
----
-
-════════════════════════════════════════════════════════════
-
-LAYER 2 — SHAMPOO pH RULE
-
-pH is a mandatory scoring modifier affecting:
-• Scalp acid mantle integrity
-• Scalp microbiome stability
-• Scalp enzymatic balance (serine proteases)
-• Hair cuticle swelling and porosity
-• Antimicrobial peptide function
-• Seborrheic dermatitis / dandruff risk modulation
-
-Physiological scalp pH: 4.5–5.5
-
-HAIR FIBER NOTE:
-Hair cuticle swells significantly above pH 6.5. High-pH shampoos open the cuticle, increasing protein loss, frizz, tangling, and mechanical damage risk during wet combing.
-
-High-pH shampoos increase:
-• Scalp TEWL
-• Scalp protease overactivity
-• Cuticle lifting and protein leaching
-• Scalp microbiome imbalance
-• Dandruff / irritant dermatitis risk
-
-Soap systems (pH 9–10) receive major penalties on both scalp and fiber dimensions.
-
----
-
-pH SCORING TIERS
-
-4.5–5.5
-• Optimal for scalp and hair cuticle
-• Full Barrier Preservation bonus
-• Microbiome bonus
-• Hair Fiber Integrity bonus
-
-5.5–6.5
-• Acceptable
-• Minor cuticle impact
-• Neutral-to-slight scoring reduction
-
-6.5–7.5
-• Mild scalp penalty
-• Moderate cuticle swelling risk
-• Hair Fiber Integrity reduced
-
-7.5–9.0
-• Moderate scalp penalty
-• High cuticle damage risk
-• Significant Hair Fiber Integrity reduction
-
->9.0
-• Significant scalp and fiber penalty
-• Elite Barrier Preservation disqualified
-• Soap-range: structural failure for repeated use
-
-Unknown pH:
-• No bonus
-• Minor credibility reduction
-
-pH penalties apply regardless of surfactant gentleness.
-A mild Tier 4 surfactant system at pH 8.0 still receives barrier and fiber penalties.
-
----
-
-════════════════════════════════════════════════════════════
-
-LAYER 3 — RINSE-OFF ACTIVE EFFICACY (SHAMPOO)
-
-Active ingredients must be evaluated based on rinse-off scalp exposure time and evidence base.
-
-CATEGORY A — HIGH EFFICACY (FULL CREDIT)
-
-Anti-dandruff / scalp condition actives:
-• Zinc Pyrithione (ZPT) — antifungal / antibacterial, substantive to scalp
-• Ketoconazole — potent antifungal, dose-dependent efficacy
-• Selenium Sulfide — antifungal + antiseborrheic
-• Piroctone Olamine — antifungal, good scalp substantivity
-• Ciclopirox Olamine — broad-spectrum antifungal
-• Coal Tar — anti-proliferative, anti-inflammatory
-• Salicylic Acid — keratolytic / scalp exfoliation
-
-Characteristics:
-• Substantive to scalp or scalp surface during rinse-off
-• Evidence base for scalp conditions
-• Functional at realistic shampoo concentrations
-
-Scoring:
-• Full effectiveness credit for target scalp conditions
-
----
-
-CATEGORY B — PARTIAL EFFICACY
-
-• Glycerin — minor humectant benefit
-• Panthenol — minor scalp soothing, minor fiber coating
-• Niacinamide — partial scalp barrier support
-• Urea — mild keratolytic at sufficient concentration
-• Tea Tree Oil — mild antimicrobial (concentration-dependent; allergy risk noted)
-• Piroctone Olamine at low concentration — reduced category B
-• Zinc (non-ZPT forms) — sebum regulation support
-
-Scoring:
-• Partial effectiveness credit
-
----
-
-CATEGORY C — DECORATIVE / LOW EFFICACY
-
-• Biotin — no evidence for topical rinse-off hair growth benefit
-• Caffeine — insufficient rinse-off contact for follicular benefit
-• Keratin (hydrolyzed, rinse-off) — minimal fiber penetration in shampoo; partial credit only in conditioner leave-on
-• Collagen — decorative
-• Hyaluronic Acid — decorative in rinse-off
-• Vitamin C — decorative
-• Retinoids — decorative in rinse-off
-• Peptides — decorative in rinse-off
-• Most antioxidant botanicals — decorative
-• Argan oil, coconut oil (rinse-off, shampoo concentration) — cosmetic slip only
-
-Scoring:
-• No major effectiveness credit
-• Marketing-heavy Category C stacking triggers:
-  - Ingredient Quality penalty
-  - Formulation Honesty penalty
-
----
-
-ACTIVE SCORING RULE
-
-• Category A → Full functional credit for target condition
-• Category B → Reduced credit
-• Category C → Decorative unless strong substantivity evidence exists
-• Misrepresenting Category C actives as performance drivers is penalized under Formulation Honesty
-
----
-
-════════════════════════════════════════════════════════════
-
-LAYER 4 — SCALP MICROBIOME IMPACT RULE
-
-MICROBIOME COMPATIBILITY MODIFIER
-
-The shampoo must be evaluated for long-term scalp microbiome stability.
-
-Scalp microbiome context:
-The scalp hosts a specific lipophilic microbiome (Malassezia-dominant, Staphylococcus epidermidis, Cutibacterium acnes) in a sebum-rich environment. Disruption of this balance drives dandruff, seborrheic dermatitis, scalp inflammation, and secondary infection risk.
-
-High microbiome disruption risk:
-• High-pH systems (>7.5)
-• Broad-spectrum antimicrobials without scalp condition indication
-  - Triclosan
-  - Chlorhexidine
-  - Benzalkonium chloride
-• SLS-dominant surfactant systems
-• High alcohol systems (>5% denatured alcohol)
-• Aggressive essential oil antimicrobial stacking without evidence
-
-Low microbiome disruption risk:
-• Tier 3–4 surfactant systems at physiological pH
-• Targeted antifungals (ZPT, ketoconazole, piroctone) — disruption is justified for dandruff/seborrheic dermatitis
-• Prebiotic / postbiotic support ingredients at functional concentrations
-
-Application Rules:
-• Primarily modifies:
-  - Microbiome Compatibility
-  - Long-Term Scalp Compatibility
-• Reinforces existing surfactant and pH penalties
-• Targeted antifungal use is context-credited, not penalized when scalp condition is indicated
-
----
-
-════════════════════════════════════════════════════════════
-
-LAYER 4.5 — SILICONE EVALUATION RULE
-
-Silicones are widely used in shampoos for slip, detangling, shine, and fiber coating. Evaluation must distinguish between functional and problematic silicone use.
-
-SILICONE TYPE CLASSIFICATION
-
-WATER-SOLUBLE / NON-BUILDUP:
-• PEG-modified silicones (Dimethicone Copolyol, PEG-7 Dimethicone)
-• Low molecular weight cyclics (Cyclomethicone) — largely rinse-off
-
-Characteristics:
-• Rinse-off cleanly
-• Minimal buildup potential
-• Lower concern in shampoo systems
-
-INSOLUBLE / BUILDUP-POTENTIAL:
-• Dimethicone (high molecular weight)
-• Amodimethicone (cationic, substantive — functional for damaged hair; moderate buildup)
-• Bis-Aminopropyl Dimethicone
-• Cyclopentasiloxane (D5 — environmental concern)
-• Phenyl Trimethicone
-
-Characteristics:
-• Progressive buildup on hair fiber with repeated use
-• May mask underlying damage rather than addressing it
-• Requires chelating/clarifying shampoo to remove fully
-
-SCORING RULES:
-
-• Insoluble silicone in primary shampoo (non-clarifying) → moderate Formulation Honesty concern
-• Silicone stacking (multiple insoluble types) → Ingredient Quality penalty
-• Silicone masking of harsh surfactant system → Formulation Honesty penalty
-• Amodimethicone in damage-targeted shampoo → partial credit (functional justification)
-• Water-soluble silicones → neutral to minor positive scoring
-
-CONTEXTUAL RULE:
-Silicone use in a harsh (Tier 1) surfactant shampoo that claims "nourishing" or "moisturizing" positioning = structural dishonesty. The silicone is masking the stripping behavior of the surfactant system, not repairing it.
-
----
-
-════════════════════════════════════════════════════════════
-
-LAYER 4.6 — COLORANT PENALTY RULE
-
-Artificial/decorative colorants provide no cleansing, scalp, or hair benefit and increase unnecessary irritation burden.
-
-High concern examples:
-• Red 40
-• Yellow 5
-• Yellow 6
-• Blue 1
-• Green 3
-• Multiple synthetic dye blends
-
-Scoring Impact:
-• Allergy Risk penalty
-• Ingredient Quality penalty
-• Cumulative Irritation Risk penalty
-• Formulation Honesty penalty
-
-Multiple synthetic dyes increase penalties further.
-Mineral pigments (Iron Oxides, Titanium Dioxide) receive minimal penalty unless heavily decorative.
-
-OUTPUT RULE:
-Colorants must be mentioned under:
-• Concerns
-• Why This Rating
-• Key Structural Ingredients (if major)
-
----
-
-════════════════════════════════════════════════════════════
-
-LAYER 4.7 — HAIR FIBER INTEGRITY RULE
-
-Shampoos contact hair fiber during lathering and rinsing. Fiber impact must be evaluated independently from scalp impact.
-
-FIBER DAMAGE MECHANISMS:
-
-• Surfactant cuticle swelling → mechanical damage during wet combing
-• Protein extraction → weakening of cortex (especially in chemically treated hair)
-• High pH → cuticle lifting, static, frizz, porosity increase
-• Repeated stripping → cumulative protein loss
-• Chelating agents (EDTA) at high concentration → mineral stripping (minor)
-
-HAIR TYPE VULNERABILITY RANKING (HIGHEST RISK FIRST):
-
-1. Chemically bleached / highlighted hair — highest protein loss risk
-2. Relaxed / permed / chemically processed hair — compromised cuticle
-3. Coily / Type 4 hair — high natural porosity, prone to moisture/protein loss
-4. Curly / Type 3 hair — elevated porosity vs. straight hair
-5. Fine/thin hair — minimal fiber mass, damage accumulates faster
-6. Color-treated (non-bleached) — moderate vulnerability
-7. Normal/healthy straight hair — lowest vulnerability
-
-FIBER INTEGRITY SCORING MODIFIERS:
-
-• Tier 1 surfactant → Hair Fiber Integrity penalized
-• pH >6.5 → Hair Fiber Integrity penalized
-• Mild surfactant + physiological pH → Hair Fiber Integrity credited
-• Hydrolyzed protein (leave-on or long-contact) → partial fiber credit
-• Cationic conditioning agents (quaternium, guar) → minor cuticle smoothing credit in rinse-off
-
----
-
-════════════════════════════════════════════════════════════
-
+All surfactants must be classified before scoring. Surfactant structure is the primary determinant of scalp barrier disruption, lipid depletion, cuticle swelling, and protein loss.
+TIER 1 — HARSH SLS · SLES (primary) · ALS · ALES (primary) · Sodium C14-16 Olefin Sulfonate · Traditional soap/saponified systems (pH ≥9) · TEA-Lauryl Sulfate → Mandatory Safety penalties · Barrier Preservation ceiling reduction · High Cumulative Irritation Risk · Hair Fiber Integrity penalties
+TIER 2 — MODERATE SCI · Sodium Lauroyl Methyl Isethionate · Disodium Laureth Sulfosuccinate · SLES in blended systems with Tier 3/4 support · SLSA → Moderate Safety penalties · Improved tolerance when blended with Tier 3–4
+TIER 3 — MILD CAPB · Lauryl Betaine · Sodium Cocoamphoacetate · Disodium Cocoamphodiacetate · Sodium Cocoyl Glycinate · Sodium Lauroamphoacetate → Eligible for good Barrier Preservation · Strong compatibility with Tier 4 Note: CAPB sensitization risk affects Allergy Risk, not Safety tier.
+TIER 4 — VERY MILD Decyl Glucoside · Coco Glucoside · Lauryl Glucoside · Sodium Cocoyl Glutamate · Sodium Lauroyl Sarcosinate · Sodium Cocoyl Alaninate · Sodium Cocoyl Methyl Alaninate · Sodium Cocoyl Taurate · Amino acid/glucoside blends → Eligible for maximum Barrier Preservation · Transparency bonus eligible
+SYSTEM CLASSIFICATION: Tier 1 alone → Severe · Tier 1 + Tier 3/4 → Moderate-High · Tier 2 alone → Moderate · Tier 2 + Tier 3/4 → Moderate-Low · Tier 3/4 dominant → Low · Tier 4 dominant → Very Low
+Clarifying shampoos with Tier 1 architecture receive explicit high-frequency use penalties but are evaluated primarily under occasional-use simulation when clearly targeting buildup, silicone removal, swimmer use, or hard water residue.
+LAYER 2 — pH RULE
+pH is a mandatory scoring modifier affecting: scalp acid mantle integrity · microbiome stability · hair cuticle swelling · antimicrobial peptide function.
+Physiological scalp pH: 4.5–5.5. High-pH increases TEWL, protease overactivity, cuticle lifting, and dandruff risk. Soap systems (pH 9–10) receive major penalties on both scalp and fiber.
+pH SCORING TIERS: 4.5–5.5 → Full Barrier Preservation + Microbiome + Hair Fiber bonus 5.5–6.5 → Acceptable, minor reduction 6.5–7.5 → Mild scalp penalty, moderate cuticle swelling risk 7.5–9.0 → Moderate scalp penalty, high cuticle damage risk
+9.0 → Significant penalty, soap-range structural failure for repeated use Unknown → No bonus, minor credibility reduction
+pH penalties apply regardless of surfactant gentleness. A Tier 4 system at pH 8.0 still receives barrier and fiber penalties.
+LAYER 3 — THERAPEUTIC CONTEXT RULE (new)
+If a Category A therapeutic scalp active is present at functional concentration (Ketoconazole · ZPT · Selenium Sulfide · Piroctone Olamine · Ciclopirox) AND the formula is clearly treatment-oriented:
+Harshness penalties remain active
+Effectiveness ceiling increases for target condition
+Skin Compatibility penalty softens slightly (intermittent use simulation)
+Formulation Honesty does NOT penalize treatment-focused cleansing strength
+Long-Term Usability simulates intermittent / prescribed frequency, not daily use
+This prevents therapeutic shampoos from being scored as failed cosmetic products. It does not remove structural penalties — it contextualizes them.
+LAYER 4 — SCALP MICROBIOME IMPACT
+High disruption risk: High-pH systems (>7.5) · Broad-spectrum antimicrobials without scalp indication (Triclosan, Chlorhexidine, Benzalkonium chloride) · SLS-dominant systems · High denatured alcohol (>5%) · Aggressive essential oil antimicrobial stacking
+Low disruption risk: Tier 3–4 surfactants at physiological pH · Targeted antifungals (ZPT, ketoconazole, piroctone) — disruption is justified for dandruff/seborrheic dermatitis · Prebiotic/postbiotic ingredients at functional concentrations
+Targeted antifungal use is context-credited, not penalized when scalp condition is indicated.
+LAYER 4.5 — SILICONE EVALUATION
+Non-buildup: PEG-modified silicones · Cyclomethicone → minimal concern
+Buildup-potential: Dimethicone (HMW) · Amodimethicone · Bis-Aminopropyl Dimethicone · Cyclopentasiloxane (D5) · Phenyl Trimethicone
+FUNCTIONAL vs MASKING DISTINCTION (refined)
+Functional silicone conditions: damaged/processed hair targeting · high friction reduction need · balanced silicone level · surfactant harshness not extreme → award Hair Fiber Integrity bonus + Mechanical Damage Reduction bonus
+Masking silicone conditions: harsh surfactant architecture + "repair/nourishing" claims relying on silicone feel · multiple insoluble silicones heavily stacked → Formulation Honesty penalty activated
+Silicones are not inherently dishonest. Amodimethicone in damage-targeted formulas receives partial functional credit. The penalty is specifically for silicone masking a harsh surfactant system claiming moisturizing or repairing performance.
+D5 (Cyclopentasiloxane) receives ecological penalty regardless of functional use.
+LAYER 4.6 — COLORANT PENALTY
+Artificial/decorative colorants provide no cleansing, scalp, or hair benefit and increase unnecessary irritation burden. Red 40 · Yellow 5/6 · Blue 1 · Green 3 and synthetic dye blends receive: Allergy Risk penalty · Ingredient Quality penalty · Cumulative Irritation Risk penalty · Formulation Honesty penalty. Multiple dyes increase penalties further. Mineral pigments receive minimal penalty.
+LAYER 4.7 — HAIR FIBER INTEGRITY
+Fiber damage mechanisms: surfactant cuticle swelling · protein extraction · high pH cuticle lifting · repeated stripping cumulative loss
+Vulnerability ranking (highest first): Bleached/highlighted → Relaxed/permed → Coily Type 4 → Curly Type 3 → Fine/thin → Color-treated → Normal healthy straight
+Fiber integrity modifiers: Tier 1 surfactant → penalized · pH >6.5 → penalized · Mild surfactant + physiological pH → credited · Cationic conditioning agents (quaternium, guar) → minor cuticle smoothing credit
+Fiber Integrity Ceilings: Tier 1 dominant at pH >6.5 → Max 2.0 · Tier 1 + Tier 3/4 moderate pH → Max 2.8 · Tier 2 + Tier 3/4 at pH 4.5–6.5 → Max 3.7 · Tier 3/4 at pH 4.5–5.5 → Eligible for 5.0
+LAYER 4.8 — HERBAL / ORGANIC VALIDATION (new)
+HERBAL EVIDENCE CLASSIFICATION:
+H1 — Evidence-Supported: Aloe Vera · Colloidal Oat · Tea Tree Oil (concentration-dependent) · Licorice · Green Tea · Centella · Fermented extracts · Neem (partial) → Partial functional credit if reasonable concentration likely, biologically plausible in rinse-off, and formulation architecture compatible. Do not over-credit.
+H2 — Traditional / Partial Evidence: Bhringraj · Amla · Shikakai · Reetha · Hibiscus · Rosemary · Rice Water · Fenugreek → Recognize traditional/historical use and mild supportive role. Do NOT allow hair growth, repair, or strong clinical claims. Output: "traditional supportive use with limited modern rinse-off evidence."
+H3 — Marketing / Decorative: Gold dust botanicals · overloaded exotic extract stacks · luxury plant inflation → No performance credit. Triggers Formulation Honesty reduction + Botanical Inflation flag.
+GENUINE vs GIMMICK HERBAL DISTINCTION:
+Genuine signals: mild surfactant architecture · coherent botanical strategy · low fragrance burden · realistic claims · scalp-compatible pH · reasonable simplicity
+Gimmick signals: harsh surfactant + herbal front marketing · essential oil overload · 20+ extract inflation · fake "hair growth" positioning · perfume-heavy "Ayurvedic" products
+🌿 HERBAL / ORGANIC REALISM block must appear in output for herbal-positioned products, evaluating: evidence quality · traditional vs clinical support · rinse-off realism · essential oil burden · botanical inflation · authenticity of herbal positioning.
 LAYER 5 — CORE SCORING SYSTEM
-
-Score range: 1.0 → 5.0 FOR EVERY RULE
-
----
-
-SAFETY [DOMINANT]
-
-Evaluates:
-• Surfactant harshness on scalp and fiber
-• Scalp barrier disruption risk
-• Repeated-use irritation burden
-• Sensitization potential (fragrance, CAPB, preservatives)
-• pH-related scalp barrier stress
-• Cumulative inflammatory load
-• Long-term scalp tolerance trajectory
-• Anti-dandruff active safety profile (where applicable)
-
-Core Rules:
-• Repeated low-grade scalp irritation reduces Safety
-• Daily-use frequency magnifies irritation burden
-• SLS/soap penalties reflect chronic scalp barrier stress, not acute toxicity
-• Safety overrides:
-  - Foam perception
-  - Fragrance freshness
-  - Luxury/salon positioning
-  - Short-term cosmetic feel
-
----
-
-EFFECTIVENESS
-
-Core Question:
-Can the shampoo effectively cleanse scalp and hair while maintaining scalp stability and fiber integrity under repeated use?
-
-Evaluates:
-• Sebum/dirt/product buildup removal
-• Scalp cleansing vs scalp stripping balance
-• Anti-dandruff active efficacy (where present)
-• Rinse-off active real-world functional credit
-• Cleansing-to-barrier balance
-• pH suitability for scalp and fiber
-• Repeated-use scalp functionality
-• Structural formulation honesty
-
-High effectiveness requires:
-• Adequate cleansing without excessive scalp stripping
-• Evidence-supported actives where targeted claims exist
-• Barrier-considerate surfactant design
-• Functional pH range for scalp
-• Honest anti-dandruff active concentrations
-
-Rules:
-• Basic sebum removal alone cannot achieve elite effectiveness
-• Rinse-off active inflation (biotin, caffeine, keratin) cannot receive full credit
-• Silicone masking of cleansing performance is penalized
-• Ignore:
-  - Marketing claims
-  - Foam perception
-  - Fragrance freshness
-  - Luxury/salon positioning
-
----
-
-ALLERGY RISK
-
-Evaluates:
-• Fragrance exposure (scalp is more absorptive than hair fiber)
-• Essential oil sensitizers
-• Preservative sensitizers (methylisothiazolinone, DMDM hydantoin, parabens)
-• CAPB sensitization potential (contact dermatitis risk)
-• Botanical allergens
-• Repeated-use trigger accumulation on scalp
-• Anti-dandruff active tolerance (rare sensitization to ZPT, ketoconazole)
-
-Application Rules:
-• Scalp has higher absorption potential than hair shaft — scalp contact allergy risk is elevated vs body wash
-• Fragrance-heavy shampoos receive Allergy Risk penalties
-• Frequency of exposure (daily/alternate day) is prioritized
-• Preservative systems must be evaluated for scalp sensitization potential
-
----
-
-ECO IMPACT
-
-Evaluates:
-• Surfactant biodegradability
-• Silicone environmental persistence (D5 Cyclopentasiloxane — restricted in EU wash-off products)
-• Microplastics / synthetic polymer particles
-• Environmental persistence of antimicrobial actives (ZPT aquatic toxicity)
-• Unnecessary formulation burden
-• Direct rinse-off environmental load
-
-General Rules:
-• Glucoside and amino acid surfactants receive ecological preference
-• D5 silicone (Cyclopentasiloxane) receives specific eco penalty
-• ZPT aquatic toxicity must be noted under anti-dandruff shampoos
-• Persistent preservatives/antimicrobials reduce score
-
----
-
-INGREDIENT QUALITY
-
-Evaluates:
-• Surfactant system coherence for scalp and fiber
-• Rinse-off active honesty (biotin, caffeine, keratin claims)
-• Surfactant/pH balance logic
-• Functional ingredient synergy
-• Silicone type appropriateness
-• Absence of decorative active inflation
-• Structural transparency
-
-Rules:
-• Decorative active stacking (biotin + caffeine + keratin + collagen) reduces quality credibility
-• Non-functional botanical loading reduces transparency
-• Rinse-off actives must justify functional relevance
-• Silicone masking of harsh surfactant = quality penalty
-
----
-
-SKIN COMPATIBILITY (SCALP COMPATIBILITY)
-
-Evaluates:
-• Daily-use scalp tolerance
-• Scalp barrier resilience
-• Post-wash scalp tightness/dryness/itch
-• Dandruff/seborrheic dermatitis compatibility
-• Scalp microbiome stability
-• Long-term scalp tolerance development
-• Cumulative sensitization risk
-• Sensitive scalp suitability
-
-Core Rules:
-• Temporary cosmetic hair feel does not equal scalp compatibility
-• Foam satisfaction does not equal scalp health
-• Long-term repeated-use scalp behavior is prioritized over immediate cosmetic feel
-• Post-wash scalp tightness = barrier stress signal, not "clean scalp" feeling
-
----
-
-CORE SCORE FORMULA
-
-Core Score =
-(
- Safety × 0.25 +
- Effectiveness × 0.20 +
- Allergy Risk × 0.15 +
- Eco Impact × 0.10 +
- Ingredient Quality × 0.15 +
- Skin Compatibility × 0.15
-)
-
----
-
-════════════════════════════════════════════════════════════
-
+Score range: 1.0 → 5.0 for every parameter.
+SAFETY [DOMINANT] — surfactant harshness · barrier disruption risk · repeated-use irritation · sensitization potential · pH-related scalp stress · cumulative inflammatory load · long-term scalp tolerance trajectory
+EFFECTIVENESS — sebum/dirt/buildup removal · scalp cleansing vs stripping balance · anti-dandruff active efficacy · rinse-off active real-world credit · pH suitability · structural formulation honesty. Basic sebum removal alone cannot achieve elite effectiveness.
+ALLERGY RISK — fragrance exposure · essential oil sensitizers · preservative sensitizers · CAPB contact dermatitis risk · botanical allergens · repeated-use scalp accumulation. Scalp has higher absorption potential than hair shaft.
+FRAGRANCE CALIBRATION (refined): Low–moderate fragrance → moderate Allergy penalty only Heavy/perfume-driven fragrance → strong penalty Sensitive-scalp targeted + heavy fragrance → enhanced contradiction penalty Do not collapse scores from moderate fragrance alone.
+ECO IMPACT — surfactant biodegradability · D5 silicone environmental persistence (EU restricted in wash-off) · microplastics · ZPT aquatic toxicity · unnecessary formulation burden. Glucoside and amino acid surfactants receive ecological preference.
+INGREDIENT QUALITY — surfactant system coherence · rinse-off active honesty · functional ingredient synergy · silicone type appropriateness · absence of decorative active inflation
+SKIN COMPATIBILITY (SCALP COMPATIBILITY) — daily-use scalp tolerance · scalp barrier resilience · microbiome stability · long-term scalp tolerance trajectory · sensitive scalp suitability
+CORE SCORE FORMULA: Core Score = (Safety × 0.25) + (Effectiveness × 0.20) + (Allergy Risk × 0.15) + (Eco Impact × 0.10) + (Ingredient Quality × 0.15) + (Skin Compatibility × 0.15)
 LAYER 6 — SPECIALIZED SHAMPOO PERFORMANCE
-
-Evaluates real-world repeated-use shampoo behavior on scalp and hair fiber.
-Score Range: 1.0 → 5.0
-
----
-
-CLEANSING EFFICIENCY
-
-Evaluates:
-• Sebum and scalp oil removal
-• Dirt and pollutant removal
-• Product buildup removal (dry shampoo, styling product residue, silicone buildup)
-• Scalp cell debris and flake removal
-• Anti-dandruff efficacy (where applicable)
-
-Core Rules:
-• Balanced scalp cleansing is preferred over aggressive stripping
-• Foam volume does not determine cleansing quality
-• Micellar and low-foam systems may outperform harsh foaming systems
-• Excessive scalp stripping (sebum over-removal) reduces score — drives rebound oiliness
-• Clarifying shampoos receive cleansing credit but frequency penalties
-
-CEILING RULE:
-Tier 1 surfactant systems cannot achieve maximum Cleansing Efficiency regardless of raw cleansing power. Overstripping ≠ clean scalp.
-
----
-
-SCALP BARRIER PRESERVATION [DOMINANT]
-
-Evaluates:
-• Scalp TEWL disruption risk
-• Scalp lipid (ceramide, fatty acid) preservation
-• Scalp barrier recovery speed post-wash
-• pH-related acid mantle recovery
-• Repeated-use scalp resilience
-• Long-term scalp lipid depletion risk
-• Sebum rebound (over-stripping drives excess sebum production)
-
-BARRIER CEILINGS
-
-• Tier 1 dominant → Max 2.0
-• Tier 1 + Tier 3/4 → Max 2.8
-• Tier 2 dominant → Max 3.2
-• Tier 2 + Tier 3/4 → Max 3.7
-• Tier 3/4 dominant → Max 4.3
-• Tier 3/4 at pH 4.5–5.5 → Eligible for 5.0
-• Tier 3/4 at pH 5.5–7.5 → Reduced ceiling
-• Soap systems (pH >9) → Hard ceiling 2.0
-
-Core Rules:
-• Post-wash scalp tightness = scalp barrier stress
-• High scores require:
-  - Mild surfactants
-  - Physiological pH (4.5–5.5)
-  - Low repeated scalp barrier stress
-• Soap/SLS-dominant systems cannot achieve elite Scalp Barrier Preservation
-• Scalp Barrier Preservation is the dominant shampoo performance parameter
-
----
-
-HAIR FIBER INTEGRITY
-
-Evaluates:
-• Cuticle lifting and swelling risk
-• Protein loss potential (especially in chemically treated or porous hair)
-• Wet combing damage risk
-• Frizz / static generation potential
-• Post-wash hair breakage risk
-• Fiber structural preservation under repeated washing
-• Shine preservation vs surfactant stripping
-
-Core Rules:
-• Squeaky post-wash hair feel = cuticle disruption signal
-• Harsh surfactants + high pH = compounding fiber damage
-• Conditioning agents in shampoo provide partial but limited protection
-• Silicone masking cannot substitute for genuine fiber protection
-• Chemically treated hair requires higher fiber integrity consideration
-
-HAIR FIBER CEILINGS:
-• Tier 1 dominant at pH >6.5 → Max 2.0
-• Tier 1 + Tier 3/4 at moderate pH → Max 2.8
-• Tier 2 + Tier 3/4 at pH 4.5–6.5 → Max 3.7
-• Tier 3/4 at pH 4.5–5.5 → Eligible for 5.0
-
----
-
-SCALP HYDRATION SUPPORT
-
-Evaluates:
-• Residual humectant benefit on scalp skin
-• Post-wash scalp moisture retention
-• Reduction of scalp dehydration potential
-• Avoidance of excessive scalp lipid stripping
-
-Core Rules:
-• Hydration in shampoos is inherently limited (rinse-off contact)
-• Reduced scalp dehydration is considered hydration success
-• Shampoos cannot replicate scalp moisturizer / scalp serum function
-• Humectants (glycerin, panthenol) cannot fully offset Tier 1 scalp stripping
-
----
-
-RESIDUAL DRYNESS RISK
-
-Evaluates:
-• Post-wash scalp tightness and dryness
-• Hair fiber post-wash dryness (moisture stripped from cortex)
-• Scalp lipid depletion trajectory
-• Long-term scalp and hair dryness accumulation
-• pH-mediated scalp dehydration
-• NMF depletion risk on scalp
-• Sebum rebound potential
-
-Core Rules:
-• Repeated scalp tightness indicates structural barrier stress
-• Tier 1 surfactants increase long-term scalp NMF depletion risk
-• Chronic dryness progression must influence scoring
-• Over-cleansed scalp drives compensatory sebum rebound — creating a cycle of oiliness that worsens with frequent washing
-
----
-
-SCALP MICROBIOME COMPATIBILITY
-
-Evaluates:
-• Malassezia / commensal yeast balance preservation
-• pH-mediated scalp microbial stability
-• Surfactant disruption of scalp microbiome
-• Antimicrobial selectivity vs broad-spectrum disruption
-• Long-term scalp microbiome balance
-
-Core Rules:
-• Routine scalp microbiome disruption reduces score
-• Broad-spectrum antimicrobial systems without scalp condition indication receive penalties
-• Targeted antifungals (ZPT, ketoconazole, piroctone) receive contextual credit when microbiome imbalance is the target condition
-• High-pH systems promote Malassezia overgrowth risk (alkaline shift favors pathogenic organisms)
-
----
-
-CUMULATIVE IRRITATION RISK
-
-Evaluates:
-• Repeated surfactant scalp exposure
-• Fragrance accumulation on scalp skin
-• Essential oil scalp exposure
-• Preservative sensitization potential
-• Chronic scalp inflammatory burden
-• pH-mediated scalp irritation stress
-• Frequency-weighted scalp exposure
-
-Core Rules:
-• Daily / alternate-day exposure amplifies scalp irritation burden
-• Mild scalp irritants become clinically significant under repeated use
-• Long-term low-grade scalp inflammation is prioritized over isolated acute reactions
-• Scalp has higher absorption than hair fiber — cumulative scalp exposure is more concerning than equivalent body wash use
-
----
-
-FORMULATION HONESTY
-
-Evaluates:
-• Foam-dependent cleansing perception
-• Fragrance-driven "salon fresh" sensory positioning
-• Decorative botanical and active loading (biotin, caffeine, keratin, collagen)
-• Rinse-off active inflation (Category C actives marketed as primary benefits)
-• Silicone cosmetic masking of underlying surfactant harshness
-• Ingredient-list inflation
-• Aggressive "strengthening / repairing / growth-boosting" marketing
-• "Microbiome / scalp balancing" claims lacking surfactant or pH structural support
-
-Core Rules:
-• Consumer perception cannot replace structural formulation quality
-• Foam richness does not equal cleansing performance
-• Dermatological and trichological outcome overrides sensory satisfaction
-• Silicone-generated cosmetic feel is not fiber repair
-
----
-
-SPECIALIZED CALCULATION
-
-Specialized Performance Score =
-Average of all 7 specialized scores:
-
-1. Cleansing Efficiency
-2. Scalp Barrier Preservation
-3. Hair Fiber Integrity
-4. Scalp Hydration Support
-5. Residual Dryness Risk
-6. Scalp Microbiome Compatibility
-7. Cumulative Irritation Risk
-8. Formulation Honesty
-
-(8 parameters — average of all 8)
-
-Dominant Parameters:
-• Scalp Barrier Preservation → primary interpretive parameter
-• Cumulative Irritation Risk → primary penalty parameter
-• Hair Fiber Integrity → secondary interpretive parameter
-
-All penalties must reflect:
-• Realistic scalp contact time
-• Scalp vs hair fiber distinction
-• Usage frequency
-• Evidence-supported trichological and dermatological relevance
-
----
-
-════════════════════════════════════════════════════════════
-
+Score range: 1.0 → 5.0
+CLEANSING EFFICIENCY — sebum/dirt/product buildup removal · scalp cell debris · anti-dandruff efficacy. Balanced cleansing preferred over aggressive stripping. Foam volume does not determine quality. Excessive scalp stripping reduces score (drives sebum rebound). Ceiling rule: Tier 1 systems cannot achieve maximum Cleansing Efficiency — overstripping ≠ clean scalp.
+SCALP BARRIER PRESERVATION [DOMINANT] — scalp TEWL disruption · lipid preservation · barrier recovery speed · acid mantle recovery · long-term scalp lipid depletion · sebum rebound risk
+Barrier Ceilings: Tier 1 dominant → Max 2.0 · Tier 1 + Tier 3/4 → Max 2.8 · Tier 2 dominant → Max 3.2 · Tier 2 + Tier 3/4 → Max 3.7 · Tier 3/4 dominant → Max 4.3 · Tier 3/4 at pH 4.5–5.5 → Eligible for 5.0 · Soap systems (pH >9) → Hard ceiling 2.0
+HAIR FIBER INTEGRITY — cuticle lifting and swelling risk · protein loss potential · wet combing damage · frizz/static · post-wash breakage risk. Squeaky post-wash = cuticle disruption. Silicone masking cannot substitute for genuine fiber protection.
+SCALP HYDRATION SUPPORT — residual humectant benefit · post-wash moisture retention · scalp lipid depletion avoidance. Shampoos inherently limit hydration (rinse-off). Reduced dehydration = hydration success.
+RESIDUAL DRYNESS RISK — post-wash scalp tightness and dryness · fiber moisture stripping · NMF depletion · sebum rebound potential. Repeated scalp tightness = structural barrier stress. Over-cleansed scalp drives compensatory oiliness cycle.
+SCALP MICROBIOME COMPATIBILITY — commensal microbiome balance preservation · pH-mediated stability · surfactant disruption · antimicrobial selectivity vs broad-spectrum disruption. Targeted antifungals receive contextual credit when microbiome imbalance is the target.
+CUMULATIVE IRRITATION RISK — repeated surfactant scalp exposure · fragrance/essential oil accumulation · preservative sensitization · chronic scalp inflammatory burden · frequency-weighted exposure. Daily/alternate-day exposure amplifies burden. Scalp has higher absorption than body skin.
+FORMULATION HONESTY — foam-dependent cleansing perception · fragrance-driven "salon fresh" positioning · decorative active stacking · rinse-off active inflation · silicone cosmetic masking · "strengthening/repairing/growth-boosting" claims without structural support · "microbiome/scalp balancing" claims lacking pH or surfactant evidence
+SPECIALIZED PERFORMANCE SCORE = Average of all 8 parameters. Dominant: Scalp Barrier Preservation (primary) · Cumulative Irritation Risk (primary penalty) · Hair Fiber Integrity (secondary)
 LAYER 7 — FINAL RATING FORMULA
-
-Final Rating =
-(Core Score × 0.50) +
-(Specialized Performance Score × 0.50)
-
-Core and Specialized scores carry equal weight.
-
-This prevents:
-• Marketing-driven performance inflation
-• Safe-but-ineffective scoring inflation
-• Effective-but-scalp-damaging inflation
-• Silicone-masked cosmetic feel inflation
-
----
-
-HIGH SCORE ELIGIBILITY (>4.0)
-
-Requires:
-• Tier 3 or Tier 4 dominant surfactant system
-• pH ≤ 6.5 (preferably 4.5–5.5)
-• Scalp Barrier Preservation ≥ 3.5
-• Hair Fiber Integrity ≥ 3.5
-• Cumulative Irritation Risk ≥ 3.0
-• No rinse-off active inflation (no biotin/caffeine/keratin primary claims)
-• No dominant fragrance/essential oil loading
-• Formulation Honesty ≥ 3.5
-• No unjustified broad-spectrum antimicrobial dominance
-• No insoluble silicone masking of harsh surfactant system
-
-DISQUALIFIERS:
-• Primary SLS/ALS systems
-• Soap pH systems (>9.0)
-• Heavy fragrance loading
-• Decorative Category C active marketing as primary benefit
-• Cyclopentasiloxane (D5) dominant silicone system
-
----
-
-════════════════════════════════════════════════════════════
-
+Final Rating = (Core Score × 0.50) + (Specialized Performance Score × 0.50)
+Equal weighting prevents: marketing-driven performance inflation · safe-but-ineffective scoring inflation · effective-but-scalp-damaging inflation · silicone-masked cosmetic feel inflation.
+HIGH SCORE ELIGIBILITY (>4.0) REQUIRES: Tier 3 or Tier 4 dominant surfactant · pH ≤ 6.5 (preferably 4.5–5.5) · Scalp Barrier Preservation ≥ 3.5 · Hair Fiber Integrity ≥ 3.5 · Cumulative Irritation Risk ≥ 3.0 · No rinse-off active inflation · No dominant fragrance/essential oil loading · Formulation Honesty ≥ 3.5 · No unjustified broad-spectrum antimicrobials · No insoluble silicone masking of harsh surfactant
+DISQUALIFIERS: Primary SLS/ALS systems · Soap pH (>9.0) · Heavy fragrance loading · Category C active marketing as primary benefit · D5-dominant silicone system
 LAYER 7.5 — REAL-WORLD USAGE SIMULATION
+Simulate: daily or alternate-day shampooing frequency · scalp barrier stress accumulation · scalp recovery cycles · long-term lipid/NMF depletion · sebum rebound under over-washing · post-wash pH recovery · microbiome stability · repeated fragrance/preservative sensitization · hair fiber cumulative protein loss · silicone buildup progression.
+Core question: Can the shampoo remain tolerable and genuinely beneficial for scalp and hair under long-term real-world use?
+Therapeutic shampoos simulate at prescribed/intermittent frequency, not daily use. Clarifying shampoos simulate at occasional-use frequency, not daily use.
+ANTI-MARKETING FILTER Mandatory penalties for: foam-first cleansing claims · fragrance "freshness/salon" positioning · biotin/caffeine/keratin/collagen as primary performance claims · "hair growth/anti-hair loss" claims without substantiated actives · "deep cleansing" from harsh surfactant architecture · "microbiome/scalp balancing" without pH/surfactant structural support · "strengthening/repairing" relying on silicone masking · anti-dandruff claims without Category A active presence
+BIAS NEUTRALIZATION FILTER Neutralize: foam = cleansing illusion · fragrance = clean hair illusion · "natural soap = safe" bias (pH 9–10 is structurally harmful) · botanical inflation bias · silicone slip = healthy hair bias · luxury texture bias · antibacterial scalp health halo · biotin/caffeine rinse-off performance halo · squeaky-clean = healthy scalp illusion · salon positioning = efficacy bias
+ENGINE CALIBRATION TARGET: Modern dermatology + cosmetic chemistry + trichology + real-world tolerability + long-term scalp physiology. Strict but fair. Scientific but practical.
 
-Simulate:
-• Daily or alternate-day shampooing frequency
-• Scalp barrier stress accumulation
-• Scalp recovery cycles between washes
-• Long-term scalp lipid / NMF depletion
-• Sebum rebound cycle under over-washing
-• Post-wash scalp pH recovery time
-• Long-term scalp microbiome stability
-• Repeated fragrance / preservative scalp sensitization
-• Hair fiber cumulative protein loss
-• Silicone buildup progression (where applicable)
-
-Core Question:
-Can the shampoo remain tolerable and genuinely beneficial for scalp and hair under long-term real-world use?
-
-Core Rules:
-• Post-wash scalp tightness = scalp barrier stress signal
-• Post-wash hair squeakiness = cuticle damage signal
-• Foam perception ≠ cleansing quality
-• Silicone-generated cosmetic feel ≠ fiber health
-• Long-term repeated-use behavior overrides short-term sensory satisfaction
-• Sebum rebound from over-stripping = formulation failure signal
-
----
-
-ANTI-MARKETING FILTER
-
-Mandatory penalties apply for:
-
-• Foam-first cleansing claims
-• Fragrance-driven "freshness" or "salon" positioning
-• Biotin, caffeine, keratin, collagen as primary performance claims
-• Aggressive "hair growth / anti-hair loss" claims without substantiated actives
-• "Deep cleansing" claims based on harsh surfactant architecture
-• Rinse-off active inflation
-• Essential oil marketing without functional scalp evidence
-• "Microbiome / scalp balancing" claims lacking pH or surfactant structural support
-• "Strengthening / repairing" claims relying on silicone masking
-• Anti-dandruff claims without Category A active presence
-
----
-
-BIAS NEUTRALIZATION FILTER
-
-Neutralize:
-• Foam = cleansing illusion
-• Fragrance = clean hair illusion
-• "Natural soap = safe" bias (pH 9–10 is structurally harmful to scalp and fiber)
-• Botanical inflation bias
-• Silicone slip = healthy hair bias
-• Luxury texture bias
-• Antibacterial scalp health halo
-• Rinse-off active (biotin, caffeine) performance halo
-• Ingredient-count quality illusion
-• Squeaky-clean = healthy scalp illusion (squeaky = cuticle disruption)
-• Salon/professional positioning = efficacy bias
-
----
-
-════════════════════════════════════════════════════════════
+━━━━━━━━━━━━━━━━━━━━━━
 
 OUTPUT FORMAT
 
-⭐ FINAL RATING
-X.X / 5 — Rating Level
 
-⚖ STRUCTURAL QUALITY
+# ⭐ FINAL RATING
 
-Short simple summary covering:
-• Surfactant mildness
-• Scalp barrier friendliness
-• Hair fiber integrity
-• pH compatibility
-• Long-term scalp and hair behavior
-• Overall formulation balance
+## X.X / 5 — Rating Level
 
 ---
 
-🧴 SHAMPOO PROFILE
+# 🧴 SHAMPOO PROFILE
+
+## Functional Classification
 
 Short shampoo classification.
 
 Examples:
-• Gentle Daily Scalp Shampoo
-• Balanced Anti-Dandruff Shampoo
-• Harsh High-Foam Clarifying Shampoo
-• Moderate Syndet Shampoo
-• Silicone-Masked Damage Shampoo
-• Co-Wash / Low-Poo System
-• Targeted Scalp Treatment Shampoo
+- Gentle Daily Scalp Shampoo
+- Balanced Anti-Dandruff Shampoo
+- Harsh High-Foam Clarifying Shampoo
+- Moderate Syndet Shampoo
+- Silicone-Masked Damage Shampoo
+- Targeted Scalp Treatment Shampoo
 
 ---
 
-📊 CORE SCORES
-(GIVE SHORT STRUCTURAL REASON FOR EVERY SCORING RULE IN EASY LANGUAGE AND MENTION WHY IT SCORED)
+# ⚖ STRUCTURAL QUALITY
 
-Safety — ⭐X.X
-Effectiveness — ⭐X.X
-Allergy Risk — ⭐X.X
-Eco Impact — ⭐X.X
-Ingredient Quality — ⭐X.X
-Skin Compatibility — ⭐X.X
+## Overall Formulation Summary
+
+Short simple summary covering surfactant mildness, scalp barrier friendliness, hair fiber integrity, pH compatibility, long-term scalp and hair behavior, and overall formulation balance.
 
 ---
 
-🧪 SPECIALIZED PERFORMANCE
-(GIVE SHORT STRUCTURAL REASON FOR EVERY SCORING RULE IN EASY LANGUAGE AND MENTION WHY IT SCORED)
+# 📊 CORE SCORES
 
-Cleansing Efficiency — ⭐X.X
-Scalp Barrier Preservation — ⭐X.X
-Hair Fiber Integrity — ⭐X.X
-Scalp Hydration Support — ⭐X.X
-Residual Dryness Risk — ⭐X.X
-Scalp Microbiome Compatibility — ⭐X.X
-Cumulative Irritation Risk — ⭐X.X
-Formulation Honesty — ⭐X.X
+## Fundamental Performance Analysis
 
----
+### Safety — ⭐X.X
 
-👍 STRENGTHS
+Short structural reason in plain language explaining why it scored this way.
 
-• Main structural advantage
-• Main structural advantage
-• Main structural advantage
+### Effectiveness — ⭐X.X
 
-⚠ CONCERNS
+Short structural reason in plain language explaining why it scored this way.
 
-• Main structural weakness
-• Main structural weakness
-• Main structural weakness
+### Allergy Risk — ⭐X.X
 
----
+Short structural reason in plain language explaining why it scored this way.
 
-👤 HAIR TYPE COMPATIBILITY
+### Eco Impact — ⭐X.X
 
-Fine / Thin Hair — ⭐X.X
-Thick / Coarse Hair — ⭐X.X
-Curly / Coily Hair — ⭐X.X
-Color-Treated Hair — ⭐X.X
-Chemically Processed Hair — ⭐X.X
-Oily Scalp — ⭐X.X
-Dry / Sensitive Scalp — ⭐X.X
-Dandruff / Seborrheic Dermatitis Scalp — ⭐X.X
-Normal Hair / Scalp — ⭐X.X
+Short structural reason in plain language explaining why it scored this way.
+
+### Ingredient Quality — ⭐X.X
+
+Short structural reason in plain language explaining why it scored this way.
+
+### Skin Compatibility — ⭐X.X
+
+Short structural reason in plain language explaining why it scored this way.
 
 ---
 
-📅 LONG-TERM USABILITY
+# 🧪 SPECIALIZED PERFORMANCE
 
-Daily Use — ⭐X.X
-Alternate-Day Use — ⭐X.X
-2–3× Weekly Use — ⭐X.X
-Occasional / Clarifying Use — ⭐X.X
+## Scalp + Fiber Analysis
 
----
+### Cleansing Efficiency — ⭐X.X
 
-⏱ EXPECTED RESULTS
+Short structural reason in plain language explaining why it scored this way.
 
-Immediate:
-• Cleansing feel (scalp and hair)
-• Scalp tightness / comfort post-wash
-• Hair feel post-wash (smooth vs squeaky)
-• Lather and rinse behavior
+### Scalp Barrier Preservation — ⭐X.X
 
-Medium-Term:
-• Scalp barrier response
-• Scalp oiliness / dryness changes
-• Sebum rebound (if over-stripping)
-• Hair fiber condition change
-• Dandruff/scalp condition response (if applicable)
+Short structural reason in plain language explaining why it scored this way.
 
-Long-Term:
-• Scalp barrier stability
-• Chronic dryness or oiliness progression
-• Scalp microbiome stability
-• Hair fiber integrity under repeated washing
-• Overall scalp and hair outcome
+### Hair Fiber Integrity — ⭐X.X
 
----
+Short structural reason in plain language explaining why it scored this way.
 
-🔬 KEY STRUCTURAL INGREDIENTS
+### Scalp Hydration Support — ⭐X.X
 
-List only major ingredients affecting:
-• Cleansing system (surfactants)
-• Scalp barrier behavior
-• Hair fiber integrity
-• Irritation risk
-• Active performance (anti-dandruff, scalp exfoliation)
-• Silicone type and buildup potential
-• Long-term scalp and hair outcome
+Short structural reason in plain language explaining why it scored this way.
+
+### Residual Dryness Risk — ⭐X.X
+
+Short structural reason in plain language explaining why it scored this way.
+
+### Scalp Microbiome Compatibility — ⭐X.X
+
+Short structural reason in plain language explaining why it scored this way.
+
+### Cumulative Irritation Risk — ⭐X.X
+
+Short structural reason in plain language explaining why it scored this way.
+
+### Formulation Honesty — ⭐X.X
+
+Short structural reason in plain language explaining why it scored this way.
 
 ---
 
-🧠 WHY THIS RATING
+# 📌 STRUCTURAL INSIGHT
 
-3–5 concise user-friendly evidence-based reasons explaining the final score.
+## Strengths
+
+- Main structural advantage
+- Main structural advantage
+- Main structural advantage
+
+## Weaknesses
+
+- Main structural weakness
+- Main structural weakness
+- Main structural weakness
 
 ---
 
-════════════════════════════════════════════════════════════
+# 👤 HAIR TYPE COMPATIBILITY
 
-⚠ STRICT OUTPUT RULES
+## Population Compatibility
 
-NO MEDICAL CLAIMS ANYWHERE
-No marketing influence on scoring
-Mention harsh colorants, preservatives, fragrances in output
-No foam-volume bias
-Surfactant harshness tier MUST be classified before scoring
-pH compatibility MUST be assessed for both scalp AND hair fiber
-Rinse-off active efficacy MUST be classified before Effectiveness scoring
-Silicone type MUST be classified before Ingredient Quality scoring
-Repeated-use behavior > single-use feel
-Long-term outcome > immediate sensation
-Post-wash scalp tightness = structural failure signal, not "clean feeling"
-Post-wash hair squeakiness = cuticle damage signal, not "clean hair"
-Foam richness ≠ cleansing power
-Natural soap ≠ safe (pH 9–10 is structurally harmful to both scalp and fiber)
-Fragrance freshness ≠ scalp health benefit
-Silicone slip ≠ hair fiber health
-Sebum rebound = over-stripping signal
-Biotin / caffeine / keratin in rinse-off = decorative unless proven otherwise
-Anti-dandruff claims require Category A active confirmation
+### Fine / Thin Hair — ⭐X.X
 
-================================================
-END OF ALGORITHM — V1.0
-================================================
+Short compatibility explanation.
 
+### Thick / Coarse Hair — ⭐X.X
 
+Short compatibility explanation.
 
+### Curly / Coily Hair — ⭐X.X
 
+Short compatibility explanation.
+
+### Color-Treated Hair — ⭐X.X
+
+Short compatibility explanation.
+
+### Chemically Processed Hair — ⭐X.X
+
+Short compatibility explanation.
+
+### Oily Scalp — ⭐X.X
+
+Short compatibility explanation.
+
+### Dry / Sensitive Scalp — ⭐X.X
+
+Short compatibility explanation.
+
+### Dandruff / Seborrheic Dermatitis Scalp — ⭐X.X
+
+Short compatibility explanation.
+
+### Normal Hair / Scalp — ⭐X.X
+
+Short compatibility explanation.
+
+---
+
+# 📅 LONG-TERM USABILITY
+
+## Repeated-Use Sustainability
+
+### Daily Use — ⭐X.X
+
+Short explanation.
+
+### Alternate-Day Use — ⭐X.X
+
+Short explanation.
+
+### 2–3× Weekly Use — ⭐X.X
+
+Short explanation.
+
+### Occasional / Clarifying Use — ⭐X.X
+
+Short explanation.
+
+---
+
+# ⏱ EXPECTED REAL-WORLD RESULTS
+
+## Immediate
+
+- Cleansing feel for scalp and hair
+- Scalp tightness or comfort post-wash
+- Hair feel post-wash (smooth vs squeaky)
+- Lather and rinse behavior
+
+## Medium-Term
+
+- Scalp barrier response
+- Scalp oiliness and dryness changes
+- Sebum rebound (if over-stripping)
+- Hair fiber condition change
+- Dandruff and scalp condition response (if applicable)
+
+## Long-Term
+
+- Scalp barrier stability
+- Chronic dryness or oiliness progression
+- Scalp microbiome stability
+- Hair fiber integrity under repeated washing
+- Overall scalp and hair outcome
+
+---
+
+# 🔬 KEY STRUCTURAL INGREDIENTS
+
+## Functionally Dominant Ingredients
+
+List only major ingredients affecting cleansing system (surfactants), scalp barrier behavior, hair fiber integrity, irritation risk, active performance (anti-dandruff, scalp exfoliation), silicone type and buildup potential, and long-term scalp and hair outcome.
+
+- Ingredient — Role
+- Ingredient — Role
+
+---
+
+# 🌿 HERBAL EVIDENCE ASSESSMENT
+
+## Botanical Realism + Functional Contribution
+
+*(Include ONLY for herbal, natural, botanical, essential-oil-focused, or plant-based products.)*
+
+Short calm explanation covering:
+- realistic herbal contribution
+- whether herbs meaningfully support the formula
+- essential oil burden if relevant
+- repeated-use realism
+- whether standard functional ingredients still perform most core work
+
+---
+
+# 🔍 THE TRUTH ABOUT "NATURAL" CLAIMS
+
+## Marketing Reality + Consumer Transparency
+
+*(Include ONLY for herbal, natural, botanical, essential-oil-focused, or plant-based products.)*
+
+Short calm explanation covering:
+- whether branding matches formulation reality
+- whether natural positioning is overstated
+- whether performance mainly comes from herbals or standard functional ingredients
+- whether the product creates unrealistic safety assumptions
+
+---
+
+# 🧠 WHY THIS RATING
+
+## Structural Summary
+
+3–5 concise user-friendly evidence-based statements explaining the final rating.
+
+---
+
+# ⚠ STRICT OUTPUT RULES
+
+## Mandatory Evaluation Rules
+
+- NO MEDICAL CLAIMS
+- No marketing influence on scoring
+- Mention harsh colorants, preservatives, and fragrances in output
+- No foam-volume bias
+- Surfactant harshness tier must be classified before scoring
+- pH compatibility must be assessed for both scalp and hair fiber
+- Rinse-off active efficacy must be classified before Effectiveness scoring
+- Silicone type must be classified before Ingredient Quality scoring
+- Repeated-use behavior > single-use feel
+- Long-term outcome > immediate sensation
+- Post-wash scalp tightness = structural failure signal
+- Post-wash hair squeakiness = cuticle damage signal
+- Foam richness ≠ cleansing power
+- Natural soap ≠ safe (pH 9–10 is structurally harmful to both scalp and fiber)
+- Fragrance freshness ≠ scalp health benefit
+- Silicone slip ≠ hair fiber health
+- Sebum rebound = over-stripping signal
+- Biotin, caffeine, or keratin in rinse-off = decorative unless proven otherwise
+- Anti-dandruff claims require Category A active confirmation
+- Natural ≠ automatically safer
+- Synthetic ≠ automatically harmful
+- Avoid exaggerated negatives
+- Maintain calm scientific tone
+
+---
+
+Shampoo Evaluation Algorithm — Structured for surfactant mildness analysis, scalp barrier preservation realism, and long-term hair fiber integrity evaluation. All scoring is structural and evidence-informed.
+
+---
+---
 
 
 
@@ -1316,7 +461,7 @@ ${ingredients.join(", ")}
 
 `;
 
-    const response =
+   const response =
       await openai.chat.completions.create({
 
         model: "gpt-5.4-mini",
@@ -1329,14 +474,13 @@ ${ingredients.join(", ")}
             role: "system",
 
             content:
-              "You are a strict haircare formulation evaluation engine."
+              "You are a strict shampoo structural evaluation engine."
           },
 
           {
             role: "user",
 
-            content:
-              prompt
+            content: prompt
           }
 
         ]
@@ -1344,7 +488,7 @@ ${ingredients.join(", ")}
       });
 
     console.log(
-      "HAIRCARE TOKEN USAGE:",
+      "CLINICAL TOKEN USAGE:",
       response.usage
     );
 
