@@ -11,9 +11,6 @@ const Product = require("./models/Product");
 
 const app = express();
 
-const analyzeFood =
-require("./routes/food/analyzeFood");
-
 
 
 const analyzeFaceWashRoute =
@@ -40,6 +37,7 @@ const shampooRoutes =
 require("./routes/shampooRoutes");
 const conditionerRoutes =
 require("./routes/conditionerRoutes");
+
 
 
 const hairColorDyeRoutes =
@@ -91,28 +89,8 @@ const petDentalGelRoutes = require("./routes/petDentalGelRoutes");
 const tickFleaTreatmentRoutes = require("./routes/tickFleaTreatmentRoutes");
 const petDeodorantRoutes = require("./routes/petDeodorantRoutes");
 const petGroomingSprayRoutes = require("./routes/petGroomingSprayRoutes");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const foodRoutes = require("./routes/food/analyzeFood"); 
+const drinksRoutes = require("./routes/food/analyzeDrinks");
 
 
 app.use(cors());
@@ -167,8 +145,6 @@ app.use(
 "/api",
 analyzeFaceMask
 );
-app.use("/api",
-analyzeFood);
 app.use(
   "/api",
   shampooRoutes
@@ -246,6 +222,14 @@ app.use("/api", petDentalGelRoutes);
 app.use("/api", tickFleaTreatmentRoutes);
 app.use("/api", petDeodorantRoutes);
 app.use("/api", petGroomingSprayRoutes);
+app.use("/api", foodRoutes);
+
+app.use(
+  "/api",
+  drinksRoutes
+);
+
+
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -261,7 +245,7 @@ mongoose
 ========================= */
 
 const upload = multer({ dest: "uploads/" });
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 const DATA_FILE = path.join(__dirname, "data", "products.json");
 console.log("Using DATA_FILE:", DATA_FILE);
 
@@ -488,6 +472,7 @@ app.delete(
 
   }
 );
+
 function readProducts() {
   try {
     if (!fs.existsSync(DATA_FILE)) return [];
@@ -546,41 +531,24 @@ function cleanNumber(value) {
 
 /* ============================================================
    🔵 FRONTEND API → PRODUCTS FOR SITE
+   FIX #1: Correct pagination, return flat array
 ============================================================ */
 app.get("/products", async (req, res) => {
   try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 0; // 0 = all (for web app)
 
-    const page =
-      Number(req.query.page) || 1;
+    const data = await Product.find().lean();
 
-    const limit =
-      Number(req.query.limit) || 12;
-
-    const data =
-      await Product.find();
-
-    /* =========================
-       FILTER VISIBLE PRODUCTS
-    ========================= */
-
-   const visibleProducts = data;
-
-    /* =========================
-       GROUP VARIANTS
-    ========================= */
-
+    // Group variants
     const groupedMap = {};
 
-    visibleProducts.forEach((product) => {
-
+    data.forEach((product) => {
       const groupId =
-        cleanString(
-          product["Variant Group ID"]
-        ) ||
+        cleanString(product["Variant Group ID"]) ||
         cleanString(product.id);
 
       if (!groupedMap[groupId]) {
-
         groupedMap[groupId] = {
           groupId,
           displayProduct: product,
@@ -588,42 +556,26 @@ app.get("/products", async (req, res) => {
         };
       }
 
-      groupedMap[groupId]
-        .variants
-        .push(product);
+      groupedMap[groupId].variants.push(product);
     });
 
-    const groupedProducts =
-      Object.values(groupedMap);
+    const groupedProducts = Object.values(groupedMap);
 
-    /* =========================
-       PAGINATION
-    ========================= */
+    // Flatten all variants (frontend normalizes flat array)
+    const flattened = groupedProducts.flatMap((group) => group.variants);
 
-    const start =
-      (page - 1) * limit;
+    // Apply pagination only if limit is specified
+    if (limit > 0) {
+      const start = (page - 1) * limit;
+      const paginated = flattened.slice(start, start + limit);
+      return res.json(paginated);
+    }
 
-    const end =
-      start + limit;
-
-    const paginated =
-      groupedProducts.slice(start, end);
-
-    const flattened =
-  groupedProducts.flatMap(
-    (group) => group.variants
-  );
-
-res.json(flattened);
+    res.json(flattened);
 
   } catch (err) {
-
     console.error(err);
-
-    res.status(500).json({
-      message: "Server Error",
-    });
-
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -1043,13 +995,21 @@ app.get(
 
 /* ============================================================
    🟢 ADMIN API → ALL PRODUCTS
+   FIX #4: Read from MongoDB instead of JSON file
 ============================================================ */
-app.get("/admin/products", (req, res) => {
-  res.json(readProducts());
+app.get("/admin/products", async (req, res) => {
+  try {
+    const products = await Product.find().lean();
+    res.json(products);
+  } catch (err) {
+    console.error("MongoDB admin read failed, falling back to JSON:", err);
+    res.json(readProducts());
+  }
 });
 
 /* ============================================================
    🔁 UPLOAD EXCEL (STRICT + SAFE)
+   FIX #5: Only replace products of the uploaded category
 ============================================================ */
 app.post(
   "/upload",
@@ -1140,44 +1100,41 @@ app.post(
     });
 
     /* =========================
-   SAVE JSON
-========================= */
+       SAVE JSON
+    ========================= */
 
-const finalProducts =
-  Object.values(map);
+    const finalProducts = Object.values(map);
+    writeProducts(finalProducts);
 
-writeProducts(finalProducts);
+    /* =========================
+       FIX #5: SYNC ONLY THIS CATEGORY TO MONGO
+    ========================= */
 
-/* =========================
-   SYNC TO MONGO
-========================= */
+    await Product.deleteMany({ "Primary Category": category });
+    const categoryProducts = finalProducts.filter(
+      (p) => cleanString(p["Primary Category"]) === cleanString(category)
+    );
+    if (categoryProducts.length > 0) {
+      await Product.insertMany(categoryProducts);
+    }
 
-await Product.deleteMany({});
+    console.log("Mongo synced after upload (category only)");
 
-await Product.insertMany(
-  finalProducts
-);
+    /* =========================
+       CLEANUP
+    ========================= */
 
-console.log(
-  "Mongo synced after upload"
-);
+    fs.unlinkSync(req.file.path);
 
-/* =========================
-   CLEANUP
-========================= */
+    /* =========================
+       RESPONSE
+    ========================= */
 
-fs.unlinkSync(req.file.path);
-
-/* =========================
-   RESPONSE
-========================= */
-
-res.json({
-  success: true,
-  added: addedCount,
-  totalProducts:
-    finalProducts.length,
-});
+    res.json({
+      success: true,
+      added: addedCount,
+      totalProducts: finalProducts.length,
+    });
   } catch (err) {
     console.error("UPLOAD ERROR:", err);
     if (req.file && fs.existsSync(req.file.path)) {
@@ -1253,11 +1210,34 @@ app.post("/products/:id/update-home-section", async (req, res) => {
 
 /* ============================================================
    UPDATE SINGLE PRODUCT
+   FIX #2: Targeted Mongo update with whitelisted fields
 ============================================================ */
+
 app.post("/products/:id/update", async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
   const updates = req.body;
 
+  // Whitelist allowed update fields to prevent overwriting critical data
+  const ALLOWED_FIELDS = [
+    "isNewLaunch", "isBestForDailyUse", "isTrending", "isUnderrated",
+    "homeSections", "Status", "Price", "Brand", "Name of Product",
+    "Short Description", "Seller Website", "Subcategory Sample Rank",
+    "Rating",
+  ];
+
+  const safeUpdates = {};
+  ALLOWED_FIELDS.forEach((field) => {
+    if (updates[field] !== undefined) {
+      // Coerce boolean fields to actual booleans
+      if (["isNewLaunch", "isBestForDailyUse", "isTrending", "isUnderrated"].includes(field)) {
+        safeUpdates[field] = Boolean(updates[field]);
+      } else {
+        safeUpdates[field] = updates[field];
+      }
+    }
+  });
+
+  // Update JSON file
   const products = readProducts();
   const index = products.findIndex(
     (p) => cleanString(p.id) === cleanString(id)
@@ -1267,61 +1247,21 @@ app.post("/products/:id/update", async (req, res) => {
     return res.status(404).json({ message: "Product not found" });
   }
 
-  products[index] = {
-    ...products[index],
-    ...updates,
-  };
-
+  products[index] = { ...products[index], ...safeUpdates };
   writeProducts(products);
-  await syncProductsToMongo();
-  res.json({ success: true });
-});
 
-/* ============================================================
-   BULK UPDATE
-============================================================ */
-app.post("/products/bulk-update", async (req, res) => {
-    const updatedProducts = req.body;
-
-  if (!Array.isArray(updatedProducts)) {
-    return res.status(400).json({ message: "Invalid payload" });
+  // FIX #2: Use targeted findOneAndUpdate instead of deleteMany + insertMany
+  try {
+    await Product.findOneAndUpdate(
+      { id: cleanString(id) },
+      { $set: safeUpdates },
+      { upsert: false }
+    );
+  } catch (mongoErr) {
+    console.error("Mongo update failed, falling back to full sync:", mongoErr);
+    await syncProductsToMongo();
   }
 
-  const existing = readProducts();
-  const map = {};
-
-  existing.forEach((p) => {
-    map[cleanString(p.id)] = p;
-  });
-
-  updatedProducts.forEach((incoming) => {
-    const id = cleanString(incoming.id);
-    if (!map[id]) return;
-
-    map[id] = {
-      ...map[id],
-      ...incoming,
-    };
-  });
-
-  writeProducts(Object.values(map));
-  await syncProductsToMongo();
-  res.json({ success: true });
-});
-
-/* ============================================================
-   DELETE SINGLE
-============================================================ */
-app.delete("/products/:id", async (req, res) => {
-  const { id } = req.params;
-
-  const products = readProducts();
-  const remaining = products.filter(
-    (p) => cleanString(p.id) !== cleanString(id)
-  );
-
-  writeProducts(remaining);
-  await syncProductsToMongo();
   res.json({ success: true });
 });
 
@@ -1348,6 +1288,50 @@ app.post("/products/bulk-delete", async (req, res) => {
     deletedCount: products.length - remaining.length,
   });
 });
+
+/* ============================================================
+   FIX #3: BULK DISCOVER UPDATE
+============================================================ */
+app.post("/products/bulk-update-discover", async (req, res) => {
+  try {
+    const { updates } = req.body;
+
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return res.status(400).json({ message: "updates array required" });
+    }
+
+    // Update JSON file in one pass
+    const products = readProducts();
+    const productMap = {};
+    products.forEach((p) => { productMap[cleanString(p.id)] = p; });
+
+    updates.forEach(({ id, isNewLaunch, isBestForDailyUse, isTrending, isUnderrated }) => {
+      const cleanId = cleanString(id);
+      if (productMap[cleanId]) {
+        productMap[cleanId] = {
+          ...productMap[cleanId],
+          isNewLaunch: Boolean(isNewLaunch),
+          isBestForDailyUse: Boolean(isBestForDailyUse),
+          isTrending: Boolean(isTrending),
+          isUnderrated: Boolean(isUnderrated),
+        };
+      }
+    });
+
+    const finalProducts = Object.values(productMap);
+    writeProducts(finalProducts);
+
+    // ONE full sync after all updates (not N syncs)
+    await syncProductsToMongo();
+
+    res.json({ success: true, updated: updates.length });
+
+  } catch (err) {
+    console.error("Bulk discover update failed:", err);
+    res.status(500).json({ message: "Bulk update failed", error: err.message });
+  }
+});
+
 /* =========================
    START SERVER
 ========================= */
@@ -1394,7 +1378,5 @@ app.get("/debug-first-product", async (req, res) => {
 
 });
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `✅ Backend running at http://localhost:${PORT}`
-  );
+  console.log(`✅ Backend running on port ${PORT}`);
 });

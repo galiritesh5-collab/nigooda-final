@@ -21,11 +21,9 @@ const slugify = (text: string) =>
 ----------------------------------*/
 const CategoryPage = ({ products }: { products: any[] }) => {
   const { categoryId } = useParams();
-  const [showSubCategories, setShowSubCategories] = useState(false);
+  const [showSubCategories, setShowSubCategories] = useState(true); // default open
 
-  const category = CATEGORIES.find(
-    (c) => c.id === categoryId
-  );
+  const category = CATEGORIES.find((c) => c.id === categoryId);
 
   if (!category) {
     return (
@@ -67,6 +65,19 @@ const CategoryPage = ({ products }: { products: any[] }) => {
 
   const subCategories = Object.keys(productsBySubCategory);
 
+  if (categoryProducts.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-16 text-center">
+        <h1 className="text-2xl font-bold uppercase tracking-wide mb-4">
+          {category.label}
+        </h1>
+        <p className="text-slate-500">
+          No products found in this category yet.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
       {/* CATEGORY HEADER */}
@@ -85,7 +96,7 @@ const CategoryPage = ({ products }: { products: any[] }) => {
       </div>
 
       {/* STICKY SUBCATEGORY BAR */}
-      {showSubCategories && (
+      {showSubCategories && subCategories.length > 0 && (
         <div className="sticky top-14 z-30 bg-white shadow-md rounded-xl px-3 py-3">
           <div className="flex gap-3 overflow-x-auto">
             {subCategories.map((sub) => (
@@ -115,17 +126,24 @@ const CategoryPage = ({ products }: { products: any[] }) => {
       {/* CATEGORY PREVIEW SECTIONS */}
       {Object.entries(productsBySubCategory).map(
         ([subCategory, items]) => {
-          const previewProducts = items
-            .filter(
-              (p) =>
-                typeof p["Subcategory Sample Rank"] === "number"
-            )
-            .sort(
-              (a, b) =>
-                a["Subcategory Sample Rank"] -
-                b["Subcategory Sample Rank"]
-            )
-            .slice(0, 8);
+          // FIX: use Subcategory Sample Rank if available, otherwise show first 8
+          const rankedItems = items.filter(
+            (p) => typeof p["Subcategory Sample Rank"] === "number"
+          );
+
+          const previewItems =
+            rankedItems.length > 0
+              ? rankedItems
+                  .sort(
+                    (a, b) =>
+                      a["Subcategory Sample Rank"] -
+                      b["Subcategory Sample Rank"]
+                  )
+                  .slice(0, 8)
+              : items.slice(0, 8); // fallback: first 8 if no rank
+
+          // Wrap each product in array for ProductSection (grouped format)
+          const groupedPreview: any[][] = previewItems.map((p) => [p]);
 
           return (
             <div key={subCategory} className="space-y-4">
@@ -149,13 +167,11 @@ const CategoryPage = ({ products }: { products: any[] }) => {
                 </Link>
               </div>
 
-              {previewProducts.length > 0 && (
-                <ProductSection
-                  title=""
-                  products={previewProducts}
-                  compact
-                />
-              )}
+              <ProductSection
+                title=""
+                products={groupedPreview}
+                compact
+              />
             </div>
           );
         }

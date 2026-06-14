@@ -607,27 +607,6 @@ Short compatibility explanation.
 
 ---
 
-# 🗺 BODY ZONE COMPATIBILITY
-
-## Zone-by-Zone Assessment
-
-### Lower Legs / Shins (Highest Xerosis Risk) — ⭐X.X
-
-Short zone explanation.
-
-### Trunk / Back / Chest — ⭐X.X
-
-Short zone explanation.
-
-### Axilla / Groin / Flexural Zones — ⭐X.X
-
-Short zone explanation.
-
-### Arms / General Body — ⭐X.X
-
-Short zone explanation.
-
----
 
 # 📅 LONG-TERM USABILITY
 

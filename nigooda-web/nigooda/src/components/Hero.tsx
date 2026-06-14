@@ -57,9 +57,7 @@ const Hero = () => {
             buttonText="Analyze Product"
             color="emerald"
             onClick={() =>
-              navigate("/food-drink")
-            }
-          />
+             navigate("/analyze/food/foods")}/>
 
           {/* PRODUCT */}
           <IntelligenceCard

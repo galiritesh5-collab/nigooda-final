@@ -1142,7 +1142,21 @@ ${ingredients.join(", ")}
       "CLINICAL TOKEN USAGE:",
       response.usage
     );
+const finalOutput =
+  response.choices[0]
+    .message.content;
 
+console.log(
+  "\n========== RAW ORAL CARE OUTPUT ==========\n"
+);
+
+console.log(finalOutput);
+
+console.log(
+  "\n========== END OUTPUT ==========\n"
+);
+
+return finalOutput;
     return response.choices[0]
       .message.content;
 

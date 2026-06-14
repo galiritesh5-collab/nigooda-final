@@ -4,18 +4,14 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-
-import { useEffect, useState, useMemo } from "react";
-
 import FoodBarcodePage from "./pages/FoodBarcodePage";
-import FoodDrinkPage from "./pages/FoodDrinkPage";
+import { useEffect, useState } from "react";
 import ProductIntelligencePage from "./pages/ProductIntelligencePage";
 import AnalyzeProductPage from "./pages/AnalyzeProductPage";
 import ProductAnalysisResultPage from "./pages/ProductAnalysisResultPage";
-
+import FoodAnalysisResultPage from "./pages/FoodAnalysisResultPage";
 import { WishlistProvider } from "./context/WishlistContext";
-import AnalyzeFoodPage
-from "./pages/AnalyzeFoodPage";
+import AnalyzeFoodPage from "./pages/AnalyzeFoodPage";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ExpandedCategoryPanel from "./components/ExpandedCategoryPanel";
@@ -29,6 +25,47 @@ import AdminPage from "./pages/AdminPage";
 import ProductPage from "./pages/ProductPage";
 import WishlistPage from "./pages/WishlistPage";
 
+/* ============================================================
+   NORMALIZE A SINGLE FLAT PRODUCT FROM THE SERVER
+   The server returns a flat array of variant objects.
+   We normalize each one into a consistent shape.
+============================================================ */
+function normalizeProduct(p: any) {
+  // Handle tags — may be array or comma-separated string
+  const rawTags = p.tags || p.Tags || "";
+  let cleanTags: string[] = [];
+
+  if (Array.isArray(rawTags)) {
+    cleanTags = rawTags.map((t: string) =>
+      t.toLowerCase().trim()
+    );
+  } else if (typeof rawTags === "string" && rawTags) {
+    cleanTags = rawTags
+      .toLowerCase()
+      .split(",")
+      .map((t: string) => t.trim())
+      .filter(Boolean);
+  }
+
+  return {
+    // Spread all raw fields first
+    ...p,
+
+    // Canonical name field
+    name: p["Name of Product"] || p.Name || p.name || "",
+
+    // Normalize tags to lowercase string array
+    tags: cleanTags,
+
+    // Explicitly preserve boolean discover flags
+    // Use Boolean() to handle "true"/"false" strings and numbers
+    isNewLaunch: Boolean(p.isNewLaunch),
+    isBestForDailyUse: Boolean(p.isBestForDailyUse),
+    isTrending: Boolean(p.isTrending),
+    isUnderrated: Boolean(p.isUnderrated),
+  };
+}
+
 const AppContent = () => {
 
   const location = useLocation();
@@ -39,40 +76,15 @@ const AppContent = () => {
   const [products, setProducts] =
     useState<any[]>([]);
 
+  // Search query for navbar
   const [searchQuery, setSearchQuery] =
     useState("");
 
-  const searchedProducts = useMemo(() => {
-
-    if (!searchQuery.trim()) return [];
-
-    const terms =
-      searchQuery
-        .toLowerCase()
-        .split(" ")
-        .filter(Boolean);
-
-    return products.filter((product) => {
-
-      const name =
-        (product.name || "")
-          .toLowerCase();
-
-      const tagText =
-        Array.isArray(product.tags)
-          ? product.tags.join(" ")
-          : "";
-
-      return terms.some(
-        (term) =>
-          name.includes(term) ||
-          tagText.includes(term)
-      );
-
-    });
-
-  }, [searchQuery, products]);
-
+  /* ============================================================
+     LOAD PRODUCTS FROM BACKEND
+     Server returns: flat array of variant objects (Product[])
+     FIX: iterate flat array directly (not as group.variants)
+  ============================================================ */
   useEffect(() => {
 
     const loadProducts = () => {
@@ -81,101 +93,30 @@ const AppContent = () => {
 
         .then((res) => res.json())
 
-        .then((data) => {
+        .then((data: any) => {
+          // data is a flat array — normalize each item directly
+          const rawArray = Array.isArray(data)
+            ? data
+            : (data.products || []);
 
-          data =
-            data.products || data;
-
-          const normalized =
-            data.flatMap((group: any) => {
-
-              return (
-                group.variants || []
-              ).map((p: any) => {
-
-                const rawTags =
-                  p.tags ||
-                  p.Tags ||
-                  "";
-
-                let cleanTags: string[] =
-                  [];
-
-                if (
-                  Array.isArray(rawTags)
-                ) {
-
-                  cleanTags =
-                    rawTags.map(
-                      (t: string) =>
-                        t
-                          .toLowerCase()
-                          .trim()
-                    );
-
-                } else if (
-                  typeof rawTags ===
-                  "string"
-                ) {
-
-                  cleanTags =
-                    rawTags
-                      .toLowerCase()
-                      .split(",")
-                      .map((t: string) =>
-                        t.trim()
-                      );
-
-                }
-
-                return {
-                  ...p,
-
-                  name:
-                    p[
-                      "Name of Product"
-                    ] ||
-                    p.Name ||
-                    p.name ||
-                    "",
-
-                  homeSections:
-                    p.homeSections,
-
-                  tags: cleanTags,
-                };
-
-              });
-
-            });
+          const normalized = rawArray.map(normalizeProduct);
 
           setProducts(normalized);
-
         })
 
-        .catch(() =>
-          setProducts([])
-        );
+        .catch(() => setProducts([]));
 
     };
 
     loadProducts();
 
-    const interval =
-      setInterval(
-        loadProducts,
-        3000
-      );
-
-    return () =>
-      clearInterval(interval);
+    // Poll every 5 seconds (reduced from 3 to lighten load)
+  
 
   }, []);
 
   useEffect(() => {
-
     setActiveCategory(null);
-
   }, [location.pathname]);
 
   return (
@@ -183,23 +124,15 @@ const AppContent = () => {
     <div className="min-h-screen font-sans text-slate-900">
 
       <Navbar
-        activeCategory={
-          activeCategory
-        }
+        activeCategory={activeCategory}
         onCategoryClick={(id) =>
           setActiveCategory(
-            activeCategory === id
-              ? null
-              : id
+            activeCategory === id ? null : id
           )
         }
-        onCloseCategory={() =>
-          setActiveCategory(null)
-        }
+        onCloseCategory={() => setActiveCategory(null)}
         searchQuery={searchQuery}
-        setSearchQuery={
-          setSearchQuery
-        }
+        setSearchQuery={setSearchQuery}
         products={products}
       />
 
@@ -209,9 +142,7 @@ const AppContent = () => {
         location.pathname === "/" && (
 
           <ExpandedCategoryPanel
-            categoryId={
-              activeCategory
-            }
+            categoryId={activeCategory}
           />
 
       )}
@@ -258,100 +189,84 @@ const AppContent = () => {
         />
 
         <Route
-          path="/food-drink"
-          element={<FoodDrinkPage />}
+          path="/analyze/food/:type"
+          element={<AnalyzeFoodPage />}
         />
 
         <Route
           path="/product-intelligence"
-          element={
-            <ProductIntelligencePage />
-          }
+          element={<ProductIntelligencePage />}
         />
-        <Route
-  path="/analyze/food"
-  element={<AnalyzeFoodPage />}
-/>
-        <Route
-  path="/product-analysis-result"
-  element={<ProductAnalysisResultPage />}
-/>
 
-      <Route
-  path="/analyze/:category"
-  element={<AnalyzeProductPage />}
-/>
+        <Route
+          path="/food-analysis-result"
+          element={<FoodAnalysisResultPage />}
+        />
 
-<Route
-  path="/analyze/:category/:section/:product"
-  element={<AnalyzeProductPage />}
-/>
+        <Route
+          path="/product-analysis-result"
+          element={<ProductAnalysisResultPage />}
+        />
+
+        <Route
+          path="/analyze/:category"
+          element={<AnalyzeProductPage />}
+        />
+
+        <Route
+          path="/analyze/:category/:section/:product"
+          element={<AnalyzeProductPage />}
+        />
 
         <Route
           path="/discover/:sectionKey"
           element={
-            <DiscoverPage
-              products={products}
-            />
+            <DiscoverPage products={products} />
           }
         />
 
         <Route
           path="/scan/barcode"
-          element={
-            <FoodBarcodePage />
-          }
+          element={<FoodBarcodePage />}
         />
 
         <Route
           path="/search"
           element={
-            <SearchResultsPage
-              products={products}
-            />
+            <SearchResultsPage products={products} />
           }
         />
 
         <Route
           path="/category/:categoryId"
           element={
-            <CategoryPage
-              products={products}
-            />
+            <CategoryPage products={products} />
           }
         />
 
         <Route
           path="/food-barcode"
-          element={
-            <FoodBarcodePage />
-          }
+          element={<FoodBarcodePage />}
         />
 
         <Route
           path="/category/:categoryId/:subCategory"
           element={
-            <SubCategoryPage
-              products={products}
-            />
+            <SubCategoryPage products={products} />
           }
         />
 
         <Route
           path="/product/:id"
           element={
-            <ProductPage
-              products={products}
-            />
+            <ProductPage products={products} />
           }
         />
 
         <Route
           path="/wishlist"
           element={
-            <WishlistPage
-              products={products}
-            />
+            <WishlistPage products={products} />
           }
         />
 

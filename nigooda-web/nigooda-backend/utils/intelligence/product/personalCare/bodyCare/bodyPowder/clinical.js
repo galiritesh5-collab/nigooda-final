@@ -399,13 +399,6 @@ OUTPUT FORMAT
 
 ## X.X / 5 — Rating Level
 
----
-
-# ⚠ APPLICATION ZONE FLAG
-
-**Zone Classification:** General Body / Intertriginous / Intimate / Infant / Multi-Zone
-
-Critical zone flags noted here when applicable.
 
 ---
 

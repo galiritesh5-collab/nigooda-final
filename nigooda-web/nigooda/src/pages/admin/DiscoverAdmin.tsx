@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 type Product = {
   id: string | number;
   name?: string;
+  "Name of Product"?: string;
   Name?: string;
   Brand?: string;
   Status?: string;
@@ -45,15 +46,21 @@ const DiscoverAdmin = ({
     DISCOVER_SECTIONS[0].key
   );
   const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
 
   /* =========================
      BUILD DISCOVER MAP FROM BOOLEAN FLAGS
+     Runs whenever products are reloaded
   ========================= */
   useEffect(() => {
+    // Only rebuild if not dirty (user hasn't made unsaved changes)
+    if (isDirty) return;
+
     const map: DiscoverMap = {
-      "underrated": [],
+      underrated: [],
       "new-launch": [],
-      "trending": [],
+      trending: [],
       "daily-use": [],
     };
 
@@ -67,7 +74,7 @@ const DiscoverAdmin = ({
     });
 
     setDiscoverMap(map);
-  }, [products]);
+  }, [products, isDirty]);
 
   const productById = useMemo(() => {
     const map = new Map<string, Product>();
@@ -76,32 +83,47 @@ const DiscoverAdmin = ({
   }, [products]);
 
   /* =========================
-     SAVE
+     SAVE — FIX: uses bulk endpoint (one request, no race condition)
   ========================= */
   const handleSave = async () => {
-    console.log("Saving discover changes...");
-    console.log("Discover Map:", discoverMap);
+    setIsSaving(true);
+    setSaveStatus("idle");
 
-    for (const product of products) {
-      const id = String(product.id);
-
-      const updates = {
-        isNewLaunch: discoverMap["new-launch"]?.includes(id) || false,
-        isBestForDailyUse: discoverMap["daily-use"]?.includes(id) || false,
-        isTrending: discoverMap["trending"]?.includes(id) || false,
-        isUnderrated: discoverMap["underrated"]?.includes(id) || false,
-      };
-
-      await fetch(`http://localhost:5000/products/${id}/update`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
+    try {
+      // Build a list of updates for ALL products (only changed flags)
+      const updates = products.map((product) => {
+        const id = String(product.id);
+        return {
+          id,
+          isNewLaunch: discoverMap["new-launch"]?.includes(id) || false,
+          isBestForDailyUse: discoverMap["daily-use"]?.includes(id) || false,
+          isTrending: discoverMap["trending"]?.includes(id) || false,
+          isUnderrated: discoverMap["underrated"]?.includes(id) || false,
+        };
       });
-    }
 
-    setIsDirty(false);
-    refresh?.();
-    alert("Saved successfully");
+      // FIX: Send ONE bulk request instead of N individual requests
+      const res = await fetch(
+        "http://localhost:5000/products/bulk-update-discover",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ updates }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Save failed");
+
+      setIsDirty(false);
+      setSaveStatus("success");
+      refresh?.();
+
+    } catch (err) {
+      console.error("Save failed:", err);
+      setSaveStatus("error");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   /* =========================
@@ -111,6 +133,7 @@ const DiscoverAdmin = ({
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Discover Sections</h2>
 
+      {/* SECTION TABS */}
       <div className="flex gap-3">
         {DISCOVER_SECTIONS.map((s) => (
           <button
@@ -123,6 +146,9 @@ const DiscoverAdmin = ({
             }`}
           >
             {s.label}
+            <span className="ml-2 text-xs opacity-70">
+              ({(discoverMap[s.key] || []).length})
+            </span>
           </button>
         ))}
       </div>
@@ -149,14 +175,12 @@ const DiscoverAdmin = ({
               );
 
               if (!exists) {
-                alert("Product ID not found");
+                alert(`Product ID "${id}" not found in loaded products`);
                 return;
               }
 
-              if (
-                discoverMap[activeSection]?.includes(id)
-              ) {
-                alert("Already added");
+              if (discoverMap[activeSection]?.includes(id)) {
+                alert("Already added to this section");
                 return;
               }
 
@@ -175,13 +199,22 @@ const DiscoverAdmin = ({
         />
       </div>
 
-      {/* LIST */}
+      {/* PRODUCT LIST */}
       <div className="border rounded bg-white">
+        {(discoverMap[activeSection] || []).length === 0 && (
+          <p className="p-4 text-sm text-slate-500">
+            No products added to this section yet.
+          </p>
+        )}
+
         {(discoverMap[activeSection] || []).map(
           (id, index) => {
-            const product = products.find(
-              (p) => String(p.id) === id
-            );
+            const product = productById.get(id);
+            const name =
+              product?.["Name of Product"] ||
+              product?.name ||
+              product?.Name ||
+              `Unknown (${id})`;
 
             return (
               <div
@@ -189,77 +222,67 @@ const DiscoverAdmin = ({
                 className="flex justify-between items-center px-4 py-3 border-t"
               >
                 <div>
-                  <p className="text-sm font-medium">
-                    {product?.["Name of Product"] ||
-                      product?.name}
-                  </p>
+                  <p className="text-sm font-medium">{name}</p>
                   <p className="text-xs text-slate-500">
                     ID: {id} • {product?.Brand}
                   </p>
                 </div>
 
                 <div className="flex gap-3 items-center">
+                  {/* Move Up */}
                   <button
+                    disabled={index === 0}
                     onClick={() => {
                       if (index === 0) return;
-                      const updated = [
-                        ...discoverMap[activeSection],
-                      ];
-                      [
-                        updated[index - 1],
-                        updated[index],
-                      ] = [
+                      const updated = [...discoverMap[activeSection]];
+                      [updated[index - 1], updated[index]] = [
                         updated[index],
                         updated[index - 1],
                       ];
-
                       setIsDirty(true);
                       setDiscoverMap((prev) => ({
                         ...prev,
                         [activeSection]: updated,
                       }));
                     }}
+                    className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
                   >
                     ↑
                   </button>
 
+                  {/* Move Down */}
                   <button
+                    disabled={index === (discoverMap[activeSection]?.length ?? 0) - 1}
                     onClick={() => {
-                      const updated = [
-                        ...discoverMap[activeSection],
-                      ];
+                      const updated = [...discoverMap[activeSection]];
                       if (index === updated.length - 1) return;
-
-                      [
-                        updated[index + 1],
-                        updated[index],
-                      ] = [
+                      [updated[index + 1], updated[index]] = [
                         updated[index],
                         updated[index + 1],
                       ];
-
                       setIsDirty(true);
                       setDiscoverMap((prev) => ({
                         ...prev,
                         [activeSection]: updated,
                       }));
                     }}
+                    className="text-slate-400 hover:text-slate-700 disabled:opacity-30"
                   >
                     ↓
                   </button>
 
+                  {/* Remove */}
                   <button
                     onClick={() => {
                       setIsDirty(true);
                       setDiscoverMap((prev) => ({
                         ...prev,
-                        [activeSection]:
-                          prev[activeSection].filter(
-                            (x) => x !== id
-                          ),
+                        [activeSection]: prev[activeSection].filter(
+                          (x) => x !== id
+                        ),
                       }));
                     }}
-                    className="text-red-600 text-sm"
+                    className="text-red-600 text-sm hover:underline"
                   >
                     Remove
                   </button>
@@ -268,25 +291,27 @@ const DiscoverAdmin = ({
             );
           }
         )}
-
-        {(discoverMap[activeSection] || []).length === 0 && (
-          <p className="p-4 text-sm text-slate-500">
-            No products added yet.
-          </p>
-        )}
       </div>
 
-      <div className="flex justify-end">
+      {/* SAVE BUTTON */}
+      <div className="flex justify-end items-center gap-4">
+        {saveStatus === "success" && (
+          <span className="text-green-600 text-sm">✅ Saved successfully</span>
+        )}
+        {saveStatus === "error" && (
+          <span className="text-red-600 text-sm">❌ Save failed. Try again.</span>
+        )}
+
         <button
-          disabled={!isDirty}
+          disabled={!isDirty || isSaving}
           onClick={handleSave}
-          className={`px-6 py-2 rounded ${
-            isDirty
-              ? "bg-indigo-600 text-white"
-              : "bg-slate-300 text-slate-600"
+          className={`px-6 py-2 rounded font-medium ${
+            isDirty && !isSaving
+              ? "bg-indigo-600 text-white hover:bg-indigo-700"
+              : "bg-slate-300 text-slate-600 cursor-not-allowed"
           }`}
         >
-          Save Discover Changes
+          {isSaving ? "Saving…" : "Save Discover Changes"}
         </button>
       </div>
     </div>

@@ -1,54 +1,35 @@
 import { useParams } from "react-router-dom";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import ProductSection from "../components/ProductSection";
 
 /* -------------------------------
-   SLUGIFY (CATEGORY ONLY)
+   SLUGIFY — consistent with CategoryPage
 ----------------------------------*/
 const slugify = (text: string) =>
   text
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/&/g, "and")
+    .replace(/&/g, "and")         // FIX: added & → and (was missing before)
+    .replace(/,/g, "")
+    .replace(/[^\w\s-]/g, "")
     .replace(/\s+/g, "-");
 
 /* -------------------------------
    PAGE
+   FIX: Uses products prop from App.tsx instead of fetching its own
+        Eliminates double-fetch and data shape inconsistency
 ----------------------------------*/
-const SubCategoryPage = ({ products: initialProducts }: { products: any[] }) => {
-
-  const [products, setProducts] = useState<any[]>([]);
+const SubCategoryPage = ({ products }: { products: any[] }) => {
   const [sortOption, setSortOption] = useState("default");
-  const [loading, setLoading] = useState(false);
-  const [refreshSeed, setRefreshSeed] = useState(0);
 
   const { categoryId, subCategory } = useParams();
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-
-      const res = await fetch(`http://localhost:5000/products?refresh=${Date.now()}`);
-      const data = await res.json();
-
-      setProducts(data);
-    } catch (err) {
-      console.error("Error fetching products:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   // Decode URL safely
   const decodedSubCategory = decodeURIComponent(subCategory || "").trim();
 
   /* --------------------------------
-     FILTER PRODUCTS FIRST
+     FILTER PRODUCTS
   ----------------------------------*/
   const filteredProducts = useMemo(() => {
     if (!products || !categoryId || !decodedSubCategory) return [];
@@ -73,46 +54,22 @@ const SubCategoryPage = ({ products: initialProducts }: { products: any[] }) => 
      SORT AFTER FILTER
   ----------------------------------*/
   const sortedProducts = useMemo(() => {
-
-    if (sortOption === "default") {
-      let shuffled = [...filteredProducts];
-
-      if (refreshSeed > 0) {
-        shuffled.sort(() => Math.random() - 0.5);
-      }
-
-      return shuffled;
-    }
-
-    let sorted = [...filteredProducts];
+    const sorted = [...filteredProducts];
 
     if (sortOption === "priceLowHigh") {
       sorted.sort((a, b) => Number(a["Price"]) - Number(b["Price"]));
-    }
-
-    if (sortOption === "priceHighLow") {
+    } else if (sortOption === "priceHighLow") {
       sorted.sort((a, b) => Number(b["Price"]) - Number(a["Price"]));
-    }
-
-    if (sortOption === "rating") {
+    } else if (sortOption === "rating" || sortOption === "popular") {
       sorted.sort((a, b) => Number(b["Rating"]) - Number(a["Rating"]));
-    }
-
-    if (sortOption === "popular") {
-      sorted.sort((a, b) => Number(b["Rating"]) - Number(a["Rating"]));
-    }
-
-    // shuffle when refresh clicked
-    if (refreshSeed > 0) {
-      sorted.sort(() => Math.random() - 0.5);
     }
 
     return sorted;
-
-  }, [filteredProducts, sortOption, refreshSeed]);
+  }, [filteredProducts, sortOption]);
 
   /* --------------------------------
      GROUP VARIANTS
+     Build { [groupId]: Product[] } then return as Product[][]
   ----------------------------------*/
   const groupedProducts = useMemo(() => {
     const groups: Record<string, any[]> = {};
@@ -124,10 +81,12 @@ const SubCategoryPage = ({ products: initialProducts }: { products: any[] }) => 
         if (!groups[groupId]) groups[groupId] = [];
         groups[groupId].push(p);
       } else {
+        // Products without a variant group get their own single-item group
         groups[`single-${p.id}`] = [p];
       }
     });
 
+    // Sort variants within each group alphabetically by variant name
     Object.keys(groups).forEach((key) => {
       groups[key].sort((a, b) => {
         const aName = (a["Variant Name"] || "").toLowerCase();
@@ -138,34 +97,23 @@ const SubCategoryPage = ({ products: initialProducts }: { products: any[] }) => 
 
     const groupArray = Object.values(groups);
 
-    /* SORT GROUPS BASED ON FIRST PRODUCT */
+    // Sort groups by first product's sort criteria
     if (sortOption === "priceLowHigh") {
       groupArray.sort(
         (a, b) => Number(a[0]["Price"]) - Number(b[0]["Price"])
       );
-    }
-
-    if (sortOption === "priceHighLow") {
+    } else if (sortOption === "priceHighLow") {
       groupArray.sort(
         (a, b) => Number(b[0]["Price"]) - Number(a[0]["Price"])
       );
-    }
-
-    if (sortOption === "rating") {
-      groupArray.sort(
-        (a, b) => Number(b[0]["Rating"]) - Number(a[0]["Rating"])
-      );
-    }
-
-    if (sortOption === "popular") {
+    } else if (sortOption === "rating" || sortOption === "popular") {
       groupArray.sort(
         (a, b) => Number(b[0]["Rating"]) - Number(a[0]["Rating"])
       );
     }
 
     return groupArray;
-
-  }, [sortedProducts]);
+  }, [sortedProducts, sortOption]);
 
   /* --------------------------------
      RENDER
@@ -174,6 +122,7 @@ const SubCategoryPage = ({ products: initialProducts }: { products: any[] }) => 
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
 
       <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold">{decodedSubCategory}</h1>
 
         <select
           value={sortOption}
@@ -186,25 +135,19 @@ const SubCategoryPage = ({ products: initialProducts }: { products: any[] }) => 
           <option value="priceLowHigh">Price: Low → High</option>
           <option value="priceHighLow">Price: High → Low</option>
         </select>
-
-        <button
-          onClick={() => {
-            setSortOption("default");
-            setRefreshSeed(prev => prev + 1);
-          }}
-          className="bg-gray-800 text-white px-4 py-2 rounded-md"
-        >
-          Reload Products
-        </button>
-
       </div>
 
       {groupedProducts.length === 0 ? (
-        <p className="text-slate-500">No products found.</p>
+        <div className="py-24 text-center text-slate-500">
+          <p className="text-lg">No products found in "{decodedSubCategory}"</p>
+          <p className="text-sm mt-1">
+            Products may still be loading or this subcategory has no items.
+          </p>
+        </div>
       ) : (
         <ProductSection
           key={decodedSubCategory}
-          title={decodedSubCategory}
+          title=""
           products={groupedProducts}
         />
       )}

@@ -552,13 +552,6 @@ OUTPUT FORMAT
 
 ## X.X / 5 — Rating Level
 
-- **Product Format:** Dental Gel / Dental Paste / Dental Foam / Dental Spray
-- **Species Evaluated:** Dog / Cat / All Pet / Puppy / Kitten
-- **Disqualifying Ingredient Present:** Yes — [ingredient] / No
-- **VOHC Certified:** Yes / No / Not stated
-
----
-
 # 🦷 DENTAL GEL PROFILE
 
 ## Functional Classification
@@ -856,6 +849,9 @@ ${ingredients.join(", ")}
       "CLINICAL TOKEN USAGE:",
       response.usage
     );
+    console.log("\n=========== RAW AI RESPONSE ===========\n");
+console.log(result);
+console.log("\n=======================================\n");
 
     return response.choices[0]
       .message.content;

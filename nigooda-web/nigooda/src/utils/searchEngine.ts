@@ -1,8 +1,11 @@
 export const normalize = (text: string) =>
-  text.toLowerCase().replace(/[^a-z0-9% ]/g, "");
+  (text || "").toLowerCase().replace(/[^a-z0-9% ]/g, "");
 
 const synonymMap: Record<string, string[]> = {
   dark: ["70%", "75%", "80%", "85%", "90%", "cocoa", "dark chocolate"],
+  moisturizer: ["moisturiser", "lotion", "cream"],
+  shampoo: ["hair wash", "hair cleanser"],
+  sunscreen: ["spf", "sunblock", "sun protection"],
 };
 
 const getSynonyms = (word: string) => synonymMap[word] || [];
@@ -29,13 +32,30 @@ const levenshtein = (a: string, b: string) => {
 };
 
 export const searchProducts = (products: any[], query: string) => {
+  if (!query || !query.trim()) return [];
+  if (!Array.isArray(products) || products.length === 0) return [];
+
   const terms = normalize(query).split(" ").filter(Boolean);
 
   return products
     .map((product) => {
-      const text = normalize(
-        product.name + " " + product.tags.join(" ")
-      );
+      // FIX: safe access to name and tags — both may be missing
+      const productName =
+        product.name ||
+        product["Name of Product"] ||
+        product.Name ||
+        "";
+
+      // FIX: tags must be an array — guard against undefined/null/string
+      const safeTags = Array.isArray(product.tags)
+        ? product.tags
+        : typeof product.tags === "string"
+        ? product.tags.split(",").map((t: string) => t.trim())
+        : typeof product.Tags === "string"
+        ? product.Tags.split(",").map((t: string) => t.trim())
+        : [];
+
+      const text = normalize(productName + " " + safeTags.join(" "));
 
       let score = 0;
 
@@ -47,10 +67,14 @@ export const searchProducts = (products: any[], query: string) => {
         });
 
         text.split(" ").forEach((word: string) => {
-          if (levenshtein(word, term) === 1) score += 2;
+          if (word.length > 2 && levenshtein(word, term) === 1) score += 2;
         });
 
-        if (normalize(product.name).includes(term)) score += 8;
+        if (normalize(productName).includes(term)) score += 8;
+
+        // Brand match bonus
+        const brand = normalize(product.Brand || product.brand || "");
+        if (brand.includes(term)) score += 4;
       });
 
       return { product, score };

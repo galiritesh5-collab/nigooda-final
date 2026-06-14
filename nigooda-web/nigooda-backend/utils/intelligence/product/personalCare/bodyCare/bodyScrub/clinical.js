@@ -528,28 +528,6 @@ Short compatibility explanation.
 
 ---
 
-# 🗺 BODY ZONE SUITABILITY
-
-## Zone Compatibility
-
-### General Body (Arms, Legs, Torso) — ✅ / ⚠ / ❌
-
-Short zone note.
-
-### Sensitive Zones (Décolleté, Inner Arms, Bikini Area) — ✅ / ⚠ / ❌
-
-Short zone note.
-
-### Rough Zones (Elbows, Knees, Feet) — ✅ / ⚠ / ❌
-
-Short zone note.
-
-### Face / Neck — ✅ / ⚠ / ❌
-
-Short zone note. (Most body scrubs: ❌)
-
----
-
 # 📅 LONG-TERM USABILITY
 
 ## Usage Frequency Safety

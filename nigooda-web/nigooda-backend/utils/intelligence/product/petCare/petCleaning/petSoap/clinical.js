@@ -418,10 +418,6 @@ OUTPUT FORMAT
 # ⭐ FINAL RATING
 
 ## X.X / 5 — Rating Level
-
-- **Soap Format:** True Soap / Syndet Bar / Hybrid / Medicated Soap
-- **Species Evaluated:** Dog / Cat / All Pet / Puppy / Kitten
-
 ---
 
 # 🧼 SOAP PROFILE
@@ -734,6 +730,9 @@ ${ingredients.join(", ")}
       "CLINICAL TOKEN USAGE:",
       response.usage
     );
+    console.log("\n=========== RAW AI RESPONSE ===========\n");
+console.log(result);
+console.log("\n=======================================\n");
 
     return response.choices[0]
       .message.content;

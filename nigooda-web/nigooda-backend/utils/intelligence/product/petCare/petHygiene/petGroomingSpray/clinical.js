@@ -1248,7 +1248,7 @@ OUTPUT FORMAT (BOTH TRACKS)
 ## X.X / 5 — Rating Level
 
 **Track:** [TRACK A: COAT CARE] / [TRACK B: DEODORIZING] / [DUAL: COAT CARE X.X / DEODORIZING X.X — Primary Rating: lower score]
-
+(THIS TRACK SHOULD NOT BE VISIBLE IN OUTPUT — for internal use only)
 ---
 
 # 🐾 GROOMING SPRAY PROFILE
@@ -1275,7 +1275,7 @@ Track B Examples:
 
 ## Species and Format Safety Flags
 
-*(Listed FIRST — before all other sections. Include only triggered warnings.)*
+(Listed FIRST — before all other sections. Include only triggered warnings.)
 
 - CAT TOXICITY WARNING — essential oils, propylene glycol, benzyl alcohol, permethrin, pyrethroids, benzalkonium chloride
 - BIRD INHALATION SAFETY WARNING — any aerosol format

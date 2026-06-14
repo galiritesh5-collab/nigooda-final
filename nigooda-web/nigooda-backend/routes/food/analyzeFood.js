@@ -4,66 +4,31 @@ require("express");
 const router =
 express.Router();
 
-const FinalFoodAnalysis =
-require("../../utils/foodEngine/finalFoodAnalysis");
-
-/*
-=====================================================
-FOOD ANALYSIS ROUTE
-=====================================================
-*/
+const FoodEngine =
+require("../../utils/intelligence/foodEngine/foods/ocrAndTypeDetection");
 
 router.post(
-  "/analyze-food",
+  "/analyze-foods",
 
   async (req, res) => {
 
     try {
 
-      console.log(
-        "FOOD ROUTE HIT"
-      );
-
       const {
+        imageBase64,
         pastedIngredients,
-        extractedIngredients,
-        nutritionData,
-        productName,
       } = req.body;
 
-      const ingredients =
-        extractedIngredients ||
-        pastedIngredients;
-
-      if (!ingredients) {
-
-        return res.status(400).json({
-
-          success: false,
-
-          error:
-            "Ingredients required",
-
-        });
-
-      }
-
       const result =
-        await FinalFoodAnalysis.run({
+        await FoodEngine.run({
 
-          ingredients,
+          imageBase64,
 
-          nutritionData,
-
-          productName,
+          pastedIngredients,
 
         });
 
-      console.log(
-        "FOOD ENGINE COMPLETED"
-      );
-
-      return res.json({
+      res.json({
 
         success: true,
 
@@ -80,7 +45,7 @@ router.post(
         error
       );
 
-      return res.status(500).json({
+      res.status(500).json({
 
         success: false,
 

@@ -236,7 +236,7 @@ Short structural reason in plain language explaining why it scored this way.
 
 ### Residual Dryness Risk — ⭐X.X
 
-Short structural reason in plain language explaining why it scored this way.
+Short structural reason in plain language explaining why it scored this way.(more drying less score less drying more score)
 
 ### Scalp Microbiome Compatibility — ⭐X.X
 

@@ -360,7 +360,6 @@ OUTPUT FORMAT
 
 ## X.X / 5 — Rating Level
 
-- **Species Evaluated:** Dog / Cat / All Pet / Puppy / Kitten
 
 ---
 
@@ -662,6 +661,9 @@ ${ingredients.join(", ")}
       "CLINICAL TOKEN USAGE:",
       response.usage
     );
+    console.log("\n=========== RAW AI RESPONSE ===========\n");
+console.log(result);
+console.log("\n=======================================\n");
 
     return response.choices[0]
       .message.content;

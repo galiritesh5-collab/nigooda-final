@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import ProductSection from "../components/ProductSection";
+import { useMemo } from "react";
 
 type DiscoverPageProps = {
   products: any[];
@@ -16,25 +17,24 @@ const SECTION_META: Record<
   },
   "new-launch": {
     title: "New Launches",
-    description:
-      "Fresh drops from premium Indian brands.",
+    description: "Fresh drops from premium brands.",
   },
   trending: {
     title: "Trending Now",
-    description:
-      "What everyone is buying this week.",
+    description: "What everyone is buying this week.",
   },
   "daily-use": {
     title: "Best for Daily Use",
-    description:
-      "Essentials that upgrade your routine.",
+    description: "Essentials that upgrade your routine.",
   },
 };
 
 const DiscoverPage = ({ products }: DiscoverPageProps) => {
   const { sectionKey } = useParams<{ sectionKey: string }>();
 
-  if (!sectionKey || !SECTION_META[sectionKey]) {
+  const meta = sectionKey ? SECTION_META[sectionKey] : undefined;
+
+  if (!sectionKey || !meta) {
     return (
       <div className="px-6 py-10">
         <h1 className="text-2xl font-semibold">
@@ -44,29 +44,53 @@ const DiscoverPage = ({ products }: DiscoverPageProps) => {
     );
   }
 
-  const filteredProducts = products.filter((p) => {
-    switch (sectionKey) {
-      case "new-launch":
-        return p.isNewLaunch === true;
-      case "daily-use":
-        return p.isBestForDailyUse === true;
-      case "trending":
-        return p.isTrending === true;
-      case "underrated":
-        return p.isUnderrated === true;
-      default:
-        return false;
-    }
-  });
+  // Filter products for this section
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      switch (sectionKey) {
+        case "new-launch":
+          return Boolean(p.isNewLaunch);
+        case "daily-use":
+          return Boolean(p.isBestForDailyUse);
+        case "trending":
+          return Boolean(p.isTrending);
+        case "underrated":
+          return Boolean(p.isUnderrated);
+        default:
+          return false;
+      }
+    });
+  }, [products, sectionKey]);
+
+  // Wrap each product in array for ProductSection (grouped format)
+  const groupedProducts: any[][] = useMemo(
+    () => filteredProducts.map((p) => [p]),
+    [filteredProducts]
+  );
 
   return (
     <div className="px-6 py-10">
-      <ProductSection
-        title={SECTION_META[sectionKey].title}
-        subtitle={SECTION_META[sectionKey].description}
-        products={filteredProducts}
-        showViewAll={false}
-      />
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">{meta.title}</h1>
+        <p className="text-slate-500 mt-1">{meta.description}</p>
+        <p className="text-sm text-slate-400 mt-2">
+          {filteredProducts.length} products
+        </p>
+      </div>
+
+      {groupedProducts.length === 0 ? (
+        <div className="py-24 text-center text-slate-400">
+          <p className="text-lg">No products in this section yet.</p>
+          <p className="text-sm mt-1">
+            Add products via the Admin → Discover panel.
+          </p>
+        </div>
+      ) : (
+        <ProductSection
+          title=""
+          products={groupedProducts}
+        />
+      )}
     </div>
   );
 };

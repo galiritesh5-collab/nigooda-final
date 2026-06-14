@@ -366,16 +366,44 @@ catch {
           );
 
         }
+navigate(
+  "/product-analysis-result",
+  {
+    state: {
+      analysisResult: data.result,
 
-        navigate(
-          "/product-analysis-result",
-          {
-            state: {
-              analysisResult:
-                data.result
-            }
-          }
-        );
+      rendererType:
+        section === "skin-care"
+          ? "skincare"
+
+          : section === "hair-care"
+          ? "haircare"
+
+          : section === "baby-care"
+          ? "babycare"
+
+          : section === "hygiene-care"
+          ? "hygienecare"
+
+          : section === "home-care"
+          ? "householdcare"
+
+          : section === "pet-care"
+          ? "petcare"
+
+          : section === "body-care"
+          ? "bodycare"
+
+          : section === "oral-care"
+          ? "oralcare"
+
+          : undefined,
+    }
+  }
+);
+
+
+       
 
       }
 
