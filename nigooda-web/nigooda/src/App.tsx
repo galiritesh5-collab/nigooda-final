@@ -16,7 +16,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ExpandedCategoryPanel from "./components/ExpandedCategoryPanel";
 import DiscoverSection from "./components/DiscoverSection";
-
+import { API_URL } from "./config";
 import DiscoverPage from "./pages/DiscoverPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import CategoryPage from "./pages/CategoryPage";
@@ -89,7 +89,7 @@ const AppContent = () => {
 
     const loadProducts = () => {
 
-      fetch("http://localhost:5000/products")
+      fetch(`${API_URL}/products`)
 
         .then((res) => res.json())
 

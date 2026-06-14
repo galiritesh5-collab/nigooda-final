@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-
+import { API_URL } from "../../config";
 type Product = {
   id: string;
   Brand?: string;
@@ -89,7 +89,7 @@ const ProductsAdmin = ({
 
     onDirtyChange(true);
 
-    await fetch("http://localhost:5000/products/bulk-delete", {
+    await fetch(`${API_URL}/products/bulk-delete`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ids: selectedIds }),
@@ -107,11 +107,16 @@ const ProductsAdmin = ({
     setSavingId(id);
     onDirtyChange(true);
 
-    await fetch(`http://localhost:5000/products/${id}/update`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
-    });
+    await fetch(
+  `${API_URL}/api/products/update`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updates),
+  }
+);
 
     setSavingId(null);
     onDirtyChange(false);
@@ -123,7 +128,7 @@ const ProductsAdmin = ({
 
     onDirtyChange(true);
 
-    await fetch(`http://localhost:5000/products/${id}`, {
+    await fetch(`${API_URL}/products/${id}`, {
       method: "DELETE",
     });
 

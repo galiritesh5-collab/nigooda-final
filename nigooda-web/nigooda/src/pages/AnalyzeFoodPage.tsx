@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { API_URL } from "../config";
 import {
   useNavigate,
   useParams,
@@ -86,7 +86,7 @@ const AnalyzeFoodPage = () => {
 
         const response =
           await fetch(
-            `http://localhost:5000/api/${endpoint}`,
+            `${API_URL}/api/${endpoint}`,
             {
               method: "POST",
 

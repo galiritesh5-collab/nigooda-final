@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-
+import { API_URL } from "../config";
 import {
   BrowserMultiFormatReader,
 } from "@zxing/browser";
@@ -45,7 +45,7 @@ const FoodBarcodePage = () => {
 
       const response =
         await fetch(
-          "http://localhost:5000/api/food/analyze-barcode",
+          `${API_URL}/api/food/analyze-barcode`,
           {
             method: "POST",
 
@@ -149,7 +149,7 @@ const FoodBarcodePage = () => {
 
                 const response =
                   await fetch(
-                    "http://localhost:5000/api/food/analyze-barcode",
+                    `${API_URL}/api/food/analyze-barcode`,
                     {
                       method:
                         "POST",

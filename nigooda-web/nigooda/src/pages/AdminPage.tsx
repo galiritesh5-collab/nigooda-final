@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import DiscoverAdmin from "./admin/DiscoverAdmin";
 import ProductsAdmin from "./admin/ProductsAdmin";
 import CategorySelector from "./admin/CategorySelector";
-
+import { API_URL } from "../config";
 /* =========================
    CONSTANTS
 ========================= */
@@ -54,7 +54,7 @@ const AdminPage = () => {
      FETCH PRODUCTS
   ========================= */
   const fetchProducts = () => {
-    fetch("http://localhost:5000/admin/products")
+    fetch(`${API_URL}/admin/products`)
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch(() => setProducts([]));
@@ -86,7 +86,7 @@ const AdminPage = () => {
       setIsUploading(true);
       setUploadStatus("uploading");
 
-      const res = await fetch("http://localhost:5000/upload", {
+      const res = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formData,
       });
@@ -191,7 +191,7 @@ const AdminPage = () => {
         {/* ✅ DOWNLOAD BUTTON ADDED */}
         <button
           onClick={() =>
-            window.open("http://localhost:5000/download-products", "_blank")
+            window.open(`${API_URL}/download-products`, "_blank")
           }
           className="bg-green-600 text-white px-4 py-2 rounded-md"
         >

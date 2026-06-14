@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-
+import { API_URL } from "../../config";
 /* =========================
    TYPES
 ========================= */
@@ -104,7 +104,7 @@ const DiscoverAdmin = ({
 
       // FIX: Send ONE bulk request instead of N individual requests
       const res = await fetch(
-        "http://localhost:5000/products/bulk-update-discover",
+        `${API_URL}/products/bulk-update-discover`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

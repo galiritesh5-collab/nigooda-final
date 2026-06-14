@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { API_URL } from "../config";
 import {
   useParams,
   useNavigate
@@ -301,7 +301,7 @@ const endpointMap: Record<string, string> = {
 
         const response =
           await fetch(
-            `http://localhost:5000/api/${endpoint}`,
+            `${API_URL}/api/${endpoint}`,
             {
               method: "POST",
 
