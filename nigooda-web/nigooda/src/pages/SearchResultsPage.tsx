@@ -7,7 +7,7 @@ const SearchResultsPage = ({ products }: { products: any[] }) => {
   // Read query from URL ?q=...
   const query = new URLSearchParams(useLocation().search).get("q") || "";
 
-  // Run search — searchEngine is now null-safe
+  // FIX: useMemo so search only reruns when products or query changes
   const results = useMemo(
     () => searchProducts(products, query),
     [products, query]

@@ -5,7 +5,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import FoodBarcodePage from "./pages/FoodBarcodePage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import ProductIntelligencePage from "./pages/ProductIntelligencePage";
 import AnalyzeProductPage from "./pages/AnalyzeProductPage";
 import ProductAnalysisResultPage from "./pages/ProductAnalysisResultPage";
@@ -73,7 +73,9 @@ const AppContent = () => {
   const [activeCategory, setActiveCategory] =
     useState<string | null>(null);
 
-  const [products, setProducts] =
+  // FIX: store raw products separately so normalization
+  // only runs once when data arrives, not on every render
+  const [rawProducts, setRawProducts] =
     useState<any[]>([]);
 
   // Search query for navbar
@@ -83,37 +85,26 @@ const AppContent = () => {
   /* ============================================================
      LOAD PRODUCTS FROM BACKEND
      Server returns: flat array of variant objects (Product[])
-     FIX: iterate flat array directly (not as group.variants)
   ============================================================ */
   useEffect(() => {
-
-    const loadProducts = () => {
-
-      fetch(`${API_URL}/products`)
-
-        .then((res) => res.json())
-
-        .then((data: any) => {
-          // data is a flat array — normalize each item directly
-          const rawArray = Array.isArray(data)
-            ? data
-            : (data.products || []);
-
-          const normalized = rawArray.map(normalizeProduct);
-
-          setProducts(normalized);
-        })
-
-        .catch(() => setProducts([]));
-
-    };
-
-    loadProducts();
-
-    // Poll every 5 seconds (reduced from 3 to lighten load)
-  
-
+    fetch(`${API_URL}/products`)
+      .then((res) => res.json())
+      .then((data: any) => {
+        const rawArray = Array.isArray(data)
+          ? data
+          : (data.products || []);
+        // FIX: store raw, normalize via useMemo below
+        setRawProducts(rawArray);
+      })
+      .catch(() => setRawProducts([]));
   }, []);
+
+  // FIX: normalize only when rawProducts changes,
+  // not on every render triggered by other state updates
+  const products = useMemo(
+    () => rawProducts.map(normalizeProduct),
+    [rawProducts]
+  );
 
   useEffect(() => {
     setActiveCategory(null);

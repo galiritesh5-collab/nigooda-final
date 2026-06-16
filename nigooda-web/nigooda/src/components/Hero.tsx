@@ -1,80 +1,75 @@
 import { useNavigate } from "react-router-dom";
-
 import IntelligenceCard from "./IntelligenceCard";
 
 const Hero = () => {
-
   const navigate = useNavigate();
 
   const comingSoon = () => {
-    alert(
-      "🚧 Coming Soon!\nWe’re actively building this AI feature."
-    );
+    alert("🚧 Coming Soon!\nWe're actively building this AI feature.");
   };
 
   return (
-    <section className="bg-gradient-to-b from-slate-50 via-white to-white px-4 md:px-6 py-24">
+    <section className="relative overflow-hidden bg-[#fafafa] px-4 md:px-8 pt-36 pb-28">
 
-      <div className="max-w-7xl mx-auto">
+      {/* FLOATING BACKGROUND GLOWS */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full bg-gradient-radial from-slate-100 to-transparent opacity-80 blur-3xl" />
+        <div className="absolute top-20 -left-32 w-[500px] h-[500px] rounded-full bg-gradient-radial from-emerald-50 to-transparent opacity-60 blur-3xl" />
+        <div className="absolute top-40 -right-24 w-[400px] h-[400px] rounded-full bg-gradient-radial from-violet-50 to-transparent opacity-50 blur-3xl" />
+      </div>
 
-        {/* HERO HEADER */}
-        <div className="max-w-4xl mx-auto text-center mb-20">
+      <div className="relative max-w-7xl mx-auto">
 
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold tracking-wide uppercase">
-            AI-Powered Product Intelligence
-          </span>
+        {/* HERO HEADER — asymmetric left-heavy */}
+        <div className="max-w-3xl mb-20">
 
-          <h1 className="mt-6 text-5xl md:text-6xl font-bold tracking-tight text-slate-900 leading-tight">
-            Understand Products
-            <span className="block text-indigo-600">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm mb-8">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[11px] font-semibold text-slate-500 tracking-widest uppercase">
+              AI-Powered Product Intelligence
+            </span>
+          </div>
+
+          <h1 className="text-[64px] md:text-[80px] font-bold tracking-[-0.03em] leading-[0.95] text-slate-900">
+            Understand
+            <br />
+            Products
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-400">
               Beyond the Label
             </span>
           </h1>
 
-          <p className="mt-6 text-lg md:text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">
-            Analyze ingredients, nutrition,
-            additives, chemicals, and product
-            safety with intelligent AI-powered
-            ratings.
+          <p className="mt-8 text-lg text-slate-500 leading-relaxed max-w-xl font-normal">
+            Analyze ingredients, nutrition, additives, and product safety
+            with intelligent AI-powered ratings — before you buy.
           </p>
 
         </div>
 
-        {/* MAIN CARDS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* INTELLIGENCE CARDS */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
           {/* FOOD */}
           <IntelligenceCard
             icon="🥗"
             title="Food & Drink Intelligence"
             description="AI-powered analysis of ingredients, nutrition, additives, and food quality — with intelligent health ratings."
-            tags={[
-              "Food",
-              "Drinks",
-              "Nutrition",
-              "Health Ratings",
-            ]}
+            tags={["Food", "Drinks", "Nutrition", "Health Ratings"]}
             buttonText="Analyze Product"
             color="emerald"
-            onClick={() =>
-             navigate("/analyze/food/foods")}/>
+            onClick={() => navigate("/analyze/food/foods")}
+          />
 
           {/* PRODUCT */}
           <IntelligenceCard
             icon="🧴"
             title="Product Ingredient Intelligence"
             description="AI-powered ingredient analysis and intelligent safety ratings for personal, pet, baby, and home care products."
-            tags={[
-              "Personal Care",
-              "Pet Care",
-              "Household Care",
-              "Safety Ratings",
-            ]}
+            tags={["Personal Care", "Pet Care", "Household Care", "Safety Ratings"]}
             buttonText="Analyze Product"
             color="indigo"
-            onClick={() =>
-              navigate("/product-intelligence")
-            }
+            onClick={() => navigate("/product-intelligence")}
           />
 
           {/* STYLIST */}
@@ -82,12 +77,7 @@ const Hero = () => {
             icon="👗"
             title="Stylist AI"
             description="Upload your photo and get AI-powered outfit recommendations, styling inspiration, and fashion suggestions."
-            tags={[
-              "Fashion",
-              "AI Styling",
-              "Outfit Ideas",
-              "Coming Soon",
-            ]}
+            tags={["Fashion", "AI Styling", "Outfit Ideas", "Coming Soon"]}
             buttonText="Coming Soon"
             color="rose"
             onClick={comingSoon}
@@ -96,7 +86,6 @@ const Hero = () => {
         </div>
 
       </div>
-
     </section>
   );
 };

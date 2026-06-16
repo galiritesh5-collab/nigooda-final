@@ -531,48 +531,14 @@ function cleanNumber(value) {
 
 /* ============================================================
    🔵 FRONTEND API → PRODUCTS FOR SITE
-   FIX #1: Correct pagination, return flat array
+   FIX: Skip pointless group-then-flatten — return flat array
+   directly from MongoDB. The frontend normalizeProduct()
+   already handles everything it needs from the flat shape.
 ============================================================ */
 app.get("/products", async (req, res) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 0; // 0 = all (for web app)
-
     const data = await Product.find().lean();
-
-    // Group variants
-    const groupedMap = {};
-
-    data.forEach((product) => {
-      const groupId =
-        cleanString(product["Variant Group ID"]) ||
-        cleanString(product.id);
-
-      if (!groupedMap[groupId]) {
-        groupedMap[groupId] = {
-          groupId,
-          displayProduct: product,
-          variants: [],
-        };
-      }
-
-      groupedMap[groupId].variants.push(product);
-    });
-
-    const groupedProducts = Object.values(groupedMap);
-
-    // Flatten all variants (frontend normalizes flat array)
-    const flattened = groupedProducts.flatMap((group) => group.variants);
-
-    // Apply pagination only if limit is specified
-    if (limit > 0) {
-      const start = (page - 1) * limit;
-      const paginated = flattened.slice(start, start + limit);
-      return res.json(paginated);
-    }
-
-    res.json(flattened);
-
+    res.json(data);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server Error" });
@@ -995,7 +961,7 @@ app.get(
 
 /* ============================================================
    🟢 ADMIN API → ALL PRODUCTS
-   FIX #4: Read from MongoDB instead of JSON file
+   FIX: Read from MongoDB instead of JSON file
 ============================================================ */
 app.get("/admin/products", async (req, res) => {
   try {
@@ -1009,7 +975,7 @@ app.get("/admin/products", async (req, res) => {
 
 /* ============================================================
    🔁 UPLOAD EXCEL (STRICT + SAFE)
-   FIX #5: Only replace products of the uploaded category
+   Only replace products of the uploaded category
 ============================================================ */
 app.post(
   "/upload",
@@ -1107,7 +1073,7 @@ app.post(
     writeProducts(finalProducts);
 
     /* =========================
-       FIX #5: SYNC ONLY THIS CATEGORY TO MONGO
+       SYNC ONLY THIS CATEGORY TO MONGO
     ========================= */
 
     await Product.deleteMany({ "Primary Category": category });
@@ -1210,7 +1176,7 @@ app.post("/products/:id/update-home-section", async (req, res) => {
 
 /* ============================================================
    UPDATE SINGLE PRODUCT
-   FIX #2: Targeted Mongo update with whitelisted fields
+   Targeted Mongo update with whitelisted fields
 ============================================================ */
 
 app.post("/products/:id/update", async (req, res) => {
@@ -1250,7 +1216,7 @@ app.post("/products/:id/update", async (req, res) => {
   products[index] = { ...products[index], ...safeUpdates };
   writeProducts(products);
 
-  // FIX #2: Use targeted findOneAndUpdate instead of deleteMany + insertMany
+  // Targeted findOneAndUpdate instead of deleteMany + insertMany
   try {
     await Product.findOneAndUpdate(
       { id: cleanString(id) },
@@ -1290,7 +1256,7 @@ app.post("/products/bulk-delete", async (req, res) => {
 });
 
 /* ============================================================
-   FIX #3: BULK DISCOVER UPDATE
+   BULK DISCOVER UPDATE
 ============================================================ */
 app.post("/products/bulk-update-discover", async (req, res) => {
   try {

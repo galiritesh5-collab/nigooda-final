@@ -44,25 +44,20 @@ const DiscoverPage = ({ products }: DiscoverPageProps) => {
     );
   }
 
-  // Filter products for this section
+  // FIX: useMemo so filter only reruns when products or sectionKey changes
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       switch (sectionKey) {
-        case "new-launch":
-          return Boolean(p.isNewLaunch);
-        case "daily-use":
-          return Boolean(p.isBestForDailyUse);
-        case "trending":
-          return Boolean(p.isTrending);
-        case "underrated":
-          return Boolean(p.isUnderrated);
-        default:
-          return false;
+        case "new-launch":  return Boolean(p.isNewLaunch);
+        case "daily-use":   return Boolean(p.isBestForDailyUse);
+        case "trending":    return Boolean(p.isTrending);
+        case "underrated":  return Boolean(p.isUnderrated);
+        default:            return false;
       }
     });
   }, [products, sectionKey]);
 
-  // Wrap each product in array for ProductSection (grouped format)
+  // FIX: separate useMemo so grouping doesn't rerun unless filter output changes
   const groupedProducts: any[][] = useMemo(
     () => filteredProducts.map((p) => [p]),
     [filteredProducts]

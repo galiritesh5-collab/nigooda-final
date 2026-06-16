@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { API_URL } from "../../config";
+
 type Product = {
   id: string;
   Brand?: string;
@@ -34,20 +35,22 @@ const ProductsAdmin = ({
   const [savingId, setSavingId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  /* ✅ SIMPLE FILTER (NO useMemo) */
-  const filteredProducts = products.filter((p) => {
-    const primary = (p["Primary Category"] || "").trim();
-    const sub = (p["Sub-Category"] || "").trim();
-
-    if (activeCategory && primary !== activeCategory.trim()) return false;
-    if (activeSubCategory && sub !== activeSubCategory.trim()) return false;
-
-    return true;
-  });
-
-  /* ✅ GROUP AFTER FILTER */
+  /* =========================
+     FIX: wrap filter + group in useMemo so this
+     only recomputes when inputs actually change
+  ========================= */
   const displayProducts = useMemo(() => {
-    const groupedProducts = filteredProducts.reduce((acc, p) => {
+    const filtered = products.filter((p) => {
+      const primary = (p["Primary Category"] || "").trim();
+      const sub = (p["Sub-Category"] || "").trim();
+
+      if (activeCategory && primary !== activeCategory.trim()) return false;
+      if (activeSubCategory && sub !== activeSubCategory.trim()) return false;
+
+      return true;
+    });
+
+    const grouped = filtered.reduce((acc, p) => {
       const groupId = String(p["Variant Group ID"] || "").trim();
 
       if (groupId === "") {
@@ -60,28 +63,28 @@ const ProductsAdmin = ({
       return acc;
     }, {} as Record<string, Product[]>);
 
-    return Object.values(groupedProducts).flat();
-  }, [filteredProducts]);
+    return Object.values(grouped).flat();
+  }, [products, activeCategory, activeSubCategory]);
 
   /* =========================
      SELECT / DESELECT
   ========================= */
-  const toggleSelect = (id: string) => {
+  const toggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
-  };
+  }, []);
 
-  const toggleSelectAll = () => {
+  const toggleSelectAll = useCallback(() => {
     const allIds = displayProducts.map((p) => p.id);
     const allSelected = allIds.every((id) => selectedIds.includes(id));
     setSelectedIds(allSelected ? [] : allIds);
-  };
+  }, [displayProducts, selectedIds]);
 
   /* =========================
      BULK DELETE
   ========================= */
-  const bulkDelete = async () => {
+  const bulkDelete = useCallback(async () => {
     if (selectedIds.length === 0) return;
 
     if (!window.confirm(`Delete ${selectedIds.length} products permanently?`))
@@ -98,32 +101,30 @@ const ProductsAdmin = ({
     setSelectedIds([]);
     onDirtyChange(false);
     refresh();
-  };
+  }, [selectedIds, onDirtyChange, refresh]);
 
   /* =========================
-     UPDATE / DELETE
+     UPDATE — FIX: corrected URL to /products/:id/update
   ========================= */
-  const update = async (id: string, updates: Partial<Product>) => {
+  const update = useCallback(async (id: string, updates: Partial<Product>) => {
     setSavingId(id);
     onDirtyChange(true);
 
-    await fetch(
-  `${API_URL}/api/products/update`,
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(updates),
-  }
-);
+    await fetch(`${API_URL}/products/${id}/update`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
 
     setSavingId(null);
     onDirtyChange(false);
     refresh();
-  };
+  }, [onDirtyChange, refresh]);
 
-  const remove = async (id: string) => {
+  /* =========================
+     DELETE SINGLE
+  ========================= */
+  const remove = useCallback(async (id: string) => {
     if (!window.confirm("Delete this product permanently?")) return;
 
     onDirtyChange(true);
@@ -134,7 +135,7 @@ const ProductsAdmin = ({
 
     onDirtyChange(false);
     refresh();
-  };
+  }, [onDirtyChange, refresh]);
 
   return (
     <div className="space-y-4">
@@ -217,6 +218,7 @@ const ProductsAdmin = ({
                   <img
                     src={p["Main Image URL"]}
                     className="w-12 h-12 object-cover rounded"
+                    loading="lazy"
                   />
                   <input
                     className="border mt-1 px-1 py-0.5 w-32"

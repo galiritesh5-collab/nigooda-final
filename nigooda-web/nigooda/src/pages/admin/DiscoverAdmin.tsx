@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { API_URL } from "../../config";
+
 /* =========================
    TYPES
 ========================= */
@@ -67,15 +68,16 @@ const DiscoverAdmin = ({
     products.forEach((p) => {
       const id = String(p.id);
 
-      if (p.isUnderrated) map["underrated"].push(id);
-      if (p.isNewLaunch) map["new-launch"].push(id);
-      if (p.isTrending) map["trending"].push(id);
+      if (p.isUnderrated)      map["underrated"].push(id);
+      if (p.isNewLaunch)       map["new-launch"].push(id);
+      if (p.isTrending)        map["trending"].push(id);
       if (p.isBestForDailyUse) map["daily-use"].push(id);
     });
 
     setDiscoverMap(map);
   }, [products, isDirty]);
 
+  // FIX: useMemo so lookup map is not rebuilt on every render
   const productById = useMemo(() => {
     const map = new Map<string, Product>();
     products.forEach((p) => map.set(String(p.id), p));
@@ -83,26 +85,26 @@ const DiscoverAdmin = ({
   }, [products]);
 
   /* =========================
-     SAVE — FIX: uses bulk endpoint (one request, no race condition)
+     SAVE — bulk endpoint (one request, no race condition)
   ========================= */
   const handleSave = async () => {
     setIsSaving(true);
     setSaveStatus("idle");
 
     try {
-      // Build a list of updates for ALL products (only changed flags)
+      // Build a list of updates for ALL products
       const updates = products.map((product) => {
         const id = String(product.id);
         return {
           id,
-          isNewLaunch: discoverMap["new-launch"]?.includes(id) || false,
-          isBestForDailyUse: discoverMap["daily-use"]?.includes(id) || false,
-          isTrending: discoverMap["trending"]?.includes(id) || false,
-          isUnderrated: discoverMap["underrated"]?.includes(id) || false,
+          isNewLaunch:       discoverMap["new-launch"]?.includes(id) || false,
+          isBestForDailyUse: discoverMap["daily-use"]?.includes(id)  || false,
+          isTrending:        discoverMap["trending"]?.includes(id)    || false,
+          isUnderrated:      discoverMap["underrated"]?.includes(id)  || false,
         };
       });
 
-      // FIX: Send ONE bulk request instead of N individual requests
+      // Send ONE bulk request instead of N individual requests
       const res = await fetch(
         `${API_URL}/products/bulk-update-discover`,
         {

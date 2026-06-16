@@ -21,6 +21,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
   /* ----------------------------
      FIND PRODUCT
+     FIX: useMemo already present — kept as-is
   ---------------------------- */
   const product = useMemo(() => {
     return products.find((p) => String(p.id) === String(id));
@@ -28,6 +29,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
   /* ----------------------------
      FIND VARIANTS
+     FIX: useMemo already present — kept as-is
   ---------------------------- */
   const variants = useMemo(() => {
     if (!product) return [];
@@ -79,9 +81,12 @@ const ProductPage = ({ products }: { products: Product[] }) => {
           />
         </button>
 
+        {/* FIX: lazy load the main product image */}
         <img
           src={activeVariant["Main Image URL"]}
           alt={activeVariant["Name of Product"]}
+          loading="lazy"
+          decoding="async"
           className="max-h-[500px] object-contain"
         />
       </div>
@@ -136,9 +141,12 @@ const ProductPage = ({ products }: { products: Product[] }) => {
                       : "border-gray-300"
                   }`}
                 >
+                  {/* FIX: lazy load variant thumbnails */}
                   <img
                     src={variant["Main Image URL"]}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 </button>

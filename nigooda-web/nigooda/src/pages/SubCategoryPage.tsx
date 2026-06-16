@@ -10,15 +10,13 @@ const slugify = (text: string) =>
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/&/g, "and")         // FIX: added & → and (was missing before)
+    .replace(/&/g, "and")
     .replace(/,/g, "")
     .replace(/[^\w\s-]/g, "")
     .replace(/\s+/g, "-");
 
 /* -------------------------------
    PAGE
-   FIX: Uses products prop from App.tsx instead of fetching its own
-        Eliminates double-fetch and data shape inconsistency
 ----------------------------------*/
 const SubCategoryPage = ({ products }: { products: any[] }) => {
   const [sortOption, setSortOption] = useState("default");
@@ -30,6 +28,7 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
 
   /* --------------------------------
      FILTER PRODUCTS
+     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const filteredProducts = useMemo(() => {
     if (!products || !categoryId || !decodedSubCategory) return [];
@@ -52,6 +51,7 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
 
   /* --------------------------------
      SORT AFTER FILTER
+     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const sortedProducts = useMemo(() => {
     const sorted = [...filteredProducts];
@@ -69,7 +69,7 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
 
   /* --------------------------------
      GROUP VARIANTS
-     Build { [groupId]: Product[] } then return as Product[][]
+     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const groupedProducts = useMemo(() => {
     const groups: Record<string, any[]> = {};
@@ -81,7 +81,6 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
         if (!groups[groupId]) groups[groupId] = [];
         groups[groupId].push(p);
       } else {
-        // Products without a variant group get their own single-item group
         groups[`single-${p.id}`] = [p];
       }
     });

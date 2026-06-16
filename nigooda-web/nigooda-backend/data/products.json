@@ -18,7 +18,7 @@
     "isNewLaunch": false,
     "isBestForDailyUse": false,
     "isTrending": false,
-    "isUnderrated": true
+    "isUnderrated": false
   },
   {
     "id": "f2",
@@ -78,7 +78,7 @@
     "Tags": "Eggoz, Brown Eggs, Farm Fresh, High Protein, Thick Shell, Orange Yolk, Nutritious, Healthy, Dairy, Poultry, UV Sanitized, Hormone Free, Antibiotic Free, Breakfast, Cooking, Baking, Natural, Quality, Eggoz Brand, Wholesome, Freshness, Kitchen Essentials",
     "Status": "Live",
     "homeSections": [],
-    "isNewLaunch": true,
+    "isNewLaunch": false,
     "isBestForDailyUse": false,
     "isTrending": false,
     "isUnderrated": false
@@ -1370,7 +1370,7 @@
     "Status": "Live",
     "homeSections": [],
     "isNewLaunch": false,
-    "isBestForDailyUse": false,
+    "isBestForDailyUse": true,
     "isTrending": false,
     "isUnderrated": false
   },
@@ -1414,7 +1414,7 @@
     "isNewLaunch": false,
     "isBestForDailyUse": false,
     "isTrending": false,
-    "isUnderrated": false
+    "isUnderrated": true
   },
   {
     "id": "f68",
@@ -2525,7 +2525,7 @@
     "Status": "Live",
     "homeSections": [],
     "isNewLaunch": false,
-    "isBestForDailyUse": false,
+    "isBestForDailyUse": true,
     "isTrending": false,
     "isUnderrated": false
   },

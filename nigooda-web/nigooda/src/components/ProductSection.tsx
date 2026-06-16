@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { useWishlist } from "../context/WishlistContext";
 import { Heart } from "lucide-react";
@@ -20,11 +20,13 @@ interface Product {
 
 /* =========================
    PRODUCT CARD
+   FIX: wrapped in React.memo so cards only re-render
+   when their own variants array reference changes
 ========================= */
 const ProductCard: React.FC<{
   variants: Product[];
   compact?: boolean;
-}> = ({ variants, compact = false }) => {
+}> = memo(({ variants, compact = false }) => {
   const safeVariants = variants.filter(Boolean);
 
   const [activeVariant, setActiveVariant] =
@@ -67,6 +69,9 @@ const ProductCard: React.FC<{
         >
           <img
             src={activeVariant["Main Image URL"]}
+            // FIX: lazy load images — browser won't fetch off-screen images
+            loading="lazy"
+            decoding="async"
             className="max-h-full object-contain group-hover:scale-110 transition-transform duration-500"
             alt={activeVariant["Name of Product"]}
           />
@@ -123,6 +128,9 @@ const ProductCard: React.FC<{
               <img
                 src={variant["Main Image URL"]}
                 alt=""
+                // FIX: lazy load variant thumbnails too
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </button>
@@ -131,12 +139,16 @@ const ProductCard: React.FC<{
       )}
     </div>
   );
-};
+});
+
+ProductCard.displayName = "ProductCard";
 
 /* =========================
    PRODUCT SECTION
+   FIX: wrapped in React.memo so the whole section
+   doesn't re-render unless its products prop changes
 ========================= */
-const ProductSection = ({
+const ProductSection = memo(({
   title,
   products,
   compact = false,
@@ -168,6 +180,8 @@ const ProductSection = ({
       </div>
     </section>
   );
-};
+});
+
+ProductSection.displayName = "ProductSection";
 
 export default ProductSection;

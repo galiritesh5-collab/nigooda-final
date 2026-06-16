@@ -21,7 +21,7 @@ const slugify = (text: string) =>
 ----------------------------------*/
 const CategoryPage = ({ products }: { products: any[] }) => {
   const { categoryId } = useParams();
-  const [showSubCategories, setShowSubCategories] = useState(true); // default open
+  const [showSubCategories, setShowSubCategories] = useState(true);
 
   const category = CATEGORIES.find((c) => c.id === categoryId);
 
@@ -35,6 +35,7 @@ const CategoryPage = ({ products }: { products: any[] }) => {
 
   /* -------------------------------
      FILTER PRODUCTS BY CATEGORY
+     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const categoryProducts = useMemo(
     () =>
@@ -48,6 +49,7 @@ const CategoryPage = ({ products }: { products: any[] }) => {
 
   /* -------------------------------
      GROUP BY SUBCATEGORY
+     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const productsBySubCategory = useMemo(() => {
     const map: Record<string, any[]> = {};
@@ -126,7 +128,6 @@ const CategoryPage = ({ products }: { products: any[] }) => {
       {/* CATEGORY PREVIEW SECTIONS */}
       {Object.entries(productsBySubCategory).map(
         ([subCategory, items]) => {
-          // FIX: use Subcategory Sample Rank if available, otherwise show first 8
           const rankedItems = items.filter(
             (p) => typeof p["Subcategory Sample Rank"] === "number"
           );
@@ -140,7 +141,7 @@ const CategoryPage = ({ products }: { products: any[] }) => {
                       b["Subcategory Sample Rank"]
                   )
                   .slice(0, 8)
-              : items.slice(0, 8); // fallback: first 8 if no rank
+              : items.slice(0, 8);
 
           // Wrap each product in array for ProductSection (grouped format)
           const groupedPreview: any[][] = previewItems.map((p) => [p]);
