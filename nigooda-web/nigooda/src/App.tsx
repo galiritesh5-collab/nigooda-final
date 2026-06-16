@@ -25,6 +25,16 @@ import AdminPage from "./pages/AdminPage";
 import ProductPage from "./pages/ProductPage";
 import WishlistPage from "./pages/WishlistPage";
 
+// NEW: auth context + route guard
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// NEW: account-area pages
+import Dashboard from "./pages/Dashboard";
+import MyScans from "./pages/MyScans";
+import BillingPlans from "./pages/BillingPlans";
+import Settings from "./pages/Settings";
+
 /* ============================================================
    NORMALIZE A SINGLE FLAT PRODUCT FROM THE SERVER
    The server returns a flat array of variant objects.
@@ -266,6 +276,44 @@ const AppContent = () => {
           element={<AdminPage />}
         />
 
+        {/* ── NEW PROTECTED ROUTES ── */}
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/my-scans"
+          element={
+            <ProtectedRoute>
+              <MyScans />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/billing"
+          element={
+            <ProtectedRoute>
+              <BillingPlans />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
 
     </div>
@@ -277,12 +325,18 @@ const AppContent = () => {
 const App = () => {
 
   return (
+    // NEW: AuthProvider wraps the whole tree so auth state
+    // (current user, login/logout) is available to Navbar,
+    // ProtectedRoute, and every page below it.
+    <AuthProvider>
 
-    <WishlistProvider>
+      <WishlistProvider>
 
-      <AppContent />
+        <AppContent />
 
-    </WishlistProvider>
+      </WishlistProvider>
+
+    </AuthProvider>
 
   );
 

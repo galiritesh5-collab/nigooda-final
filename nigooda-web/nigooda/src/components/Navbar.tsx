@@ -4,6 +4,7 @@ import { searchProducts } from "../utils/searchEngine";
 import logo from "../assets/logo.png";
 import { CATEGORIES } from "../constants";
 import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, type User } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 type Props = {
   activeCategory: string | null;
@@ -161,17 +162,6 @@ const Navbar: React.FC<Props> = ({
             {/* DIVIDER */}
             <div className="hidden md:block w-px h-5 bg-slate-200 mx-2" />
 
-            {/* WISHLIST — part of user cluster */}
-            <Link
-              to="/wishlist"
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-150"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364 4.318 12.682a4.5 4.5 0 010-6.364z" />
-              </svg>
-              <span className="hidden md:block">Wishlist</span>
-            </Link>
-
             {/* ──────────────────────────────────────────
                 AUTH SECTION
                 currentUser comes from Firebase's
@@ -272,44 +262,60 @@ const Navbar: React.FC<Props> = ({
 
                       {/* MENU ITEMS */}
                       <div className="p-1.5">
+
                         <Link
-                          to="/account"
+                          to="/dashboard"
                           onClick={() => setIsAccountOpen(false)}
                           className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-150"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5.121 17.804A9 9 0 1118.879 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m0-8H5m7 0h7" />
                           </svg>
-                          My Account
+                          Dashboard
                         </Link>
+
                         <Link
-                          to="/wishlist"
+                          to="/my-scans"
                           onClick={() => setIsAccountOpen(false)}
                           className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-150"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 21.364 4.318 12.682a4.5 4.5 0 010-6.364z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 17v-2m3 2v-4m3 4v-6M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                           </svg>
-                          Wishlist
+                          My Scans
                         </Link>
+
                         <Link
-                          to="/premium"
+                          to="/billing"
                           onClick={() => setIsAccountOpen(false)}
                           className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-150"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 9V7a5 5 0 00-10 0v2m-2 0h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2z" />
                           </svg>
-                          Premium Membership
+                          Billing & Plans
                         </Link>
+
+                        <Link
+                          to="/settings"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-150"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l.7 2.152a1 1 0 00.95.69h2.263c.969 0 1.371 1.24.588 1.81l-1.83 1.33a1 1 0 00-.364 1.118l.7 2.152c.3.922-.755 1.688-1.538 1.118l-1.83-1.33a1 1 0 00-1.176 0l-1.83 1.33c-.783.57-1.838-.197-1.538-1.118l.7-2.152a1 1 0 00-.364-1.118l-1.83-1.33c-.784-.57-.38-1.81.588-1.81h2.263a1 1 0 00.95-.69l.7-2.152z" />
+                          </svg>
+                          Settings
+                        </Link>
+
                       </div>
 
                       {/* LOGOUT */}
                       <div className="border-t border-slate-50 p-1.5">
                         <button
-                          onClick={() => {
+                          onClick={async () => {
                             setIsAccountOpen(false);
-                            // TODO: call Firebase signOut(auth) here
+                            await signOut(auth);
+                            navigate("/");
                           }}
                           className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors duration-150"
                         >
