@@ -24,17 +24,23 @@ import SubCategoryPage from "./pages/SubCategoryPage";
 import AdminPage from "./pages/AdminPage";
 import ProductPage from "./pages/ProductPage";
 import WishlistPage from "./pages/WishlistPage";
-
-// NEW: auth context + route guard
+import AboutUs from "./pages/footer/AboutUs";// NEW: auth context + route guard
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import Footer from "./components/Footer";
 // NEW: account-area pages
 import Dashboard from "./pages/Dashboard";
 import MyScans from "./pages/MyScans";
 import BillingPlans from "./pages/BillingPlans";
 import Settings from "./pages/Settings";
-
+import PrivacyPolicy from "./pages/footer/PrivacyPolicy";
+import TermsConditions from "./pages/footer/TermsConditions";
+import Disclaimer from "./pages/footer/Disclaimer";
+import AffiliateDisclosure from "./pages/footer/AffiliateDisclosure";
+import ContactUs from "./pages/footer/ContactUs";
+import RefundPolicy from "./pages/footer/RefundPolicy";
+import HowRatingsWork from "./pages/footer/HowRatingsWork";
+import FAQ from "./pages/footer/FAQ";
 /* ============================================================
    NORMALIZE A SINGLE FLAT PRODUCT FROM THE SERVER
    The server returns a flat array of variant objects.
@@ -218,7 +224,6 @@ const AppContent = () => {
           path="/analyze/:category/:section/:product"
           element={<AnalyzeProductPage />}
         />
-
         <Route
           path="/discover/:sectionKey"
           element={
@@ -314,13 +319,53 @@ const AppContent = () => {
           }
         />
 
-      </Routes>
+    <Route path="/about" element={<AboutUs />} />
 
-    </div>
+<Route
+  path="/privacy-policy"
+  element={<PrivacyPolicy />}
+/>
 
-  );
+<Route
+  path="/terms-and-conditions"
+  element={<TermsConditions />}
+/>
+<Route
+  path="/disclaimer"
+  element={<Disclaimer />}
+/>
+<Route
+  path="/affiliate-disclosure"
+  element={<AffiliateDisclosure />}
+/>
+<Route
+  path="/contact-us"
+  element={<ContactUs />}
+/>
+<Route
+  path="/refund-policy"
+  element={<RefundPolicy />}
+/>
+<Route
+  path="/how-ratings-work"
+  element={<HowRatingsWork />}
+/>
+<Route
+  path="/faq"
+  element={<FAQ />}
+/>
+  </Routes>
+  
+
+  <Footer />
+
+</div>
+
+
+);
 
 };
+
 
 const App = () => {
 

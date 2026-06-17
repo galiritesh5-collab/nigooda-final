@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
-
+import TestAnalysis from "../components/TestAnalysis";
 interface Product {
   id: string;
   Brand?: string;
@@ -172,7 +172,12 @@ const ProductPage = ({ products }: { products: Product[] }) => {
           </div>
         )}
 
+           </div>
+
+      <div className="md:col-span-2">
+        <TestAnalysis />
       </div>
+
     </div>
   );
 };
