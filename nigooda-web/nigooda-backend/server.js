@@ -91,7 +91,8 @@ const petDeodorantRoutes = require("./routes/petDeodorantRoutes");
 const petGroomingSprayRoutes = require("./routes/petGroomingSprayRoutes");
 const foodRoutes = require("./routes/food/analyzeFood"); 
 const drinksRoutes = require("./routes/food/analyzeDrinks");
-
+const recommendationsRoutes =
+require("./routes/recommendations");
 
 app.use(cors());
 
@@ -228,7 +229,10 @@ app.use(
   "/api",
   drinksRoutes
 );
-
+app.use(
+  "/api",
+  recommendationsRoutes
+);
 
 
 mongoose
@@ -1060,6 +1064,9 @@ app.post(
         "Subcategory Sample Rank": cleanNumber(
           row["Subcategory Sample Rank"]
         ),
+        analysisEngine: cleanString(row["Analysis Engine"]),
+        analysisIngredients: cleanString(row["Analysis Ingredients"]),
+        analysisReport: cleanString(row["Analysis Report"]),
       };
 
       addedCount++;
@@ -1189,6 +1196,9 @@ app.post("/products/:id/update", async (req, res) => {
     "homeSections", "Status", "Price", "Brand", "Name of Product",
     "Short Description", "Seller Website", "Subcategory Sample Rank",
     "Rating",
+    "analysisEngine",
+    "analysisIngredients",
+    "analysisReport",
   ];
 
   const safeUpdates = {};
@@ -1229,6 +1239,185 @@ app.post("/products/:id/update", async (req, res) => {
   }
 
   res.json({ success: true });
+});
+
+/* ============================================================
+   GENERATE PRODUCT INTELLIGENCE REPORT
+   POST /products/:id/generate-report
+   Calls existing Nigooda engine → saves result.analysis
+   into analysisReport on JSON + MongoDB.
+============================================================ */
+
+const ENGINE_ROUTES = {
+  "face-wash":                  "/api/analyze-facewash",
+  "moisturizer":                "/api/analyze-moisturizer",
+  "sunscreen":                  "/api/analyze-sunscreen",
+  "toner":                      "/api/analyze-toner",
+  "serum":                      "/api/analyze-serum",
+  "day-cream":                  "/api/analyze-daycream",
+  "night-cream":                "/api/analyze-nightcream",
+  "eye-cream":                  "/api/analyze-eyecream",
+  "lip-balm":                   "/api/analyze-lipbalm",
+  "face-mask":                  "/api/analyze-facemask",
+  "shampoo":                    "/api/analyze-shampoo",
+  "conditioner":                "/api/analyze-conditioner",
+  "hair-color-dye":             "/api/analyze-haircolordye",
+  "hair-styling":               "/api/analyze-hairstylingproduct",
+  "hair-oil":                   "/api/analyze-hairoil",
+  "hair-mask":                  "/api/analyze-hairmask",
+  "hair-serum":                 "/api/analyze-hairserum",
+  "beard-growth-serum":         "/api/analyze-beardgrowthserum",
+  "soap-body-wash":             "/api/analyze-soapbodywash",
+  "body-lotion":                "/api/analyze-bodylotion",
+  "body-scrub":                 "/api/analyze-bodyscrub",
+  "body-powder":                "/api/analyze-bodypowder",
+  "deodorant-antiperspirant":   "/api/analyze-deodorantantiperspirant",
+  "toothpaste-tooth-powder":    "/api/analyze-toothpastetoothpowder",
+  "mouthwash":                  "/api/analyze-mouthwash",
+  "teeth-whitening":            "/api/analyze-teethwhiteningproduct",
+  "gum-care":                   "/api/analyze-gumcareproduct",
+  "hand-wash":                  "/api/analyze-handwash",
+  "hand-sanitizer":             "/api/analyze-handsanitizer",
+  "intimate-wash":              "/api/analyze-intimatewash",
+  "foot-care":                  "/api/analyze-footcare",
+  "antiseptic-liquid":          "/api/analyze-antisepticliquid",
+  "hygiene-wipes":              "/api/analyze-hygienewipes",
+  "food":                       "/api/analyze-foods",
+  "drinks":                     "/api/analyze-drinks",
+};
+
+app.post("/products/:id/generate-report", async (req, res) => {
+  const { id } = req.params;
+  const { analysisEngine, analysisIngredients } = req.body;
+
+  /* =========================
+     VALIDATE ENGINE
+  ========================= */
+  if (!analysisEngine) {
+    return res.status(400).json({
+      message: "analysisEngine is required",
+    });
+  }
+
+  const enginePath = ENGINE_ROUTES[analysisEngine];
+
+  if (!enginePath) {
+    return res.status(400).json({
+      message: `Unknown analysisEngine: "${analysisEngine}"`,
+    });
+  }
+
+  /* =========================
+     VALIDATE INGREDIENTS
+  ========================= */
+  if (
+    !analysisIngredients ||
+    cleanString(analysisIngredients) === ""
+  ) {
+    return res.status(400).json({
+      message: "analysisIngredients is required",
+    });
+  }
+
+  /* =========================
+     FIND PRODUCT
+  ========================= */
+  const products = readProducts();
+  const index = products.findIndex(
+    (p) => cleanString(p.id) === cleanString(id)
+  );
+
+  if (index === -1) {
+    return res.status(404).json({
+      message: "Product not found",
+    });
+  }
+
+  /* =========================
+     CALL EXISTING ENGINE
+  ========================= */
+  let analysisReport;
+
+  try {
+    const engineUrl = `http://localhost:${PORT}${enginePath}`;
+
+    const engineResponse = await fetch(engineUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pastedIngredients: analysisIngredients,
+      }),
+    });
+
+    if (!engineResponse.ok) {
+      return res.status(502).json({
+        message: `Engine responded with status ${engineResponse.status}`,
+      });
+    }
+
+    const engineData = await engineResponse.json();
+
+    if (
+      !engineData.success ||
+      !engineData.result ||
+      !engineData.result.analysis
+    ) {
+      return res.status(502).json({
+        message: "Engine did not return a valid analysis",
+        engineData,
+      });
+    }
+
+    analysisReport = engineData.result.analysis;
+
+  } catch (engineErr) {
+    console.error("Engine call failed:", engineErr);
+    return res.status(502).json({
+      message: "Engine call failed",
+      error: engineErr.message,
+    });
+  }
+
+  /* =========================
+     SAVE TO JSON
+  ========================= */
+  const reportUpdates = {
+    analysisEngine:      cleanString(analysisEngine),
+    analysisIngredients: cleanString(analysisIngredients),
+    analysisReport,
+  };
+
+  products[index] = {
+    ...products[index],
+    ...reportUpdates,
+  };
+
+  writeProducts(products);
+
+  /* =========================
+     SAVE TO MONGODB
+  ========================= */
+  try {
+    await Product.findOneAndUpdate(
+      { id: cleanString(id) },
+      { $set: reportUpdates },
+      { upsert: false }
+    );
+  } catch (mongoErr) {
+    console.error(
+      "Mongo update failed after report generation, falling back to full sync:",
+      mongoErr
+    );
+    await syncProductsToMongo();
+  }
+
+  /* =========================
+     RESPOND
+  ========================= */
+  res.json({
+    success: true,
+    analysisReport,
+  });
 });
 
 /* ============================================================

@@ -17,7 +17,49 @@ type Product = {
   Tags?: string;
   Status?: string;
   "Subcategory Sample Rank"?: number;
+  analysisEngine?: string;
+  analysisIngredients?: string;
+  analysisReport?: string;
 };
+
+const ANALYSIS_ENGINE_OPTIONS = [
+  { value: "", label: "— Select Engine —" },
+  { value: "face-wash", label: "Face Wash" },
+  { value: "moisturizer", label: "Moisturizer" },
+  { value: "sunscreen", label: "Sunscreen" },
+  { value: "toner", label: "Toner" },
+  { value: "serum", label: "Serum" },
+  { value: "day-cream", label: "Day Cream" },
+  { value: "night-cream", label: "Night Cream" },
+  { value: "eye-cream", label: "Eye Cream" },
+  { value: "lip-balm", label: "Lip Balm" },
+  { value: "face-mask", label: "Face Mask" },
+  { value: "shampoo", label: "Shampoo" },
+  { value: "conditioner", label: "Conditioner" },
+  { value: "hair-color-dye", label: "Hair Color / Dye" },
+  { value: "hair-styling", label: "Hair Styling Product" },
+  { value: "hair-oil", label: "Hair Oil" },
+  { value: "hair-mask", label: "Hair Mask" },
+  { value: "hair-serum", label: "Hair Serum" },
+  { value: "beard-growth-serum", label: "Beard Growth Serum" },
+  { value: "soap-body-wash", label: "Soap / Body Wash" },
+  { value: "body-lotion", label: "Body Lotion" },
+  { value: "body-scrub", label: "Body Scrub" },
+  { value: "body-powder", label: "Body Powder" },
+  { value: "deodorant-antiperspirant", label: "Deodorant / Antiperspirant" },
+  { value: "toothpaste-tooth-powder", label: "Toothpaste / Tooth Powder" },
+  { value: "mouthwash", label: "Mouthwash" },
+  { value: "teeth-whitening", label: "Teeth Whitening Product" },
+  { value: "gum-care", label: "Gum Care Product" },
+  { value: "hand-wash", label: "Hand Wash" },
+  { value: "hand-sanitizer", label: "Hand Sanitizer" },
+  { value: "intimate-wash", label: "Intimate Wash" },
+  { value: "foot-care", label: "Foot Care" },
+  { value: "antiseptic-liquid", label: "Antiseptic Liquid" },
+  { value: "hygiene-wipes", label: "Hygiene Wipes" },
+  { value: "food", label: "Food" },
+  { value: "drinks", label: "Drinks" },
+];
 
 const ProductsAdmin = ({
   products,
@@ -194,6 +236,10 @@ const ProductsAdmin = ({
               <th>Tags</th>
               <th className="p-3 text-left w-24">Sample Rank</th>
               <th>Status</th>
+              <th>Analysis Engine</th>
+              <th>Ingredients</th>
+              <th>Report</th>
+              <th>Generate</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -395,6 +441,119 @@ const ProductsAdmin = ({
                       Saving…
                     </div>
                   )}
+                </td>
+
+                {/* ANALYSIS ENGINE DROPDOWN */}
+                <td className="p-2">
+                  <select
+                    className="border px-2 py-1 w-44"
+                    defaultValue={p.analysisEngine ?? ""}
+                    onChange={(e) =>
+                      update(p.id, {
+                        analysisEngine: e.target.value,
+                      })
+                    }
+                  >
+                    {ANALYSIS_ENGINE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+
+                {/* INGREDIENTS */}
+                <td className="p-2">
+                  <textarea
+                    className="border px-2 py-1 w-64 h-24"
+                    defaultValue={p.analysisIngredients}
+                    onBlur={(e) =>
+                      update(p.id, {
+                        analysisIngredients: e.target.value,
+                      })
+                    }
+                  />
+                </td>
+
+                {/* REPORT */}
+                <td className="p-2">
+                  <textarea
+                    className="border px-2 py-1 w-72 h-32"
+                    defaultValue={p.analysisReport}
+                    onBlur={(e) =>
+                      update(p.id, {
+                        analysisReport: e.target.value,
+                      })
+                    }
+                  />
+                </td>
+
+                {/* GENERATE */}
+                <td className="p-2">
+                  <div className="flex flex-col items-start gap-1">
+                    <button
+                      onClick={async () => {
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/products/${p.id}/generate-report`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body:
+            JSON.stringify({
+
+              analysisEngine:
+                p.analysisEngine,
+
+              analysisIngredients:
+                p.analysisIngredients,
+
+            }),
+        }
+      );
+
+    const data =
+      await response.json();
+
+    console.log(
+      "GENERATE RESULT:",
+      data
+    );
+
+    refresh();
+
+  }
+
+  catch (err) {
+
+    console.error(
+      "GENERATE ERROR:",
+      err
+    );
+
+  }
+
+}}
+                      disabled={!p.analysisEngine || !p.analysisIngredients}
+                      className="px-3 py-1.5 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Generate Report
+                    </button>
+
+                    {p.analysisReport && (
+                      <span className="text-xs text-green-600 font-medium">
+                        ✓ Report Available
+                      </span>
+                    )}
+                  </div>
                 </td>
 
                 <td className="p-2">

@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
-import TestAnalysis from "../components/TestAnalysis";
+import ReactMarkdown from "react-markdown";
+
 interface Product {
   id: string;
   Brand?: string;
@@ -13,6 +14,9 @@ interface Product {
   Rating?: number;
   "Variant Group ID"?: string;
   "Short Description"?: string;
+  analysisEngine?: string;
+  analysisIngredients?: string;
+  analysisReport?: string;
 }
 
 const ProductPage = ({ products }: { products: Product[] }) => {
@@ -172,11 +176,19 @@ const ProductPage = ({ products }: { products: Product[] }) => {
           </div>
         )}
 
-           </div>
-
-      <div className="md:col-span-2">
-        <TestAnalysis />
       </div>
+
+      {/* 📊 ANALYSIS REPORT */}
+      {activeVariant.analysisReport && (
+        <div className="md:col-span-2">
+          <div className="prose max-w-none">
+            <ReactMarkdown>
+              {activeVariant.analysisReport}
+            </ReactMarkdown>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );
