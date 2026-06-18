@@ -109,16 +109,16 @@ const BillingPlans = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-28 pb-20 px-4 md:px-8">
+    <div className="min-h-screen bg-[#fafafa] pt-20 md:pt-24 pb-12 md:pb-16 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
 
         {/* HEADER */}
-        <div className="text-center mb-14">
-          <p className="text-sm font-semibold text-slate-400 tracking-widest uppercase mb-3">
+        <div className="text-center mb-8">
+          <p className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-2">
             Pricing
           </p>
 
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight mb-3">
             Billing & Plans
           </h1>
 
@@ -163,7 +163,7 @@ const BillingPlans = () => {
         </div>
 
         {/* PLAN CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 
           {PLANS.map((plan) => {
             const c = colorMap[plan.color];
@@ -172,7 +172,7 @@ const BillingPlans = () => {
             return (
               <div
                 key={plan.id}
-                className={`relative bg-white border ${c.border} ${c.ring} rounded-2xl p-7 shadow-sm flex flex-col gap-5 hover:shadow-md transition-shadow duration-200`}
+                className={`relative bg-white border ${c.border} ${c.ring} rounded-2xl p-5 md:p-6 shadow-sm flex flex-col gap-4 hover:shadow-md transition-shadow duration-200`}
               >
 
                 {plan.popular && (

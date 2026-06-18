@@ -33,35 +33,35 @@ const Dashboard = () => {
   const planColor = userData?.plan === "pro" ? "text-violet-600 bg-violet-50 border-violet-100" : userData?.plan === "starter" ? "text-blue-600 bg-blue-50 border-blue-100" : "text-slate-600 bg-slate-50 border-slate-200";
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-28 pb-20 px-4 md:px-8">
+    <div className="min-h-screen bg-[#fafafa] pt-20 md:pt-24 pb-12 md:pb-16 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
 
         {/* HEADER */}
-        <div className="mb-10">
-          <p className="text-sm font-semibold text-slate-400 tracking-widest uppercase mb-1">Overview</p>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-1">Overview</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
             Welcome back, {currentUser?.displayName?.split(" ")[0]} 👋
           </h1>
         </div>
 
         {/* STAT CARDS */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
 
           {/* Credits */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mb-4">
+          <div className="bg-white border border-slate-100 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
             <p className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-1">Credits Remaining</p>
-            <p className="text-3xl font-bold text-slate-900">{userData?.credits ?? "—"}</p>
+            <p className="text-2xl font-bold text-slate-900">{userData?.credits ?? "—"}</p>
             <p className="text-xs text-slate-400 mt-1">scans available</p>
           </div>
 
           {/* Plan */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-            <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center mb-4">
+          <div className="bg-white border border-slate-100 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center mb-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
               </svg>
@@ -78,14 +78,14 @@ const Dashboard = () => {
           </div>
 
           {/* Total Scans */}
-          <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center mb-4">
+          <div className="bg-white border border-slate-100 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center mb-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
             <p className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-1">Total Scans</p>
-            <p className="text-3xl font-bold text-slate-900">{userData?.totalScans ?? 0}</p>
+            <p className="text-2xl font-bold text-slate-900">{userData?.totalScans ?? 0}</p>
             <p className="text-xs text-slate-400 mt-1">lifetime analyses</p>
           </div>
 
@@ -101,11 +101,11 @@ const Dashboard = () => {
           </div>
 
           {loadingScans ? (
-            <div className="flex items-center justify-center py-12">
+            <div className="flex items-center justify-center py-8">
               <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
             </div>
           ) : recentScans.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+            <div className="flex flex-col items-center justify-center py-8 text-center px-6">
               <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-3 text-2xl">🔍</div>
               <p className="text-sm font-medium text-slate-700 mb-1">No scans yet</p>
               <p className="text-xs text-slate-400">Analyze your first product to see results here.</p>

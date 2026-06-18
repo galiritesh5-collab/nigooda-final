@@ -118,15 +118,15 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
      RENDER
   ----------------------------------*/
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 space-y-4">
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold">{decodedSubCategory}</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-lg font-semibold text-slate-900">{decodedSubCategory}</h1>
 
         <select
           value={sortOption}
           onChange={(e) => setSortOption(e.target.value)}
-          className="border px-3 py-2 rounded-md"
+          className="border border-slate-200 px-3 py-1.5 rounded-lg text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300"
         >
           <option value="default">Default</option>
           <option value="popular">Popularity</option>
@@ -137,8 +137,8 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
       </div>
 
       {groupedProducts.length === 0 ? (
-        <div className="py-24 text-center text-slate-500">
-          <p className="text-lg">No products found in "{decodedSubCategory}"</p>
+        <div className="py-12 text-center text-slate-500">
+          <p className="text-base">“{decodedSubCategory}” has no products yet.</p>
           <p className="text-sm mt-1">
             Products may still be loading or this subcategory has no items.
           </p>

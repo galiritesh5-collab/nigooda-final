@@ -44,7 +44,7 @@ const ProductCard: React.FC<{
   return (
     <div
       className={`relative group bg-white rounded-2xl border border-slate-100 hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 ${
-        compact ? "p-3" : "p-5"
+        compact ? "p-3" : "p-3 md:p-4"
       }`}
     >
       {/* ❤️ WISHLIST BUTTON */}
@@ -64,7 +64,7 @@ const ProductCard: React.FC<{
       <Link to={`/product/${activeVariant.id}`}>
         <div
           className={`w-full flex items-center justify-center overflow-hidden rounded-xl ${
-            compact ? "h-28 mb-3" : "h-56 mb-5"
+            compact ? "h-24 mb-2.5" : "h-40 md:h-48 mb-3"
           }`}
         >
           <img
@@ -160,11 +160,11 @@ const ProductSection = memo(({
   if (!products || !products.length) return null;
 
   return (
-    <section className="px-4 md:px-6 py-8">
-      {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
+    <section className="px-3 md:px-5 py-4">
+      {title && <h2 className="text-lg font-bold mb-3">{title}</h2>}
 
       <div
-        className={`grid gap-4 ${
+        className={`grid gap-3 ${
           compact
             ? "grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8"
             : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"

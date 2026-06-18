@@ -27,19 +27,19 @@ const Settings = () => {
     .slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-28 pb-20 px-4 md:px-8">
+    <div className="min-h-screen bg-[#fafafa] pt-20 md:pt-24 pb-12 px-4 md:px-8">
       <div className="max-w-2xl mx-auto">
 
         {/* HEADER */}
-        <div className="mb-10">
-          <p className="text-sm font-semibold text-slate-400 tracking-widest uppercase mb-1">Account</p>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Settings</h1>
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-1">Account</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Settings</h1>
         </div>
 
         {/* PROFILE CARD */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-7 shadow-sm mb-5">
-          <h2 className="text-sm font-semibold text-slate-400 tracking-widest uppercase mb-5">Profile</h2>
-          <div className="flex items-center gap-5 mb-6">
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 md:p-6 shadow-sm mb-4">
+          <h2 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">Profile</h2>
+          <div className="flex items-center gap-4 mb-5">
             {currentUser?.photoURL ? (
               <img
                 src={currentUser.photoURL}
@@ -79,8 +79,8 @@ const Settings = () => {
         </div>
 
         {/* SECURITY */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-7 shadow-sm mb-5">
-          <h2 className="text-sm font-semibold text-slate-400 tracking-widest uppercase mb-5">Security</h2>
+        <div className="bg-white border border-slate-100 rounded-2xl p-5 md:p-6 shadow-sm mb-4">
+          <h2 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">Security</h2>
           <div className="space-y-2">
 
             {/* Change password placeholder */}
@@ -101,8 +101,8 @@ const Settings = () => {
         </div>
 
         {/* DANGER ZONE */}
-        <div className="bg-white border border-red-100 rounded-2xl p-7 shadow-sm mb-5">
-          <h2 className="text-sm font-semibold text-red-400 tracking-widest uppercase mb-5">Danger Zone</h2>
+        <div className="bg-white border border-red-100 rounded-2xl p-5 md:p-6 shadow-sm mb-4">
+          <h2 className="text-xs font-semibold text-red-400 tracking-widest uppercase mb-4">Danger Zone</h2>
           <div className="space-y-2">
 
             {/* Delete account placeholder */}

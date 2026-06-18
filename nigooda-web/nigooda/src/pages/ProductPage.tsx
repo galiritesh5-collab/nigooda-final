@@ -67,7 +67,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
   const liked = isInWishlist(activeVariant.id);
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 grid md:grid-cols-2 gap-12">
+    <div className="max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-8 grid md:grid-cols-2 gap-6 md:gap-10">
 
       {/* ================= LEFT SIDE ================= */}
       <div className="relative flex items-center justify-center">
@@ -91,14 +91,14 @@ const ProductPage = ({ products }: { products: Product[] }) => {
           alt={activeVariant["Name of Product"]}
           loading="lazy"
           decoding="async"
-          className="max-h-[500px] object-contain"
+          className="max-h-[340px] md:max-h-[460px] object-contain w-full"
         />
       </div>
 
       {/* ================= RIGHT SIDE ================= */}
       <div className="space-y-5">
 
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-xl md:text-2xl font-bold">
           {activeVariant["Name of Product"]}
         </h1>
 
@@ -118,7 +118,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
         {/* 💰 Price */}
         {activeVariant.Price && (
-          <p className="text-2xl font-semibold">
+          <p className="text-xl font-semibold">
             ₹{activeVariant.Price}
           </p>
         )}
@@ -139,7 +139,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
                 <button
                   key={variant.id}
                   onClick={() => setActiveVariant(variant)}
-                  className={`w-16 h-16 rounded-lg overflow-hidden border-2 ${
+                  className={`w-12 h-12 rounded-lg overflow-hidden border-2 ${
                     activeVariant.id === variant.id
                       ? "border-black"
                       : "border-gray-300"

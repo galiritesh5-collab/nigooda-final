@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 
 const Footer = () => {
-return ( <footer className="bg-slate-950 text-white mt-20 border-t border-slate-800"> <div className="max-w-7xl mx-auto px-6 py-16">
+return ( <footer className="bg-slate-950 text-white mt-10 md:mt-14 border-t border-slate-800"> <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-12">
 
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
 
       {/* Brand Section */}
-      <div>
-        <h2 className="text-2xl font-bold mb-4">
+      <div className="col-span-2 md:col-span-1">
+        <h2 className="text-xl font-bold mb-3">
           Nigooda
         </h2>
 
@@ -20,7 +20,7 @@ return ( <footer className="bg-slate-950 text-white mt-20 border-t border-slate-
 
       {/* Company */}
       <div>
-        <h3 className="font-semibold text-lg mb-4">
+        <h3 className="font-semibold text-sm mb-3 text-slate-300 uppercase tracking-wide">
           Company
         </h3>
 
@@ -45,7 +45,7 @@ return ( <footer className="bg-slate-950 text-white mt-20 border-t border-slate-
 
       {/* Legal */}
       <div>
-        <h3 className="font-semibold text-lg mb-4">
+        <h3 className="font-semibold text-sm mb-3 text-slate-300 uppercase tracking-wide">
           Legal
         </h3>
 
@@ -98,7 +98,7 @@ return ( <footer className="bg-slate-950 text-white mt-20 border-t border-slate-
 
       {/* Resources */}
       <div>
-        <h3 className="font-semibold text-lg mb-4">
+        <h3 className="font-semibold text-sm mb-3 text-slate-300 uppercase tracking-wide">
           Resources
         </h3>
 
@@ -154,7 +154,7 @@ return ( <footer className="bg-slate-950 text-white mt-20 border-t border-slate-
 
     </div>
 
-    <div className="border-t border-slate-800 mt-12 pt-8">
+    <div className="border-t border-slate-800 mt-8 pt-6">
 
       <p className="text-center text-slate-400 text-sm">
         © {new Date().getFullYear()} Nigooda. All rights reserved.

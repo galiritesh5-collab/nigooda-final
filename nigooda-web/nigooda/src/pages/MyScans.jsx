@@ -29,22 +29,22 @@ const MyScans = () => {
   }, [currentUser]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-28 pb-20 px-4 md:px-8">
+    <div className="min-h-screen bg-[#fafafa] pt-20 md:pt-24 pb-12 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
 
         {/* HEADER */}
-        <div className="mb-10">
-          <p className="text-sm font-semibold text-slate-400 tracking-widest uppercase mb-1">History</p>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">My Scans</h1>
-          <p className="text-slate-500 text-sm mt-2">{scans.length} product{scans.length !== 1 ? "s" : ""} analyzed</p>
+        <div className="mb-6">
+          <p className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-1">History</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">My Scans</h1>
+          <p className="text-slate-500 text-sm mt-1.5">{scans.length} product{scans.length !== 1 ? "s" : ""} analyzed</p>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-24">
+          <div className="flex items-center justify-center py-14">
             <div className="w-8 h-8 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
           </div>
         ) : scans.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="flex flex-col items-center justify-center py-14 text-center">
             <div className="w-16 h-16 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-center mb-4 text-3xl">🔍</div>
             <p className="text-base font-semibold text-slate-800 mb-1">No scans yet</p>
             <p className="text-sm text-slate-400 max-w-xs">Start analyzing products to build your personal scan history.</p>

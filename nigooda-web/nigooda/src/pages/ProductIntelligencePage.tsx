@@ -178,24 +178,41 @@ const ProductIntelligencePage = () => {
 
     <div className="min-h-screen bg-slate-50">
 
+      {/* MOBILE TAB BAR — visible only below lg */}
+      <div className="lg:hidden flex gap-2 overflow-x-auto px-4 pt-4 pb-2" style={{scrollbarWidth: 'none'}}>
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              activeTab === tab
+                ? "bg-indigo-600 text-white"
+                : "bg-white border border-slate-200 text-slate-700"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
       <div className="max-w-[1600px] mx-auto flex">
 
         {/* SIDEBAR */}
 
-        <div className="w-[280px] bg-white border-r border-slate-200 min-h-screen p-6 hidden lg:block">
+        <div className="w-[240px] bg-white border-r border-slate-200 min-h-screen p-4 hidden lg:block">
 
-          <h2 className="text-xl font-bold text-slate-900 mb-8">
+          <h2 className="text-base font-bold text-slate-900 mb-5">
             Product Intelligence
           </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-1">
 
             {tabs.map((tab) => (
 
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`w-full text-left px-5 py-4 rounded-2xl transition-all duration-200 font-medium ${
+                className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
                   activeTab === tab
                     ? "bg-indigo-100 text-indigo-700"
                     : "hover:bg-slate-100 text-slate-700"
@@ -212,21 +229,21 @@ const ProductIntelligencePage = () => {
 
         {/* MAIN CONTENT */}
 
-        <div className="flex-1 p-8 md:p-10">
+        <div className="flex-1 p-4 md:p-7">
 
           {/* HERO */}
 
-          <div className="mb-12">
+          <div className="mb-6">
 
-            <span className="inline-flex px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold uppercase tracking-wide">
+            <span className="inline-flex px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold uppercase tracking-wide">
               Product Intelligence
             </span>
 
-            <h1 className="mt-5 text-5xl font-bold text-slate-900">
+            <h1 className="mt-2 text-2xl md:text-3xl font-bold text-slate-900">
               {activeTab}
             </h1>
 
-            <p className="mt-5 text-lg text-slate-600 max-w-3xl leading-relaxed">
+            <p className="mt-2 text-sm text-slate-600 max-w-2xl leading-relaxed">
               AI-powered ingredient analysis and intelligent safety ratings
               with modern AI workspace design.
             </p>
@@ -243,12 +260,12 @@ const ProductIntelligencePage = () => {
 
               <div
                 key={section.title}
-                className="bg-white border border-slate-200 rounded-3xl p-6"
+                className="bg-white border border-slate-200 rounded-2xl p-4"
               >
 
                 {/* SECTION TITLE */}
 
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">
+                <h2 className="text-base font-bold text-slate-900 mb-4">
                   {section.title}
                 </h2>
 

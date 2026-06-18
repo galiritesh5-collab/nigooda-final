@@ -336,8 +336,8 @@ const Navbar: React.FC<Props> = ({
         </div>
 
         {/* CATEGORY BAR */}
-        <div className="pb-2 relative z-10">
-          <div className="flex gap-1.5">
+        <div className="pb-1.5 relative z-10">
+          <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
             {CATEGORIES.map((cat) => {
               const isSimple = cat.type === "simple";
               const isTabbed = cat.type === "tabbed";

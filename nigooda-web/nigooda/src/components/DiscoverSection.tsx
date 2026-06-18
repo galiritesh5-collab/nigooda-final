@@ -99,7 +99,7 @@ const DiscoverSection = ({
     };
 
   return (
-    <div className="px-4 md:px-8 mb-8">
+    <div className="px-3 md:px-6 mb-5">
 
       <div
         className={`relative rounded-3xl border ${theme.accent} ${theme.bg} overflow-hidden`}
@@ -111,7 +111,7 @@ const DiscoverSection = ({
         />
 
         {/* HEADER */}
-        <div className="relative flex items-start justify-between px-8 pt-8 pb-4">
+        <div className="relative flex items-start justify-between px-5 md:px-8 pt-5 md:pt-6 pb-3">
 
           <div>
 
@@ -121,7 +121,7 @@ const DiscoverSection = ({
               {theme.label}
             </div>
 
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 leading-tight">
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-slate-900 leading-tight">
               {title}
             </h2>
 
@@ -146,7 +146,7 @@ const DiscoverSection = ({
         </div>
 
         {/* PRODUCTS */}
-        <div className="pb-6 px-2">
+        <div className="pb-4 px-1">
 
           <ProductSection
             title=""

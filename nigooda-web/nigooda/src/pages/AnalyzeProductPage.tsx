@@ -426,19 +426,19 @@ navigate(
 
   return (
 
-    <div className="min-h-screen bg-slate-50 px-6 py-12">
+    <div className="min-h-screen bg-slate-50 px-4 md:px-6 py-6 md:py-8">
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-5xl mx-auto">
 
         {/* TOP SECTION */}
 
-        <div className="mb-12">
+        <div className="mb-6">
 
           <span className="inline-flex px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold uppercase tracking-wide">
             AI Product Analysis
           </span>
 
-          <h1 className="mt-5 text-5xl font-bold text-slate-900">
+          <h1 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900">
 
             {category === "food" &&
               "Analyze Food Ingredients"}
@@ -452,7 +452,7 @@ navigate(
 
           </h1>
 
-          <p className="mt-5 text-lg text-slate-600 max-w-3xl leading-relaxed">
+          <p className="mt-3 text-base text-slate-600 max-w-2xl leading-relaxed">
             Upload ingredient labels, scan
             packaging, or paste ingredients to
             generate AI-powered ingredient,
@@ -464,11 +464,11 @@ navigate(
 
         {/* MAIN ANALYSIS CARD */}
 
-        <div className="bg-white border border-slate-200 rounded-[32px] p-8 md:p-10 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 md:p-7 shadow-sm">
 
           {/* CONTEXT */}
 
-          <div className="flex flex-wrap gap-3 mb-8">
+          <div className="flex flex-wrap gap-2 mb-5">
 
             {categoryLabel && (
               <span className="px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 text-sm font-medium">
@@ -496,13 +496,13 @@ navigate(
 
             {/* UPLOAD */}
 
-            <div className="rounded-3xl border border-indigo-100 bg-indigo-50 p-8 hover:shadow-xl transition-all duration-300">
+            <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-5 hover:shadow-xl transition-all duration-300">
 
-              <div className="text-5xl mb-5">
+              <div className="text-3xl mb-3">
                 📸
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-slate-900">
                 Upload Image
               </h2>
 
@@ -535,13 +535,13 @@ navigate(
 
             {/* SCAN */}
 
-            <button className="rounded-3xl border border-slate-200 bg-white p-8 text-left hover:shadow-xl transition-all duration-300">
+            <button className="rounded-2xl border border-slate-200 bg-white p-5 text-left hover:shadow-xl transition-all duration-300">
 
-              <div className="text-5xl mb-5">
+              <div className="text-3xl mb-3">
                 🔍
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-slate-900">
                 Scan Ingredients
               </h2>
 
@@ -554,13 +554,13 @@ navigate(
 
             {/* PASTE */}
 
-            <button className="rounded-3xl border border-slate-200 bg-white p-8 text-left hover:shadow-xl transition-all duration-300">
+            <button className="rounded-2xl border border-slate-200 bg-white p-5 text-left hover:shadow-xl transition-all duration-300">
 
-              <div className="text-5xl mb-5">
+              <div className="text-3xl mb-3">
                 ✍️
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-slate-900">
                 Paste Ingredients
               </h2>
 
@@ -576,7 +576,7 @@ navigate(
 
           {/* INPUT AREA */}
 
-          <div className="mt-10">
+          <div className="mt-6">
 
             <textarea
               value={ingredientsText}
@@ -586,13 +586,13 @@ navigate(
                 )
               }
               placeholder="Paste ingredients here..."
-              className="w-full h-52 rounded-3xl border border-slate-200 p-6 text-slate-700 resize-none focus:outline-none focus:ring-4 focus:ring-indigo-100"
+              className="w-full h-36 md:h-44 rounded-2xl border border-slate-200 p-4 text-sm text-slate-700 resize-none focus:outline-none focus:ring-4 focus:ring-indigo-100"
             />
 
             <button
               onClick={handleAnalyze}
               disabled={loading}
-              className="mt-6 px-8 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-all duration-200 disabled:opacity-50"
+              className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm text-white font-semibold transition-all duration-200 disabled:opacity-50"
             >
               {loading
                 ? "Analyzing..."

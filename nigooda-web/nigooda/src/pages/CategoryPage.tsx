@@ -69,11 +69,11 @@ const CategoryPage = ({ products }: { products: any[] }) => {
 
   if (categoryProducts.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-16 text-center">
-        <h1 className="text-2xl font-bold uppercase tracking-wide mb-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4">
+        <h1 className="text-xl font-bold uppercase tracking-wide mb-3">
           {category.label}
         </h1>
-        <p className="text-slate-500">
+        <p className="text-slate-500 text-sm">
           No products found in this category yet.
         </p>
       </div>
@@ -81,11 +81,11 @@ const CategoryPage = ({ products }: { products: any[] }) => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+    <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 space-y-6 md:space-y-8">
       {/* CATEGORY HEADER */}
       <div className="flex items-center justify-between select-none">
         <h1
-          className="text-2xl font-bold uppercase tracking-wide cursor-pointer"
+          className="text-xl font-bold uppercase tracking-wide cursor-pointer"
           onMouseDown={() => setShowSubCategories((v) => !v)}
           onTouchStart={() => setShowSubCategories((v) => !v)}
         >
@@ -99,8 +99,8 @@ const CategoryPage = ({ products }: { products: any[] }) => {
 
       {/* STICKY SUBCATEGORY BAR */}
       {showSubCategories && subCategories.length > 0 && (
-        <div className="sticky top-14 z-30 bg-white shadow-md rounded-xl px-3 py-3">
-          <div className="flex gap-3 overflow-x-auto">
+        <div className="sticky top-[108px] z-30 bg-white shadow-sm rounded-xl px-3 py-2">
+          <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth: 'none'}}>
             {subCategories.map((sub) => (
               <Link
                 key={sub}

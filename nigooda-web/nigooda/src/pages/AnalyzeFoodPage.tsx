@@ -180,13 +180,13 @@ const AnalyzeFoodPage = () => {
 
   return (
 
-    <div className="min-h-screen bg-slate-50 px-6 py-12">
+    <div className="min-h-screen bg-slate-50 px-4 md:px-6 py-6 md:py-8">
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
         {/* TOP SWITCHER */}
 
-        <div className="flex gap-4 mb-10">
+        <div className="flex gap-3 mb-5">
 
           <button
             onClick={() =>
@@ -195,7 +195,7 @@ const AnalyzeFoodPage = () => {
               )
             }
 
-            className={`px-6 py-3 rounded-full font-semibold transition-all duration-200 ${
+            className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200 ${
               !isDrinks
 
                 ? "bg-emerald-600 text-white shadow-lg"
@@ -215,7 +215,7 @@ const AnalyzeFoodPage = () => {
               )
             }
 
-            className={`px-6 py-3 rounded-full font-semibold transition-all duration-200 ${
+            className={`px-5 py-2 rounded-full font-semibold text-sm transition-all duration-200 ${
               isDrinks
 
                 ? "bg-sky-600 text-white shadow-lg"
@@ -232,10 +232,10 @@ const AnalyzeFoodPage = () => {
 
         {/* HERO */}
 
-        <div className="mb-12">
+        <div className="mb-6">
 
           <span
-            className={`inline-flex px-4 py-1.5 rounded-full border text-xs font-semibold uppercase tracking-wide ${
+            className={`inline-flex px-3 py-1 rounded-full border text-xs font-semibold uppercase tracking-wide ${
               isDrinks
 
                 ? "bg-sky-50 border-sky-100 text-sky-700"
@@ -250,7 +250,7 @@ const AnalyzeFoodPage = () => {
 
           </span>
 
-          <h1 className="mt-5 text-5xl font-bold text-slate-900">
+          <h1 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900">
 
             {isDrinks
               ? "Analyze Drink Product"
@@ -258,7 +258,7 @@ const AnalyzeFoodPage = () => {
 
           </h1>
 
-          <p className="mt-5 text-lg text-slate-600 max-w-3xl leading-relaxed">
+          <p className="mt-3 text-base text-slate-600 max-w-2xl leading-relaxed">
 
             {isDrinks
 
@@ -273,7 +273,7 @@ const AnalyzeFoodPage = () => {
         {/* MAIN CARD */}
 
         <div
-          className={`bg-white border rounded-[32px] p-8 md:p-10 shadow-sm ${
+          className={`bg-white border rounded-2xl p-5 md:p-7 shadow-sm ${
             isDrinks
 
               ? "border-sky-100"
@@ -289,7 +289,7 @@ const AnalyzeFoodPage = () => {
             {/* IMAGE */}
 
             <div
-              className={`rounded-3xl border p-8 hover:shadow-xl transition-all duration-300 ${
+              className={`rounded-2xl border p-5 hover:shadow-xl transition-all duration-300 ${
                 isDrinks
 
                   ? "border-sky-100 bg-sky-50"
@@ -298,11 +298,11 @@ const AnalyzeFoodPage = () => {
               }`}
             >
 
-              <div className="text-5xl mb-5">
+              <div className="text-3xl mb-3">
                 📸
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-slate-900">
 
                 Upload Label
 
@@ -318,7 +318,7 @@ const AnalyzeFoodPage = () => {
               <input
                 type="file"
                 accept="image/*"
-                className="mt-6"
+                className="mt-4 text-sm"
                 onChange={(e) => {
 
                   if (
@@ -338,13 +338,13 @@ const AnalyzeFoodPage = () => {
 
             {/* PASTE */}
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-8 hover:shadow-xl transition-all duration-300">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 hover:shadow-xl transition-all duration-300">
 
-              <div className="text-5xl mb-5">
+              <div className="text-3xl mb-3">
                 ✍️
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-slate-900">
 
                 Paste Ingredients
 
@@ -363,7 +363,7 @@ const AnalyzeFoodPage = () => {
 
           {/* TEXTAREA */}
 
-          <div className="mt-10">
+          <div className="mt-6">
 
             <textarea
               value={ingredients}
@@ -382,7 +382,7 @@ const AnalyzeFoodPage = () => {
                   : "Paste food ingredients here..."
               }
 
-              className={`w-full h-56 rounded-3xl border p-6 text-slate-700 resize-none focus:outline-none focus:ring-4 ${
+              className={`w-full h-36 md:h-44 rounded-2xl border p-4 text-sm text-slate-700 resize-none focus:outline-none focus:ring-4 ${
                 isDrinks
 
                   ? "border-sky-200 focus:ring-sky-100"
@@ -402,7 +402,7 @@ const AnalyzeFoodPage = () => {
                 )
               }
 
-              className={`mt-6 px-8 py-4 rounded-2xl text-white font-semibold transition-all duration-200 disabled:opacity-50 ${
+              className={`mt-4 px-6 py-3 rounded-xl text-sm text-white font-semibold transition-all duration-200 disabled:opacity-50 ${
                 isDrinks
 
                   ? "bg-sky-600 hover:bg-sky-500"

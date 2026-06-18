@@ -37,19 +37,19 @@ const IntelligenceCard = ({ icon, title, description, tags, buttonText, color, o
 
   return (
     <div
-      className={`relative group rounded-3xl border ${c.border} ${c.bg} backdrop-blur-sm p-7 flex flex-col gap-5 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/8 transition-all duration-300 overflow-hidden`}
+      className={`relative group rounded-3xl border ${c.border} ${c.bg} backdrop-blur-sm p-5 md:p-6 flex flex-col gap-3.5 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/8 transition-all duration-300 overflow-hidden`}
     >
       {/* Subtle top glow */}
-      <div className={`absolute -top-12 -right-12 w-48 h-48 rounded-full bg-gradient-radial ${c.glow} to-transparent blur-2xl pointer-events-none`} />
+      <div className={`absolute -top-12 -right-12 w-40 h-40 rounded-full bg-gradient-radial ${c.glow} to-transparent blur-2xl pointer-events-none`} />
 
       {/* ICON */}
-      <div className={`w-14 h-14 rounded-2xl ${c.iconBg} flex items-center justify-center text-2xl`}>
+      <div className={`w-11 h-11 rounded-2xl ${c.iconBg} flex items-center justify-center text-xl`}>
         {icon}
       </div>
 
       {/* CONTENT */}
       <div className="flex-1">
-        <h3 className="text-lg font-semibold text-slate-900 leading-snug mb-2.5">
+        <h3 className="text-base font-semibold text-slate-900 leading-snug mb-1.5">
           {title}
         </h3>
         <p className="text-sm text-slate-500 leading-relaxed">

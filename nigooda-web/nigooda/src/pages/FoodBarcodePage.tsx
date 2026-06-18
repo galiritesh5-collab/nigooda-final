@@ -239,27 +239,27 @@ const FoodBarcodePage = () => {
 
   return (
 
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-white px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-white px-4 py-6 md:py-8">
 
       <div className="max-w-6xl mx-auto">
 
         {/* HEADER */}
 
-        <div className="text-center mb-12">
+        <div className="text-center mb-7">
 
-          <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+          <span className="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider">
 
             NIGOODA AI
 
           </span>
 
-          <h1 className="mt-6 text-4xl font-bold text-slate-900">
+          <h1 className="mt-4 text-2xl md:text-3xl font-bold text-slate-900">
 
             Scan Food Products
 
           </h1>
 
-          <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
+          <p className="mt-2 text-sm text-slate-600 max-w-xl mx-auto">
 
             Analyze ingredients,
             additives, sugars,
@@ -292,22 +292,22 @@ const FoodBarcodePage = () => {
 
         {/* OPTIONS */}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
 
           {/* CAMERA */}
 
           <button
             onClick={startScanner}
-            className="bg-white border rounded-3xl p-8 text-left shadow-sm hover:shadow-lg transition"
+            className="bg-white border rounded-2xl p-5 text-left shadow-sm hover:shadow-lg transition"
           >
 
-            <div className="text-5xl mb-6">
+            <div className="text-3xl mb-3">
 
               📷
 
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-slate-900">
 
               Scan Barcode
 
@@ -327,16 +327,16 @@ const FoodBarcodePage = () => {
 
           <button
             onClick={comingSoon}
-            className="bg-white border rounded-3xl p-8 text-left shadow-sm hover:shadow-lg transition"
+            className="bg-white border rounded-2xl p-5 text-left shadow-sm hover:shadow-lg transition"
           >
 
-            <div className="text-5xl mb-6">
+            <div className="text-3xl mb-3">
 
               🖼️
 
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-slate-900">
 
               Upload Barcode
 
@@ -353,15 +353,15 @@ const FoodBarcodePage = () => {
 
           {/* MANUAL */}
 
-          <div className="bg-white border rounded-3xl p-8 shadow-sm">
+          <div className="bg-white border rounded-2xl p-5 shadow-sm">
 
-            <div className="text-5xl mb-6">
+            <div className="text-3xl mb-3">
 
               🔢
 
             </div>
 
-            <h2 className="text-2xl font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-slate-900">
 
               Enter Barcode
 
@@ -419,13 +419,13 @@ const FoodBarcodePage = () => {
 
         {result && (
 
-          <div className="mt-12 space-y-8">
+          <div className="mt-6 space-y-5">
 
             {/* PRODUCT */}
 
-            <div className="bg-white border rounded-3xl shadow-sm p-8">
+            <div className="bg-white border rounded-2xl shadow-sm p-5">
 
-              <h2 className="text-4xl font-bold text-slate-900">
+              <h2 className="text-xl font-bold text-slate-900">
 
                 {result.product?.name}
 
@@ -447,15 +447,15 @@ const FoodBarcodePage = () => {
 
             {/* INGREDIENT ANALYSIS */}
 
-            <div className="bg-white border rounded-3xl shadow-sm p-8">
+            <div className="bg-white border rounded-2xl shadow-sm p-5">
 
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-lg font-bold mb-4">
 
                 Ingredient Analysis
 
               </h2>
 
-              <div className="whitespace-pre-wrap text-slate-700 leading-8">
+              <div className="whitespace-pre-wrap text-slate-700 text-sm leading-7">
 
                 {result.ingredient_analysis}
 
@@ -465,15 +465,15 @@ const FoodBarcodePage = () => {
 
             {/* NUTRITION ANALYSIS */}
 
-            <div className="bg-white border rounded-3xl shadow-sm p-8">
+            <div className="bg-white border rounded-2xl shadow-sm p-5">
 
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-lg font-bold mb-4">
 
                 Nutrition Analysis
 
               </h2>
 
-              <div className="whitespace-pre-wrap text-slate-700 leading-8">
+              <div className="whitespace-pre-wrap text-slate-700 text-sm leading-7">
 
                 {result.nutrition_analysis}
 
@@ -483,9 +483,9 @@ const FoodBarcodePage = () => {
 
             {/* RAW DEBUG */}
 
-            <div className="bg-slate-900 text-white rounded-3xl p-6 overflow-auto">
+            <div className="bg-slate-900 text-white rounded-2xl p-5 overflow-auto">
 
-              <h2 className="text-2xl font-bold mb-4">
+              <h2 className="text-base font-bold mb-3">
 
                 Raw Analysis Debug
 
