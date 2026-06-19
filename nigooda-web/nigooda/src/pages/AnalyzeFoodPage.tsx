@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { API_URL } from "../config";
+import { db } from "../lib/firebase";
 import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 
 const AnalyzeFoodPage = () => {
 
@@ -15,6 +22,8 @@ const AnalyzeFoodPage = () => {
 
   const isDrinks =
     type === "drinks";
+
+  const { currentUser } = useAuth();
 
   const [selectedImage,
     setSelectedImage] =
@@ -145,7 +154,49 @@ const AnalyzeFoodPage = () => {
 
         }
 
-        navigate(
+        let analysisReport = "";
+
+        if (data?.result?.analysis) {
+          analysisReport =
+            data.result.analysis;
+        } else if (data?.analysis) {
+          analysisReport =
+            data.analysis;
+        } else if (
+          typeof data?.result === "string"
+        ) {
+          analysisReport =
+            data.result;
+        }
+
+        if (
+          currentUser &&
+          analysisReport
+        ) {
+          await addDoc(
+            collection(
+              db,
+              "users",
+              currentUser.uid,
+              "scans"
+            ),
+            {
+              productType:
+                isDrinks
+                  ? "drinks"
+                  : "food",
+
+              ingredients,
+
+              analysisReport,
+
+              createdAt:
+                serverTimestamp(),
+            }
+          );
+        }
+
+       navigate(
   "/food-analysis-result",
   {
     state: {
@@ -155,6 +206,11 @@ const AnalyzeFoodPage = () => {
         isDrinks
           ? "drinks"
           : "food",
+
+      backRoute:
+        isDrinks
+          ? "/analyze/food/drinks"
+          : "/analyze/food/foods",
     },
   }
 );

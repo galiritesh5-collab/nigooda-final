@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useMemo, useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
-import ReactMarkdown from "react-markdown";
+import AnalysisMarkdown from "../components/AnalysisMarkdown";
 
 interface Product {
   id: string;
@@ -177,18 +177,34 @@ const ProductPage = ({ products }: { products: Product[] }) => {
         )}
 
       </div>
-
       {/* 📊 ANALYSIS REPORT */}
       {activeVariant.analysisReport && (
-        <div className="md:col-span-2">
-          <div className="prose max-w-none">
-            <ReactMarkdown>
-              {activeVariant.analysisReport}
-            </ReactMarkdown>
+        <div className="md:col-span-2 mt-8">
+
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+
+            <div className="px-6 py-5 border-b border-slate-200">
+
+              <h2 className="text-2xl font-bold text-slate-900">
+                Product Intelligence Report
+              </h2>
+
+              <p className="text-sm text-slate-500 mt-1">
+                AI-generated ingredient and formulation analysis
+              </p>
+
+            </div>
+
+            <div className="p-6">
+              <AnalysisMarkdown
+                markdown={activeVariant.analysisReport}
+              />
+            </div>
+
           </div>
+
         </div>
       )}
-
 
     </div>
   );

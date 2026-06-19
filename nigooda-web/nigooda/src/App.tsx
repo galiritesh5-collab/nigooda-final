@@ -41,6 +41,9 @@ import ContactUs from "./pages/footer/ContactUs";
 import RefundPolicy from "./pages/footer/RefundPolicy";
 import HowRatingsWork from "./pages/footer/HowRatingsWork";
 import FAQ from "./pages/footer/FAQ";
+import CookiePolicy from "./pages/footer/CookiePolicy";
+import ScrollToTop from "./components/ScrollToTop";
+import ScanReportPage from "./pages/ScanReportPage";
 /* ============================================================
    NORMALIZE A SINGLE FLAT PRODUCT FROM THE SERVER
    The server returns a flat array of variant objects.
@@ -129,6 +132,7 @@ const AppContent = () => {
   return (
 
     <div className="min-h-screen font-sans text-slate-900">
+      <ScrollToTop />
 
       <Navbar
         activeCategory={activeCategory}
@@ -300,6 +304,14 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+  path="/my-scans/:scanId"
+  element={
+    <ProtectedRoute>
+      <ScanReportPage />
+    </ProtectedRoute>
+  }
+/>
 
         <Route
           path="/billing"
@@ -308,6 +320,11 @@ const AppContent = () => {
               <BillingPlans />
             </ProtectedRoute>
           }
+        />
+
+        <Route
+          path="/pricing"
+          element={<BillingPlans />}
         />
 
         <Route
@@ -324,6 +341,11 @@ const AppContent = () => {
 <Route
   path="/privacy-policy"
   element={<PrivacyPolicy />}
+/>
+
+<Route
+  path="/cookie-policy"
+  element={<CookiePolicy />}
 />
 
 <Route

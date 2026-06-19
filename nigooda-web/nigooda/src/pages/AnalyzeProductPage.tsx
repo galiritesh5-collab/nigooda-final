@@ -4,6 +4,15 @@ import {
   useParams,
   useNavigate
 } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
+
+import { db } from "../lib/firebase";
 
 const AnalyzeProductPage = () => {
 
@@ -14,6 +23,8 @@ const AnalyzeProductPage = () => {
     section,
     product,
   } = useParams();
+
+  const { currentUser } = useAuth();
 
   const [selectedImage, setSelectedImage] =
     useState<File | null>(null);
@@ -366,6 +377,61 @@ catch {
           );
 
         }
+
+        let analysisReport = "";
+
+        if (data?.result?.analysis) {
+
+          analysisReport =
+            data.result.analysis;
+
+        }
+
+        else if (data?.analysis) {
+
+          analysisReport =
+            data.analysis;
+
+        }
+
+        else if (
+          typeof data?.result ===
+          "string"
+        ) {
+
+          analysisReport =
+            data.result;
+
+        }
+
+        if (
+          currentUser &&
+          analysisReport
+        ) {
+
+          await addDoc(
+            collection(
+              db,
+              "users",
+              currentUser.uid,
+              "scans"
+            ),
+            {
+              productType:
+                product || "product",
+
+              ingredients:
+                ingredientsText,
+
+              analysisReport,
+
+              createdAt:
+                serverTimestamp(),
+            }
+          );
+
+        }
+
 navigate(
   "/product-analysis-result",
   {

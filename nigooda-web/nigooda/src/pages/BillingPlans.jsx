@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { db, auth } from "../lib/firebase";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useAuth } from "../context/AuthContext";
 import PaymentModal from "../components/PaymentModal";
 const PLANS = [
@@ -76,7 +77,10 @@ const BillingPlans = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      setLoadingPayments(false);
+      return;
+    }
 
     const fetchPayments = async () => {
       try {
@@ -101,7 +105,16 @@ const BillingPlans = () => {
     fetchPayments();
   }, [currentUser]);
 
-  const handleUpgrade = (plan) => {
+  const handleUpgrade = async (plan) => {
+    if (!currentUser) {
+      const provider = new GoogleAuthProvider();
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (e) {
+        console.error("Sign in failed:", e);
+      }
+      return;
+    }
     if (plan.id === "free" || plan.id === userData?.plan) return;
 
     setSelectedPlan(plan);
@@ -128,39 +141,41 @@ const BillingPlans = () => {
         </div>
 
         {/* CURRENT STATUS */}
-        <div className="bg-white border border-slate-100 rounded-2xl p-5 mb-10 flex items-center justify-between gap-4 shadow-sm">
-          <div className="flex items-center gap-3">
+        {currentUser && (
+          <div className="bg-white border border-slate-100 rounded-2xl p-5 mb-10 flex items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3">
 
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4.5 h-4.5 text-emerald-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.8}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4.5 h-4.5 text-emerald-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.8}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+
+              <div>
+                <p className="text-xs text-slate-400 font-medium">
+                  Current Status
+                </p>
+
+                <p className="text-sm font-semibold text-slate-900 capitalize">
+                  {userData?.plan || "Free"} Plan ·{" "}
+                  {userData?.credits ?? 0} credits remaining
+                </p>
+              </div>
+
             </div>
-
-            <div>
-              <p className="text-xs text-slate-400 font-medium">
-                Current Status
-              </p>
-
-              <p className="text-sm font-semibold text-slate-900 capitalize">
-                {userData?.plan || "Free"} Plan ·{" "}
-                {userData?.credits ?? 0} credits remaining
-              </p>
-            </div>
-
           </div>
-        </div>
+        )}
 
         {/* PLAN CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -260,6 +275,8 @@ const BillingPlans = () => {
                     ? "Current Plan"
                     : plan.id === "free"
                     ? "Default Plan"
+                    : !currentUser
+                    ? "Sign in to Upgrade"
                     : `Upgrade to ${plan.name}`}
                 </button>
 

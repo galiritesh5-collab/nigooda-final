@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { createPortal } from "react-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { searchProducts } from "../utils/searchEngine";
 import logo from "../assets/logo.png";
 import { CATEGORIES } from "../constants";
@@ -24,12 +25,56 @@ const Navbar: React.FC<Props> = ({
   products,
 }) => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
+
+  // ── CATEGORY MEGA-MENU HOVER STATE ──
+  // The dropdowns are rendered through a portal (see below) so they are not
+  // clipped by the horizontally-scrolling category bar, and are positioned
+  // with `fixed` coordinates computed from the trigger button's rect.
+  const [hoveredCatId, setHoveredCatId] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
+  const catRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimer.current = setTimeout(() => {
+      setHoveredCatId(null);
+    }, 150);
+  };
+
+  const openMenu = (catId: string, isWide: boolean) => {
+    cancelClose();
+    const el = catRefs.current[catId];
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const menuWidth = isWide ? 860 : 220;
+      const maxLeft = window.innerWidth - menuWidth - 16;
+      const left = Math.max(16, Math.min(rect.left, maxLeft));
+      setMenuPos({ left, top: rect.bottom + 8 });
+    }
+    setHoveredCatId(catId);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -37,6 +82,13 @@ const Navbar: React.FC<Props> = ({
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setShowDropdown(false);
+    setIsAccountOpen(false);
+    setHoveredCatId(null);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -98,6 +150,7 @@ const Navbar: React.FC<Props> = ({
                 }}
                 placeholder="Search products, ingredients, brands..."
                 className="w-full pl-11 pr-5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-full text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-300 focus:shadow-[0_0_0_4px_rgba(0,0,0,0.04)] transition-all duration-200"
+                aria-label="Search products, ingredients, brands"
               />
 
               {showDropdown && search && (
@@ -332,6 +385,23 @@ const Navbar: React.FC<Props> = ({
               );
             })()}
 
+            {/* MOBILE MENU TOGGLE */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-slate-500 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:outline-none rounded-xl ml-1 flex items-center justify-center"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+
           </div>
         </div>
 
@@ -341,9 +411,20 @@ const Navbar: React.FC<Props> = ({
             {CATEGORIES.map((cat) => {
               const isSimple = cat.type === "simple";
               const isTabbed = cat.type === "tabbed";
+              const isOpen = hoveredCatId === cat.id;
 
               return (
-                <div key={cat.id} className="relative py-1 group shrink-0">
+                <div
+                  key={cat.id}
+                  ref={(el) => { catRefs.current[cat.id] = el; }}
+                  className="relative py-1 shrink-0"
+                  onMouseEnter={() => {
+                    if (isSimple || isTabbed) openMenu(cat.id, isTabbed);
+                  }}
+                  onMouseLeave={() => {
+                    if (isSimple || isTabbed) scheduleClose();
+                  }}
+                >
                   <button
                     onClick={() => navigate(`/category/${cat.id}`)}
                     className="px-4 py-1.5 rounded-full text-[13px] font-medium border border-slate-200/70 bg-white/70 backdrop-blur-sm text-slate-700 hover:bg-slate-900 hover:text-white hover:border-slate-900 whitespace-nowrap transition-all duration-200 shadow-sm"
@@ -351,24 +432,40 @@ const Navbar: React.FC<Props> = ({
                     {cat.label}
                   </button>
 
-                  {isSimple && cat.items && (
-                    <div className="absolute left-0 top-full mt-2 bg-white/95 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-2xl shadow-black/10 z-[200] min-w-[220px] hidden group-hover:block overflow-hidden">
+                  {/* SIMPLE DROPDOWN — rendered via portal so it can't be
+                      clipped by the overflow-x-auto category scroller and
+                      always renders above all page content. */}
+                  {isSimple && cat.items && isOpen && createPortal(
+                    <div
+                      onMouseEnter={cancelClose}
+                      onMouseLeave={scheduleClose}
+                      style={{ position: "fixed", left: menuPos.left, top: menuPos.top }}
+                      className="bg-white/95 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-2xl shadow-black/10 z-[9999] min-w-[220px] overflow-hidden hidden lg:block"
+                    >
                       <div className="p-1.5">
                         {cat.items.map((item) => (
                           <Link
                             key={item}
                             to={`/category/${cat.id}/${encodeURIComponent(item)}`}
+                            onClick={() => setHoveredCatId(null)}
                             className="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-150"
                           >
                             {item}
                           </Link>
                         ))}
                       </div>
-                    </div>
+                    </div>,
+                    document.body
                   )}
 
-                  {isTabbed && (
-                    <div className="absolute left-0 top-full mt-2 bg-white/95 backdrop-blur-xl border border-slate-100 rounded-3xl shadow-2xl shadow-black/10 z-[200] p-7 min-w-[860px] hidden group-hover:block">
+                  {/* TABBED MEGA-MENU — same portal approach. */}
+                  {isTabbed && isOpen && createPortal(
+                    <div
+                      onMouseEnter={cancelClose}
+                      onMouseLeave={scheduleClose}
+                      style={{ position: "fixed", left: menuPos.left, top: menuPos.top }}
+                      className="bg-white/95 backdrop-blur-xl border border-slate-100 rounded-3xl shadow-2xl shadow-black/10 z-[9999] p-7 min-w-[860px] hidden lg:block"
+                    >
                       {cat.id === "women" && (
                         <div className="grid grid-cols-5 gap-8">
                           {cat.tabs[0].groups.map((group) => (
@@ -379,6 +476,7 @@ const Navbar: React.FC<Props> = ({
                                   <li key={item}>
                                     <Link
                                       to={`/category/${cat.id}/${encodeURIComponent(item)}`}
+                                      onClick={() => setHoveredCatId(null)}
                                       className="text-sm text-slate-700 hover:text-slate-900 hover:font-medium transition-all duration-150"
                                     >
                                       {item}
@@ -402,6 +500,7 @@ const Navbar: React.FC<Props> = ({
                                     <li key={item}>
                                       <Link
                                         to={`/category/${cat.id}/${encodeURIComponent(item)}`}
+                                        onClick={() => setHoveredCatId(null)}
                                         className="text-sm text-slate-700 hover:text-slate-900 hover:font-medium transition-all duration-150"
                                       >
                                         {item}
@@ -414,7 +513,8 @@ const Navbar: React.FC<Props> = ({
                           )}
                         </div>
                       )}
-                    </div>
+                    </div>,
+                    document.body
                   )}
                 </div>
               );
@@ -423,6 +523,145 @@ const Navbar: React.FC<Props> = ({
         </div>
 
       </div>
+
+      {/* MOBILE DRAWER */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-x-0 top-[116px] bottom-0 bg-slate-900/40 backdrop-blur-sm z-[150] md:hidden">
+          <div className="w-full bg-white border-b border-slate-100 flex flex-col max-h-[80vh] shadow-xl overflow-y-auto p-5 gap-5">
+            {/* SEARCH */}
+            <div className="relative w-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35m1.85-5.65a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+              </svg>
+
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    navigate(`/search?q=${search}`);
+                    setShowDropdown(false);
+                    setIsMobileMenuOpen(false);
+                  }
+                }}
+                placeholder="Search products, ingredients..."
+                className="w-full pl-11 pr-5 py-2.5 bg-slate-50 border border-slate-200/80 rounded-full text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-slate-300 focus:shadow-[0_0_0_4px_rgba(0,0,0,0.04)] transition-all duration-200"
+                aria-label="Search products, ingredients, brands"
+              />
+
+              {showDropdown && search && suggestions.length > 0 && (
+                <div className="absolute w-full bg-white shadow-xl rounded-2xl mt-2 border border-slate-100 z-50 max-h-[200px] overflow-y-auto">
+                  {suggestions.map((p) => (
+                    <div
+                      key={p.id}
+                      onClick={() => {
+                        navigate(`/product/${p.id}`);
+                        setShowDropdown(false);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                        <img
+                          src={p["Main Image URL"]}
+                          alt={p["Name of Product"]}
+                          className="w-7 h-7 object-contain"
+                          onError={(e) => { (e.target as HTMLImageElement).src = "https://via.placeholder.com/32"; }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-slate-800 truncate">{p["Name of Product"]}</p>
+                      </div>
+                      <div className="text-xs font-semibold text-slate-900 shrink-0">₹{p["Price"]}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* LINKS */}
+            <div className="flex flex-col gap-1">
+              <Link
+                to="/pricing"
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
+              >
+                Pricing
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <Link
+                to="/about"
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
+              >
+                About Us
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <Link
+                to="/wishlist"
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors"
+              >
+                Wishlist
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
+
+            {/* ACTIONS */}
+            {!currentUser ? (
+              <button
+                onClick={async () => {
+                  const provider = new GoogleAuthProvider();
+                  try {
+                    await signInWithPopup(auth, provider);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }}
+                className="w-full py-3 bg-slate-900 text-white font-medium rounded-xl text-sm text-center shadow-sm hover:bg-slate-800 transition"
+              >
+                Sign In / Get Started
+              </button>
+            ) : (
+              <div className="border-t border-slate-100 pt-4 flex flex-col gap-2">
+                <p className="text-xs text-slate-400 px-4">
+                  Logged in as <span className="font-semibold text-slate-700">{currentUser.displayName}</span>
+                </p>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <Link
+                    to="/dashboard"
+                    className="py-2.5 text-center text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={async () => {
+                      await signOut(auth);
+                      navigate("/");
+                    }}
+                    className="py-2.5 text-center text-xs font-medium text-red-500 bg-red-50 hover:bg-red-100 rounded-xl"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

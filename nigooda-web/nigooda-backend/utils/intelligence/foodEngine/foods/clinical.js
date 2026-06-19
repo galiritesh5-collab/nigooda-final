@@ -778,7 +778,7 @@ ${ingredients.join(", ")}
 
         model: "gpt-5.4-mini",
 
-        temperature: 0.2,
+        temperature: 0.1,
 
         messages: [
 

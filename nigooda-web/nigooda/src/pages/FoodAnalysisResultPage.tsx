@@ -37,6 +37,12 @@ const FoodAnalysisResultPage = () => {
     state?.category ||
     state?.domain;
 
+  const backRoute =
+    state?.backRoute ||
+    (rendererType === "drinks"
+      ? "/analyze/food/drinks"
+      : "/analyze/food/foods");
+
   console.log("rendererType:", rendererType);
 
   const rendererRegistry: Record<
@@ -56,15 +62,16 @@ const FoodAnalysisResultPage = () => {
       <div className="max-w-6xl mx-auto">
 
         <div className="mb-8">
-          <button
-            onClick={() =>
-              navigate("/analyze-food")
-            }
-            className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-indigo-600 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
+         <button
+  onClick={() =>
+    navigate(backRoute, {
+      replace: true,
+    })
+  }
+>
+  <ArrowLeft className="w-4 h-4" />
+  Back
+</button>
         </div>
 
         <div className="mb-8">

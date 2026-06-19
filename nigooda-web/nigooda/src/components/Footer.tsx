@@ -124,30 +124,13 @@ return ( <footer className="bg-slate-950 text-white mt-10 md:mt-14 border-t bord
           >
             Wishlist
           </Link>
+
           <Link
-  to="/cookie-policy"
-  className="hover:text-white transition"
->
-  Cookie Policy
-</Link>
-<Link
-  to="/refund-policy"
-  className="hover:text-white transition"
->
-  Refund Policy
-</Link>
-<Link
-  to="/how-ratings-work"
-  className="hover:text-white transition"
->
-  How Ratings Work
-</Link>
-<Link
-  to="/faq"
-  className="hover:text-white transition"
->
-  FAQ
-</Link>
+            to="/faq"
+            className="hover:text-white transition"
+          >
+            FAQ
+          </Link>
 
         </div>
       </div>
