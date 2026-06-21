@@ -44,6 +44,10 @@ import FAQ from "./pages/footer/FAQ";
 import CookiePolicy from "./pages/footer/CookiePolicy";
 import ScrollToTop from "./components/ScrollToTop";
 import ScanReportPage from "./pages/ScanReportPage";
+
+// NEW: localStorage cache key for product list
+const PRODUCTS_CACHE_KEY = "products_cache";
+
 /* ============================================================
    NORMALIZE A SINGLE FLAT PRODUCT FROM THE SERVER
    The server returns a flat array of variant objects.
@@ -102,20 +106,58 @@ const AppContent = () => {
     useState("");
 
   /* ============================================================
-     LOAD PRODUCTS FROM BACKEND
+     LOAD PRODUCTS FROM BACKEND (WITH LOCALSTORAGE CACHE)
      Server returns: flat array of variant objects (Product[])
+
+     Flow:
+       1. Try to read cached raw products from localStorage and
+          show them immediately (instant paint on return visits).
+       2. Fetch fresh products from the API in the background.
+       3. On success: update state + refresh the cache.
+       4. On failure: keep whatever is currently shown (cached or
+          empty) — never clear the UI because of a failed fetch.
   ============================================================ */
   useEffect(() => {
+    // Step 1: attempt to hydrate instantly from cache
+    try {
+      const cachedRaw = localStorage.getItem(PRODUCTS_CACHE_KEY);
+      if (cachedRaw) {
+        const cachedProducts = JSON.parse(cachedRaw);
+        if (Array.isArray(cachedProducts)) {
+          setRawProducts(cachedProducts);
+        }
+      }
+    } catch {
+      // Invalid/corrupted cache — ignore and continue to fetch fresh data
+    }
+
+    // Step 2: fetch fresh data from the API
     fetch(`${API_URL}/products`)
       .then((res) => res.json())
       .then((data: any) => {
         const rawArray = Array.isArray(data)
           ? data
           : (data.products || []);
+
         // FIX: store raw, normalize via useMemo below
         setRawProducts(rawArray);
+
+        // Step 3: refresh the cache with the latest raw products
+        try {
+          localStorage.setItem(
+            PRODUCTS_CACHE_KEY,
+            JSON.stringify(rawArray)
+          );
+        } catch {
+          // localStorage might be unavailable (e.g. quota exceeded,
+          // private mode) — safe to ignore, caching is best-effort
+        }
       })
-      .catch(() => setRawProducts([]));
+      .catch(() => {
+        // Step 4: API failed — keep whatever is currently displayed
+        // (cached products if we had them, otherwise empty state).
+        // Do NOT call setRawProducts([]) here, so the UI isn't cleared.
+      });
   }, []);
 
   // FIX: normalize only when rawProducts changes,

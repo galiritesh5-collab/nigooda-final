@@ -4,9 +4,14 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { searchProducts } from "../utils/searchEngine";
 import logo from "../assets/logo.png";
 import { CATEGORIES } from "../constants";
-import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, type User } from "firebase/auth";
+import {
+  signInWithPopup,
+  onAuthStateChanged,
+  type User,
+} from "firebase/auth";
 import { signOut } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { auth, googleProvider } from "../lib/firebase";
+
 type Props = {
   activeCategory: string | null;
   onCategoryClick: (id: string) => void;
@@ -27,6 +32,7 @@ const Navbar: React.FC<Props> = ({
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [signingIn, setSigningIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [search, setSearch] = useState("");
@@ -78,8 +84,12 @@ const Navbar: React.FC<Props> = ({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("USER:", user);
+      console.log("PHOTO URL:", user?.photoURL);
+
       setCurrentUser(user);
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -103,6 +113,26 @@ const Navbar: React.FC<Props> = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // ── GOOGLE SIGN-IN ──
+  // Shared by desktop ("Sign In" / "Get Started") and mobile drawer buttons.
+  // Guards against firing a second popup while one is already open, which is
+  // what causes Firebase's auth/cancelled-popup-request error.
+  const handleGoogleSignIn = async () => {
+    if (signingIn) return;
+
+    try {
+      setSigningIn(true);
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log(result.user);
+    } catch (error: any) {
+      if (error.code !== "auth/cancelled-popup-request") {
+        console.error(error);
+      }
+    } finally {
+      setSigningIn(false);
+    }
+  };
 
   const suggestions = searchProducts(products, search).slice(0, 5);
 
@@ -223,31 +253,22 @@ const Navbar: React.FC<Props> = ({
                 currentUser = {...} → logged in state
             ────────────────────────────────────────── */}
            {(() => {
-  const provider = new GoogleAuthProvider();
-
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      console.log(result.user);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   /* ── LOGGED OUT ── */
   if (!currentUser) {
     return (
       <>
         <button
           onClick={handleGoogleSignIn}
-          className="hidden md:flex items-center px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-150"
+          disabled={signingIn}
+          className="hidden md:flex items-center px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Sign In
         </button>
 
         <button
           onClick={handleGoogleSignIn}
-          className="ml-1 px-4 py-2 bg-slate-900 hover:bg-slate-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm whitespace-nowrap"
+          disabled={signingIn}
+          className="ml-1 px-4 py-2 bg-slate-900 hover:bg-slate-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Get Started
         </button>
@@ -256,26 +277,37 @@ const Navbar: React.FC<Props> = ({
   }
               /* ── LOGGED IN ── */
               // Derive initials fallback from displayName
-              const initials = currentUser.displayName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")
-                .toUpperCase()
-                .slice(0, 2);
+              const initials =
+                currentUser.displayName
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()
+                  .slice(0, 2) || "U";
 
               return (
+                <>
+                  {/* WISHLIST — only visible when logged in */}
+                  <Link
+                    to="/wishlist"
+                    className="hidden md:flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-150"
+                  >
+                    <span aria-hidden="true">❤️</span>
+                    Wishlist
+                  </Link>
+
                 <div ref={accountRef} className="relative ml-1">
 
                   {/* AVATAR TRIGGER */}
                   <button
                     onClick={() => setIsAccountOpen(!isAccountOpen)}
-                    className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all duration-150"
+                    className="flex items-center gap-2 flex-shrink-0 pl-1 pr-2.5 py-1 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all duration-150"
                   >
                     {currentUser.photoURL ? (
                       <img
-                        src={currentUser.photoURL}
-                        alt={currentUser.displayName}
-                        className="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm"
+                        src={currentUser.photoURL || ""}
+                        alt={currentUser.displayName || "User"}
+                        className="w-8 h-8 min-w-[32px] min-h-[32px] rounded-full object-cover border border-slate-200 shadow-sm flex-shrink-0"
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white text-xs font-semibold tracking-wide">
@@ -283,7 +315,7 @@ const Navbar: React.FC<Props> = ({
                       </div>
                     )}
                     <span className="hidden md:block text-sm font-medium text-slate-700 max-w-[96px] truncate">
-                      {currentUser.displayName.split(" ")[0]}
+                      {currentUser.displayName?.split(" ")[0] || "User"}
                     </span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -298,8 +330,8 @@ const Navbar: React.FC<Props> = ({
                       <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-50">
                         {currentUser.photoURL ? (
                           <img
-                            src={currentUser.photoURL}
-                            alt={currentUser.displayName}
+                            src={currentUser.photoURL || ""}
+                            alt={currentUser.displayName || "User"}
                             className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
                           />
                         ) : (
@@ -349,17 +381,6 @@ const Navbar: React.FC<Props> = ({
                           Billing & Plans
                         </Link>
 
-                        <Link
-                          to="/settings"
-                          onClick={() => setIsAccountOpen(false)}
-                          className="flex items-center gap-2.5 w-full px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50 rounded-xl transition-colors duration-150"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l.7 2.152a1 1 0 00.95.69h2.263c.969 0 1.371 1.24.588 1.81l-1.83 1.33a1 1 0 00-.364 1.118l.7 2.152c.3.922-.755 1.688-1.538 1.118l-1.83-1.33a1 1 0 00-1.176 0l-1.83 1.33c-.783.57-1.838-.197-1.538-1.118l.7-2.152a1 1 0 00-.364-1.118l-1.83-1.33c-.784-.57-.38-1.81.588-1.81h2.263a1 1 0 00.95-.69l.7-2.152z" />
-                          </svg>
-                          Settings
-                        </Link>
-
                       </div>
 
                       {/* LOGOUT */}
@@ -382,6 +403,7 @@ const Navbar: React.FC<Props> = ({
                     </div>
                   )}
                 </div>
+                </>
               );
             })()}
 
@@ -623,17 +645,11 @@ const Navbar: React.FC<Props> = ({
             {/* ACTIONS */}
             {!currentUser ? (
               <button
-                onClick={async () => {
-                  const provider = new GoogleAuthProvider();
-                  try {
-                    await signInWithPopup(auth, provider);
-                  } catch (e) {
-                    console.error(e);
-                  }
-                }}
-                className="w-full py-3 bg-slate-900 text-white font-medium rounded-xl text-sm text-center shadow-sm hover:bg-slate-800 transition"
+                onClick={handleGoogleSignIn}
+                disabled={signingIn}
+                className="w-full py-3 bg-slate-900 text-white font-medium rounded-xl text-sm text-center shadow-sm hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In / Get Started
+                {signingIn ? "Signing in…" : "Sign In / Get Started"}
               </button>
             ) : (
               <div className="border-t border-slate-100 pt-4 flex flex-col gap-2">

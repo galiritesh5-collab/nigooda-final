@@ -9,9 +9,12 @@ type Product = {
   "Primary Category"?: string;
   "Sub-Category"?: string;
   Price?: number;
+  Rating?: number;
   "Weight / Size"?: string;
   "Short Description"?: string;
   "Seller Website"?: string;
+  "Buy Link"?: string;
+  "Referral Code"?: string;
   "Variant Group ID"?: string;
   "Variant Name"?: string;
   Tags?: string;
@@ -228,9 +231,12 @@ const ProductsAdmin = ({
               <th>Category</th>
               <th>Sub-Category</th>
               <th>Price</th>
+              <th>Rating</th>
               <th>Weight</th>
               <th>Description</th>
               <th>Website</th>
+              <th>Buy Link</th>
+              <th>Referral Code</th>
               <th>Variant Group</th>
               <th>Variant Name</th>
               <th>Tags</th>
@@ -338,6 +344,22 @@ const ProductsAdmin = ({
 
                 <td className="p-2">
                   <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="5"
+                    className="border px-2 py-1 w-20"
+                    defaultValue={p.Rating}
+                    onBlur={(e) =>
+                      update(p.id, {
+                        Rating: Number(e.target.value),
+                      })
+                    }
+                  />
+                </td>
+
+                <td className="p-2">
+                  <input
                     className="border px-2 py-1 w-28"
                     defaultValue={p["Weight / Size"]}
                     onBlur={(e) =>
@@ -367,6 +389,30 @@ const ProductsAdmin = ({
                     onBlur={(e) =>
                       update(p.id, {
                         "Seller Website": e.target.value,
+                      })
+                    }
+                  />
+                </td>
+
+                <td className="p-2">
+                  <input
+                    className="border px-2 py-1 w-40"
+                    defaultValue={p["Buy Link"]}
+                    onBlur={(e) =>
+                      update(p.id, {
+                        "Buy Link": e.target.value,
+                      })
+                    }
+                  />
+                </td>
+
+                <td className="p-2">
+                  <input
+                    className="border px-2 py-1 w-32"
+                    defaultValue={p["Referral Code"]}
+                    onBlur={(e) =>
+                      update(p.id, {
+                        "Referral Code": e.target.value,
                       })
                     }
                   />

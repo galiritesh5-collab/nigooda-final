@@ -20,15 +20,14 @@ const slugify = (text: string) =>
 ----------------------------------*/
 const SubCategoryPage = ({ products }: { products: any[] }) => {
   const [sortOption, setSortOption] = useState("default");
+  const [discoverMode, setDiscoverMode] = useState(false);
 
   const { categoryId, subCategory } = useParams();
 
-  // Decode URL safely
   const decodedSubCategory = decodeURIComponent(subCategory || "").trim();
 
   /* --------------------------------
      FILTER PRODUCTS
-     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const filteredProducts = useMemo(() => {
     if (!products || !categoryId || !decodedSubCategory) return [];
@@ -51,17 +50,28 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
 
   /* --------------------------------
      SORT AFTER FILTER
-     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const sortedProducts = useMemo(() => {
     const sorted = [...filteredProducts];
 
     if (sortOption === "priceLowHigh") {
-      sorted.sort((a, b) => Number(a["Price"]) - Number(b["Price"]));
+      sorted.sort(
+        (a, b) =>
+          (Number(a["Price"]) || 0) -
+          (Number(b["Price"]) || 0)
+      );
     } else if (sortOption === "priceHighLow") {
-      sorted.sort((a, b) => Number(b["Price"]) - Number(a["Price"]));
-    } else if (sortOption === "rating" || sortOption === "popular") {
-      sorted.sort((a, b) => Number(b["Rating"]) - Number(a["Rating"]));
+      sorted.sort(
+        (a, b) =>
+          (Number(b["Price"]) || 0) -
+          (Number(a["Price"]) || 0)
+      );
+    } else if (sortOption === "rating") {
+      sorted.sort(
+        (a, b) =>
+          (Number(b["Rating"]) || 0) -
+          (Number(a["Rating"]) || 0)
+      );
     }
 
     return sorted;
@@ -69,7 +79,6 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
 
   /* --------------------------------
      GROUP VARIANTS
-     FIX: useMemo already present — kept as-is
   ----------------------------------*/
   const groupedProducts = useMemo(() => {
     const groups: Record<string, any[]> = {};
@@ -85,7 +94,6 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
       }
     });
 
-    // Sort variants within each group alphabetically by variant name
     Object.keys(groups).forEach((key) => {
       groups[key].sort((a, b) => {
         const aName = (a["Variant Name"] || "").toLowerCase();
@@ -96,56 +104,95 @@ const SubCategoryPage = ({ products }: { products: any[] }) => {
 
     const groupArray = Object.values(groups);
 
-    // Sort groups by first product's sort criteria
+    /* --------------------------------
+       DISCOVER MODE
+    ----------------------------------*/
+    if (discoverMode) {
+      return [...groupArray].sort(() => Math.random() - 0.5);
+    }
+
+    /* --------------------------------
+       SORT GROUPS
+    ----------------------------------*/
     if (sortOption === "priceLowHigh") {
       groupArray.sort(
-        (a, b) => Number(a[0]["Price"]) - Number(b[0]["Price"])
+        (a, b) =>
+          (Number(a[0]["Price"]) || 0) -
+          (Number(b[0]["Price"]) || 0)
       );
     } else if (sortOption === "priceHighLow") {
       groupArray.sort(
-        (a, b) => Number(b[0]["Price"]) - Number(a[0]["Price"])
+        (a, b) =>
+          (Number(b[0]["Price"]) || 0) -
+          (Number(a[0]["Price"]) || 0)
       );
-    } else if (sortOption === "rating" || sortOption === "popular") {
-      groupArray.sort(
-        (a, b) => Number(b[0]["Rating"]) - Number(a[0]["Rating"])
-      );
+    } else if (sortOption === "rating") {
+      groupArray.sort((a, b) => {
+        const ratingA = Math.max(
+          ...a.map((p) => Number(p["Rating"]) || 0)
+        );
+
+        const ratingB = Math.max(
+          ...b.map((p) => Number(p["Rating"]) || 0)
+        );
+
+        return ratingB - ratingA;
+      });
     }
 
     return groupArray;
-  }, [sortedProducts, sortOption]);
+  }, [sortedProducts, sortOption, discoverMode]);
 
   /* --------------------------------
      RENDER
   ----------------------------------*/
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-5 space-y-4">
+      <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
+        <h1 className="text-lg font-semibold text-slate-900">
+          {decodedSubCategory}
+        </h1>
 
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-semibold text-slate-900">{decodedSubCategory}</h1>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setDiscoverMode(!discoverMode)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+              discoverMode
+                ? "bg-indigo-600 text-white"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            }`}
+          >
+            ✨ Discover New
+          </button>
 
-        <select
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-          className="border border-slate-200 px-3 py-1.5 rounded-lg text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300"
-        >
-          <option value="default">Default</option>
-          <option value="popular">Popularity</option>
-          <option value="rating">Rating</option>
-          <option value="priceLowHigh">Price: Low → High</option>
-          <option value="priceHighLow">Price: High → Low</option>
-        </select>
+          <select
+            value={sortOption}
+            onChange={(e) => {
+              setDiscoverMode(false);
+              setSortOption(e.target.value);
+            }}
+            className="border border-slate-200 px-3 py-1.5 rounded-lg text-sm bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300"
+          >
+            <option value="default">Default</option>
+            <option value="rating">Rating: High → Low</option>
+            <option value="priceLowHigh">Price: Low → High</option>
+            <option value="priceHighLow">Price: High → Low</option>
+          </select>
+        </div>
       </div>
 
       {groupedProducts.length === 0 ? (
         <div className="py-12 text-center text-slate-500">
-          <p className="text-base">“{decodedSubCategory}” has no products yet.</p>
+          <p className="text-base">
+            "{decodedSubCategory}" has no products yet.
+          </p>
           <p className="text-sm mt-1">
             Products may still be loading or this subcategory has no items.
           </p>
         </div>
       ) : (
         <ProductSection
-          key={decodedSubCategory}
+          key={`${decodedSubCategory}-${discoverMode}-${sortOption}`}
           title=""
           products={groupedProducts}
         />

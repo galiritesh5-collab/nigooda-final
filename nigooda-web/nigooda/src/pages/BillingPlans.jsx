@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { collection, query, orderBy, getDocs } from "firebase/firestore";
-import { db, auth } from "../lib/firebase";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { db } from "../lib/firebase";
 import { useAuth } from "../context/AuthContext";
 import PaymentModal from "../components/PaymentModal";
+
 const PLANS = [
   {
     id: "free",
@@ -106,16 +105,16 @@ const BillingPlans = () => {
   }, [currentUser]);
 
   const handleUpgrade = async (plan) => {
+    // User must sign in from Navbar first
     if (!currentUser) {
-      const provider = new GoogleAuthProvider();
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (e) {
-        console.error("Sign in failed:", e);
-      }
+      alert("Please sign in using the Sign In button in the navbar first.");
       return;
     }
-    if (plan.id === "free" || plan.id === userData?.plan) return;
+
+    // Prevent upgrading to free/current plan
+    if (plan.id === "free" || plan.id === userData?.plan) {
+      return;
+    }
 
     setSelectedPlan(plan);
     setShowModal(true);
@@ -276,7 +275,7 @@ const BillingPlans = () => {
                     : plan.id === "free"
                     ? "Default Plan"
                     : !currentUser
-                    ? "Sign in to Upgrade"
+                    ? "Please Sign In First"
                     : `Upgrade to ${plan.name}`}
                 </button>
 

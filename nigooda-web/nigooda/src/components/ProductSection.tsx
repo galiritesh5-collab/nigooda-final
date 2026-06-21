@@ -14,6 +14,7 @@ interface Product {
   "Name of Product"?: string;
   "Main Image URL"?: string;
   Price?: number;
+  Rating?: number;
   "Weight / Size"?: string;
   "Variant Group ID"?: string;
 }
@@ -59,6 +60,14 @@ const ProductCard: React.FC<{
           }`}
         />
       </button>
+
+      {/* ⭐ RATING BADGE */}
+      {activeVariant.Rating != null && (
+        <div className="absolute top-3 left-3 z-10 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm border border-slate-100 text-[11px] font-semibold text-slate-700">
+          <span>⭐</span>
+          <span>{activeVariant.Rating.toFixed(1)}</span>
+        </div>
+      )}
 
       {/* MAIN IMAGE */}
       <Link to={`/product/${activeVariant.id}`}>

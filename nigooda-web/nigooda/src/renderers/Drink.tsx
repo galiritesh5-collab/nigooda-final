@@ -1,662 +1,509 @@
-import React, { useState, useRef, useMemo } from "react";
+import { useState, useMemo } from "react";
 
-// ─── DRINKCARE METADATA ──────────────────────────────────────────────────────
-const DC_BRAND    = "NIGOODA";
-const DC_TITLE    = "Drink Intelligence";
-const DC_SUBTITLE = "Decode beverage formulation and metabolic balance";
-const DC_BADGE    = "Formulation Analysis";
+// ══════════════════════════════════════════════════════════════════
+// DESIGN TOKENS  — warm-neutral base, rich semantic accents
+// ══════════════════════════════════════════════════════════════════
+const C = {
+  // page
+  pageBg:      "#F4F6F9",
+  // surfaces
+  surface:     "#FFFFFF",
+  surfaceWarm: "#FAFAF8",
+  surfaceAlt:  "#F0F2F7",
+  glass:       "rgba(255,255,255,0.72)",
+  // borders
+  border:      "#E4E8F0",
+  borderMid:   "#CDD3DF",
+  // text
+  ink:         "#0D1117",
+  inkMid:      "#1C2333",
+  text:        "#3A4559",
+  muted:       "#5E6B82",
+  faint:       "#8A96A8",
+  // brand
+  brand:       "#4338CA",        // deeper indigo
+  brandMid:    "#6366F1",
+  brandPale:   "#EEF2FF",
+  brandSoft:   "#C7D2FE",
+  brandGlow:   "#818CF8",
+  // semantic
+  green:       "#15803D",
+  greenMid:    "#16A34A",
+  greenSoft:   "#DCFCE7",
+  greenBdr:    "#86EFAC",
+  emerald:     "#059669",
+  amber:       "#B45309",
+  amberMid:    "#D97706",
+  amberSoft:   "#FEF3C7",
+  amberBdr:    "#FCD34D",
+  orange:      "#C2410C",
+  orangeSoft:  "#FFF7ED",
+  orangeBdr:   "#FDBA74",
+  red:         "#B91C1C",
+  redMid:      "#DC2626",
+  redSoft:     "#FEF2F2",
+  redBdr:      "#FECACA",
+  blue:        "#1D4ED8",
+  blueMid:     "#3B82F6",
+  blueSoft:    "#EFF6FF",
+  blueBdr:     "#BFDBFE",
+  purple:      "#7C3AED",
+  purpleSoft:  "#F5F3FF",
+  purpleBdr:   "#DDD6FE",
+  teal:        "#0F766E",
+  tealSoft:    "#F0FDFA",
+  tealBdr:     "#99F6E4",
+  rose:        "#BE185D",
+  roseSoft:    "#FFF1F2",
+  roseBdr:     "#FBCFE8",
+};
 
-// ─── TYPES ────────────────────────────────────────────────────────────────────
-interface ScoreItem      { label: string; score: number; maxScore: number; reason: string; }
-interface CompatItem     { label: string; score: number; compatible: boolean; reason: string; }
-interface Ingredient     { name: string; role: string; group: string; tier: "primary" | "secondary" | "trace"; color: ColorSet; }
-interface ContribSignal  { name: string; tier: "primary" | "secondary" | "trace"; description: string; dot: string; }
-interface MindfulGroup   { icon: string; label: string; level: "high" | "moderate"; reason: string; }
-interface AllergenItem   { label: string; detected: boolean; }
-interface EvidenceItem   { label: string; body: string; }
-interface ColorSet       { bg: string; dot: string; text: string; border: string; }
-interface Tab            { id: string; label: string; icon: string; }
-interface DrinkStructure { processingStyle: string; ingredientCount: string; primaryBase: string; estimatedPH: string; caffeine: string; carbonated: string; }
-
-// ─── DRINK TYPE DETECTION ─────────────────────────────────────────────────────
-type DrinkType =
-  | "energy_drink" | "coffee" | "tea" | "soda" | "juice" | "water"
-  | "sports_drink" | "dairy" | "alcohol" | "smoothie" | "plant_milk" | "generic";
-
-function detectDrinkType(md: string): DrinkType {
-  const lower = md.toLowerCase();
-  if (/energy drink|monster|red bull|rockstar|bang energy/i.test(lower)) return "energy_drink";
-  if (/coffee|espresso|latte|cappuccino|cold brew/i.test(lower))         return "coffee";
-  if (/tea|matcha|kombucha|yerba/i.test(lower))                          return "tea";
-  if (/soda|cola|carbonated soft drink|sparkling/i.test(lower))          return "soda";
-  if (/juice|nectar|fruit drink/i.test(lower))                           return "juice";
-  if (/water|hydration|mineral water/i.test(lower))                      return "water";
-  if (/sports drink|electrolyte|gatorade|powerade/i.test(lower))         return "sports_drink";
-  if (/milk|dairy|yogurt drink|kefir/i.test(lower))                      return "dairy";
-  if (/beer|wine|spirits|alcohol/i.test(lower))                          return "alcohol";
-  if (/smoothie|blend|protein shake/i.test(lower))                       return "smoothie";
-  if (/oat milk|almond milk|soy milk|plant.based milk/i.test(lower))     return "plant_milk";
-  return "generic";
+// ══════════════════════════════════════════════════════════════════
+// RATING TIERS
+// ══════════════════════════════════════════════════════════════════
+function ratingTier(score, max = 5) {
+  const p = (score / max) * 100;
+  if (p >= 82) return { fg: "#14532D", mid: "#15803D", soft: "#DCFCE7", bdr: "#86EFAC", grd: "linear-gradient(135deg,#052e16 0%,#14532d 60%,#166534 100%)", label: "Excellent", tier: "excellent" };
+  if (p >= 66) return { fg: "#166534", mid: "#16A34A", soft: "#F0FDF4", bdr: "#A7F3D0", grd: "linear-gradient(135deg,#064e3b 0%,#065f46 60%,#047857 100%)", label: "Good",      tier: "good"      };
+  if (p >= 50) return { fg: "#92400E", mid: "#B45309", soft: "#FFFBEB", bdr: "#FDE68A", grd: "linear-gradient(135deg,#3c1a00 0%,#78350f 60%,#92400e 100%)", label: "Moderate",  tier: "moderate"  };
+  if (p >= 34) return { fg: "#7C2D12", mid: "#C2410C", soft: "#FFF7ED", bdr: "#FDBA74", grd: "linear-gradient(135deg,#431407 0%,#7c2d12 60%,#9a3412 100%)", label: "Weak",      tier: "weak"      };
+  return              { fg: "#7F1D1D", mid: "#B91C1C", soft: "#FEF2F2", bdr: "#FECACA", grd: "linear-gradient(135deg,#3b0000 0%,#7f1d1d 60%,#991b1b 100%)", label: "Poor",      tier: "poor"      };
 }
 
-const DRINK_ICONS: Record<DrinkType, string> = {
-  energy_drink : "⚡",
-  coffee       : "☕",
-  tea          : "🍵",
-  soda         : "🥤",
-  juice        : "🍊",
-  water        : "💧",
-  sports_drink : "🏃",
-  dairy        : "🥛",
-  alcohol      : "🍷",
-  smoothie     : "🫐",
-  plant_milk   : "🌱",
-  generic      : "🥤",
+// Consistent color for score bars/numbers
+function scoreColor(score, max = 5) {
+  return ratingTier(score, max).mid;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ATTRIBUTE CHIP CONFIG  (no pH)
+// ══════════════════════════════════════════════════════════════════
+const ATTR_STYLES = {
+  processing:  { icon: "⚙", label: "Processing",    fg: C.purple,  soft: C.purpleSoft, bdr: C.purpleBdr },
+  count:       { icon: "◈", label: "Ingredients",   fg: C.teal,    soft: C.tealSoft,   bdr: C.tealBdr   },
+  base:        { icon: "◉", label: "Primary Base",  fg: C.brand,   soft: C.brandPale,  bdr: C.brandSoft },
+  caffeine:    { icon: "⚡", label: "Caffeine",      fg: C.amber,   soft: C.amberSoft,  bdr: C.amberBdr  },
+  carbonated:  { icon: "◎", label: "Carbonated",    fg: C.blue,    soft: C.blueSoft,   bdr: C.blueBdr   },
 };
 
-const DRINK_GRADIENT: Record<DrinkType, string> = {
-  energy_drink : "linear-gradient(135deg, #1E1B4B 0%, #4C1D95 50%, #7C3AED 100%)",
-  coffee       : "linear-gradient(135deg, #1C0A00 0%, #78350F 60%, #D97706 100%)",
-  tea          : "linear-gradient(135deg, #052E16 0%, #065F46 50%, #059669 100%)",
-  soda         : "linear-gradient(135deg, #0C4A6E 0%, #0891B2 50%, #22D3EE 100%)",
-  juice        : "linear-gradient(135deg, #7C2D12 0%, #EA580C 50%, #FB923C 100%)",
-  water        : "linear-gradient(135deg, #082F49 0%, #0369A1 50%, #38BDF8 100%)",
-  sports_drink : "linear-gradient(135deg, #14532D 0%, #15803D 50%, #4ADE80 100%)",
-  dairy        : "linear-gradient(135deg, #1E3A5F 0%, #1D4ED8 50%, #60A5FA 100%)",
-  alcohol      : "linear-gradient(135deg, #3B0764 0%, #7E22CE 50%, #C084FC 100%)",
-  smoothie     : "linear-gradient(135deg, #4A044E 0%, #BE185D 50%, #F472B6 100%)",
-  plant_milk   : "linear-gradient(135deg, #1A2E05 0%, #3F6212 50%, #84CC16 100%)",
-  generic      : "linear-gradient(135deg, #0F172A 0%, #1E3A8A 50%, #3B82F6 100%)",
-};
+// ══════════════════════════════════════════════════════════════════
+// CATEGORY SCORE COLORS  (per ingredient category type)
+// ══════════════════════════════════════════════════════════════════
+function catColor(label) {
+  const n = label.toUpperCase();
+  if (/SUGAR|SWEET/.test(n))      return { fg: C.orange,  soft: C.orangeSoft,  bdr: C.orangeBdr  };
+  if (/ACID|DENTAL/.test(n))      return { fg: C.red,     soft: C.redSoft,     bdr: C.redBdr     };
+  if (/FLAVOR/.test(n))           return { fg: C.purple,  soft: C.purpleSoft,  bdr: C.purpleBdr  };
+  if (/PRESERV/.test(n))          return { fg: C.muted,   soft: C.surfaceAlt,  bdr: C.border     };
+  if (/COLOR|COLOUR/.test(n))     return { fg: C.blue,    soft: C.blueSoft,    bdr: C.blueBdr    };
+  if (/CAFFEINE|STIMUL/.test(n))  return { fg: C.brand,   soft: C.brandPale,   bdr: C.brandSoft  };
+  if (/ELECTROLYTE|MINERAL/.test(n)) return { fg: C.teal, soft: C.tealSoft,    bdr: C.tealBdr    };
+  if (/FUNCTIONAL|ADDITIVE/.test(n)) return { fg: C.blue, soft: C.blueSoft,    bdr: C.blueBdr    };
+  if (/BOTAN|HERBAL/.test(n))     return { fg: C.green,   soft: C.greenSoft,   bdr: C.greenBdr   };
+  if (/DAIRY/.test(n))            return { fg: C.blue,    soft: C.blueSoft,    bdr: C.blueBdr    };
+  if (/FRUIT/.test(n))            return { fg: C.orange,  soft: C.orangeSoft,  bdr: C.orangeBdr  };
+  if (/NATURAL|WHOLE/.test(n))    return { fg: C.green,   soft: C.greenSoft,   bdr: C.greenBdr   };
+  return                                  { fg: C.muted,   soft: C.surfaceAlt,  bdr: C.border     };
+}
 
-// ─── DESIGN TOKENS ────────────────────────────────────────────────────────────
-const T = {
-  // Primaries — electric, high-contrast
-  electric    : "#6366F1",
-  electricDim : "#4338CA",
-  electricGlow: "#A5B4FC",
-  electricPale: "#EEF2FF",
-  cyan        : "#06B6D4",
-  cyanDim     : "#0891B2",
-  cyanPale    : "#ECFEFF",
-  // Signal colors
-  green       : "#10B981",
-  greenPale   : "#D1FAE5",
-  amber       : "#F59E0B",
-  amberPale   : "#FEF3C7",
-  red         : "#EF4444",
-  redPale     : "#FEE2E2",
-  orange      : "#F97316",
-  // Neutrals — dark, sleek
-  ink         : "#0A0E1A",
-  inkMid      : "#111827",
-  inkSoft     : "#1F2937",
-  textDark    : "#F9FAFB",
-  textMid     : "#D1D5DB",
-  textMuted   : "#9CA3AF",
-  textFaint   : "#6B7280",
-  // Surfaces
-  surface     : "#111827",
-  surfaceAlt  : "#1F2937",
-  surfaceHigh : "#0F172A",
-  border      : "#374151",
-  borderMid   : "#4B5563",
-  bg          : "#0A0E1A",
-};
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION I — PARSING UTILITIES
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function parseMarkdown(md: string): Map<string, string[]> {
-  const lines    = md.split(/\r?\n/);
-  const sections = new Map<string, string[]>();
-  let currentKey = "__intro__";
-  sections.set(currentKey, []);
-
-  for (const line of lines) {
-    const t = line.trim();
+// ══════════════════════════════════════════════════════════════════
+// PARSERS  (unchanged logic, carried over verbatim)
+// ══════════════════════════════════════════════════════════════════
+function parseSections(md) {
+  const lines = md.split(/\r?\n/);
+  const sections = [];
+  let cur = null;
+  for (const raw of lines) {
+    const t = raw.trim();
     if (!t || t === "---") continue;
-    if (/^#\s/.test(t)) {
-      const key = t.replace(/^#\s+/, "").trim();
-      currentKey = key;
-      if (!sections.has(currentKey)) sections.set(currentKey, []);
+    if (/^#\s+/.test(t)) {
+      if (cur) sections.push(cur);
+      cur = { title: t.replace(/^#\s+/, "").replace(/[^\w\s&·]/gu, "").trim(), lines: [] };
+    } else if (cur) {
+      cur.lines.push(t);
     } else {
-      sections.get(currentKey)?.push(t);
+      cur = { title: "__preamble__", lines: [t] };
     }
   }
+  if (cur) sections.push(cur);
   return sections;
 }
 
-function norm(s: string): string {
-  return s
-    .toUpperCase()
-    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]+/gu, "")
-    .replace(/[^A-Z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+function findSection(sections, keywords) {
+  const kws = keywords.map(k => k.toUpperCase());
+  return sections.find(s => {
+    const n = s.title.toUpperCase().replace(/[^\w\s]/g, " ");
+    return kws.some(k => n.includes(k));
+  }) ?? null;
 }
 
-function findSection(sections: Map<string, string[]>, keywords: string[]): { key: string | null; lines: string[] } {
-  for (const [key, lines] of sections.entries()) {
-    const n = norm(key);
-    if (keywords.some((kw) => n.includes(kw.toUpperCase()))) return { key, lines };
+function stripBullet(s) {
+  return s.replace(/^[-*•·▸→#\s⭐]+/, "").trim();
+}
+
+function parseDrinkIdentity(sections) {
+  const s = findSection(sections, ["DRINK"]);
+  if (!s) return { name: "", category: "" };
+  const headingLine = s.lines.find(l => /###/.test(l)) ?? s.lines[0] ?? "";
+  const clean = headingLine.replace(/^#{1,4}\s*/, "").replace(/[^\w\s·&\-,]/gu, "").trim();
+  const parts = clean.split(/[·•|]/).map(p => p.trim()).filter(Boolean);
+  return { name: parts[0] ?? "", category: parts[1] ?? "" };
+}
+
+function parseFinalRating(sections) {
+  const s = findSection(sections, ["FINAL RATING", "OVERALL RATING"]);
+  if (!s) return { score: 0, max: 5, label: "", summary: "" };
+  let score = 0, max = 5, label = "";
+  const allLines = [s.title, ...s.lines];
+  for (const raw of allLines) {
+    const t = raw.trim();
+    const m = t.match(/(\d+\.?\d*)\s*\/\s*(\d+)\s*[—–\-]+\s*(.+)/);
+    if (m) { score = parseFloat(m[1]); max = parseInt(m[2], 10); label = stripBullet(m[3].replace(/^#{1,4}\s*/, "")).trim(); break; }
+    const m2 = t.match(/(\d+\.?\d*)\s*\/\s*(\d+)/);
+    if (m2 && !score) { score = parseFloat(m2[1]); max = parseInt(m2[2], 10); }
   }
-  return { key: null, lines: [] };
+  const summary = s.lines.map(l => l.trim()).filter(l => l && !/(\d+\.?\d*)\s*\//.test(l) && !/^#{1,4}/.test(l)).map(stripBullet).filter(l => l.length > 4).join(" ").trim();
+  return { score, max, label, summary };
 }
 
-function findSections(sections: Map<string, string[]>, keywords: string[]): Array<{ key: string; lines: string[] }> {
-  const results: Array<{ key: string; lines: string[] }> = [];
-  for (const [key, lines] of sections.entries()) {
-    const n = norm(key);
-    if (keywords.some((kw) => n.includes(kw.toUpperCase()))) results.push({ key, lines });
-  }
-  return results;
-}
-
-function cleanBullet(s: string): string {
-  return s.replace(/^[-*•·▸→#\s]+/, "").trim();
-}
-
-function previewText(reason: string, maxLen = 90): string {
-  if (!reason) return "";
-  const first = reason.split(/[.!?]/)[0]?.trim() ?? reason;
-  const clean = first.slice(0, maxLen);
-  return clean.length < reason.length ? clean + "…" : clean;
-}
-
-function linesAsText(lines: string[]): string {
-  return lines.filter((l) => !/^#{1,4}\s/.test(l.trim())).join(" ").trim();
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION II — DOMAIN PARSERS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function parseScores(lines: string[]): ScoreItem[] {
-  const items: ScoreItem[] = [];
-  let current: ScoreItem | null = null;
-
-  for (const line of lines) {
-    const t = line.trim();
+function parseDrinkStructure(sections) {
+  const s = findSection(sections, ["DRINK STRUCTURE"]);
+  if (!s) return {};
+  const fields = {};
+  let cur = "";
+  for (const raw of s.lines) {
+    const t = raw.trim();
     if (!t) continue;
-    const m = t.match(/^(?:#{1,4}\s+)?(.+?)\s+[→|]\s+⭐?\s*(\d+\.?\d*)/);
-    // Also match "Label → ⭐X.X" and "Label | ⭐X.X" and "Label — ⭐X.X"
-    const m2 = !m ? t.match(/^(?:#{1,4}\s+)?(.+?)\s+[—–\-]\s+⭐?\s*(\d+\.?\d*)/) : null;
-    const match = m || m2;
+    if (/^##\s*processing style/i.test(t)) { cur = "processing"; continue; }
+    if (/^##\s*ingredient count/i.test(t))  { cur = "count"; continue; }
+    if (/^##\s*primary base/i.test(t))      { cur = "base"; continue; }
+    if (/^##\s*estimated ph/i.test(t))      { cur = "ph"; continue; }   // parsed but not rendered
+    if (/^##\s*caffeine/i.test(t))          { cur = "caffeine"; continue; }
+    if (/^##\s*carbonated/i.test(t))        { cur = "carbonated"; continue; }
+    if (/^##\s/.test(t)) { cur = ""; continue; }
+    const v = stripBullet(t);
+    if (v.length > 1 && cur && !fields[cur]) fields[cur] = v;
+  }
+  return fields;
+}
+
+function parseScoreItems(lines) {
+  const items = [];
+  let cur = null;
+  for (const raw of lines) {
+    const t = raw.trim();
+    if (!t) continue;
+    const pipeMatch  = /^#{1,4}\s+(.+?)\s*\|\s*⭐?(\d+\.?\d*)/.exec(t);
+    const arrowMatch = /^#{1,4}\s*(.+?)\s*[→|]\s*⭐?\s*(\d+\.?\d*)/.exec(t);
+    const dashMatch  = /^#{1,4}\s*(.+?)\s*[—–\-]\s*⭐?\s*(\d+\.?\d*)/.exec(t);
+    const match = pipeMatch || arrowMatch || dashMatch;
     if (match) {
-      if (current) items.push(current);
-      const remaining = t.slice(match[0].length).replace(/^[—:–\-\s→|]+/, "").trim();
-      current = {
-        label   : cleanBullet(match[1]).trim(),
-        score   : Math.min(5, Math.max(0, parseFloat(match[2]))),
-        maxScore: 5,
-        reason  : remaining || "",
-      };
-    } else if (current && t.length > 0 && !/^#{1,4}\s/.test(t)) {
-      const clean = cleanBullet(t);
-      if (clean.length > 2) current.reason = current.reason ? current.reason + " " + clean : clean;
+      if (cur) items.push(cur);
+      const labelRaw = match[1].replace(/[^\w\s&\-]/gu, "").trim();
+      const rest = pipeMatch
+        ? t.slice(match[0].length).split("|").map(p => p.trim()).filter(Boolean).join(" — ")
+        : t.slice(match[0].length).replace(/^[→|—:–\-\s]+/, "").trim();
+      cur = { label: labelRaw, score: Math.min(5, parseFloat(match[2])), max: 5, detail: rest };
+    } else if (cur && !/^#{1,4}\s/.test(t)) {
+      const v = stripBullet(t);
+      if (v.length > 2) cur.detail = cur.detail ? cur.detail + " " + v : v;
     }
   }
-  if (current) items.push(current);
-  return items.filter((i) => i.score >= 0 && i.score <= 5);
+  if (cur) items.push(cur);
+  return items.filter(i => i.score >= 0 && i.score <= 5 && i.label.length > 1);
 }
 
-function parseCompatibility(lines: string[]): CompatItem[] {
-  const items: CompatItem[] = [];
-  let current: CompatItem | null = null;
-
-  for (const line of lines) {
-    const t = line.trim();
-    if (!t) continue;
-    const m  = t.match(/^(?:#{1,4}\s+)?(.+?)\s+[→|]\s+⭐?\s*(\d+\.?\d*)/);
-    const m2 = !m ? t.match(/^(?:#{1,4}\s+)?(.+?)\s+[—–\-]\s+⭐?\s*(\d+\.?\d*)/) : null;
-    const match = m || m2;
-    if (match) {
-      if (current) items.push(current);
-      const remaining = t.slice(match[0].length).replace(/^[—:–\-\s→|]+/, "").trim();
-      const score = Math.min(5, Math.max(0, parseFloat(match[2])));
-      current = { label: cleanBullet(match[1]).trim(), score, compatible: score >= 3.0, reason: remaining || "" };
-    } else if (current && t.length > 0 && !/^#{1,4}\s/.test(t)) {
-      const clean = cleanBullet(t);
-      if (clean.length > 2) current.reason = current.reason ? current.reason + " " + clean : clean;
-    }
-  }
-  if (current) items.push(current);
-  return items.filter((i) => i.score >= 0);
+function parseBullets(lines) {
+  return lines.filter(l => !/^#{1,4}\s/.test(l.trim()) && l.trim().length > 3).map(stripBullet).filter(Boolean);
 }
 
-function parseDrinkStructure(lines: string[]): DrinkStructure {
-  const struct: DrinkStructure = { processingStyle: "", ingredientCount: "", primaryBase: "", estimatedPH: "", caffeine: "", carbonated: "" };
-  let curField = "";
-  for (const line of lines) {
-    const t = line.trim();
-    if (!t) continue;
-    if (/processing style/i.test(t))   { curField = "processingStyle"; continue; }
-    if (/ingredient count/i.test(t))   { curField = "ingredientCount"; continue; }
-    if (/primary base/i.test(t))       { curField = "primaryBase"; continue; }
-    if (/estimated ph|ph/i.test(t))    { curField = "estimatedPH"; continue; }
-    if (/caffeine/i.test(t))           { curField = "caffeine"; continue; }
-    if (/carbonated/i.test(t))         { curField = "carbonated"; continue; }
-    const clean = cleanBullet(t);
-    if (clean && curField && !struct[curField as keyof DrinkStructure]) {
-      (struct as any)[curField] = clean;
-    }
-  }
-  return struct;
-}
-
-function parseBullets(lines: string[]): string[] {
-  return lines
-    .filter((l) => !/^#{1,4}\s/.test(l.trim()) && l.trim().length > 2)
-    .map(cleanBullet)
-    .filter(Boolean);
-}
-
-function parseMindfulGroups(lines: string[]): MindfulGroup[] {
-  const groups: MindfulGroup[] = [];
-  let current: MindfulGroup | null = null;
-
-  const MINDFUL_ICONS: Record<string, string> = {
-    children: "🧒", dental: "🦷", blood: "🩸", heart: "❤️",
-    pressure: "🧂", pregnancy: "🤰", weight: "⚖️", sleep: "😴",
-    kidney: "🫘", gut: "🦠", sport: "🏃",
-  };
-
-  for (const line of lines) {
-    const t = line.trim();
-    if (!t) continue;
-
-    // Detect heading lines with level indicator
-    const headingMatch = t.match(/^(?:#{1,4}\s+)?(.*?)\s*[|]\s*(🔴|🟡)\s*(.+)/);
-    if (headingMatch) {
-      if (current) groups.push(current);
-      const rawLabel = cleanBullet(headingMatch[1]);
-      const levelEmoji = headingMatch[2];
-      const iconKey = Object.keys(MINDFUL_ICONS).find((k) => rawLabel.toLowerCase().includes(k)) ?? "";
-      current = {
-        icon : MINDFUL_ICONS[iconKey] || "⚠️",
-        label: rawLabel,
-        level: levelEmoji === "🔴" ? "high" : "moderate",
-        reason: "",
-      };
-    } else if (t.match(/^#{1,4}\s/)) {
-      // Heading line — try to infer level
-      if (current) groups.push(current);
-      const rawLabel = t.replace(/^#{1,4}\s+/, "").trim();
-      const hasHigh = /high consideration|high/i.test(rawLabel);
-      const iconKey = Object.keys(MINDFUL_ICONS).find((k) => rawLabel.toLowerCase().includes(k)) ?? "";
-      // Only add if it seems to be a mindful group header
-      if (iconKey || /children|dental|blood|heart|pregnancy|weight|sleep|kidney|gut|sport/i.test(rawLabel)) {
-        current = {
-          icon : MINDFUL_ICONS[iconKey] || "⚠️",
-          label: rawLabel.replace(/\s*[|–—]\s*(🔴|🟡).*$/, "").trim(),
-          level: hasHigh ? "high" : "moderate",
-          reason: "",
-        };
-      }
-    } else if (current) {
-      const clean = cleanBullet(t);
-      if (clean.length > 2) current.reason = current.reason ? current.reason + " " + clean : clean;
-    }
-  }
-  if (current) groups.push(current);
-  return groups.filter((g) => g.label.length > 1);
-}
-
-function parseAllergens(lines: string[]): AllergenItem[] {
-  const ALL_ALLERGENS = ["Milk", "Soy", "Gluten", "Tree Nuts", "Peanuts", "Eggs", "Sesame", "Fish", "Sulfites", "Shellfish", "Wheat"];
-  const text = lines.join(" ");
-  const noneDetected = /no major allergen/i.test(text);
-  if (noneDetected) return ALL_ALLERGENS.map((a) => ({ label: a, detected: false }));
-  return ALL_ALLERGENS.map((a) => ({ label: a, detected: new RegExp(a, "i").test(text) }));
-}
-
-function parseContribSignals(lines: string[]): ContribSignal[] {
-  const signals: ContribSignal[] = [];
-  let current: ContribSignal | null = null;
-
-  for (const line of lines) {
-    const t = line.trim();
+function parseContribSignals(lines) {
+  const out = [];
+  let cur = null;
+  for (const raw of lines) {
+    const t = raw.trim();
     if (!t) continue;
     if (/^#{1,4}\s/.test(t)) {
-      if (current) signals.push(current);
-      const label = t.replace(/^#{1,4}\s+/, "").trim();
-      const greenMatch = /🟢/.test(t);
-      const yellowMatch = /🟡/.test(t);
-      const whiteMatch  = /⚪/.test(t);
-      const tier: ContribSignal["tier"] = greenMatch ? "primary" : yellowMatch ? "secondary" : "trace";
-      const dot = greenMatch ? T.green : yellowMatch ? T.amber : T.textFaint;
-      current = { name: cleanBullet(label.replace(/[🟢🟡⚪]/g, "").trim()), tier, description: "", dot };
-    } else if (current) {
-      const clean = cleanBullet(t);
-      if (clean.length > 2) current.description = current.description ? current.description + " " + clean : clean;
+      if (cur) out.push(cur);
+      const body = t.replace(/^#{1,4}\s+/, "");
+      const tier = /🟢/.test(body) ? "primary" : /🟡/.test(body) ? "supporting" : "trace";
+      const name = body.replace(/[🟢🟡⚪→]/g, "").replace(/[^\w\s\-&]/gu, "").trim();
+      cur = { name, tier, detail: "" };
+    } else if (cur) {
+      const v = stripBullet(t);
+      if (v.length > 2) cur.detail = cur.detail ? cur.detail + " " + v : v;
     }
   }
-  if (current) signals.push(current);
-  return signals.filter((s) => s.name.length > 1);
+  if (cur) out.push(cur);
+  return out.filter(c => c.name.length > 1);
 }
 
-function parseEvidenceItems(lines: string[]): EvidenceItem[] {
-  const items: EvidenceItem[] = [];
-  let current: EvidenceItem | null = null;
-  for (const line of lines) {
-    const t = line.trim();
+function parseMindful(lines) {
+  const ICONS = { children:"🧒", dental:"🦷", blood:"🩸", heart:"❤️", pressure:"🧂", pregnancy:"🤰", weight:"⚖️", sleep:"😴", kidney:"🫘", gut:"🦠", sport:"🏃" };
+  const out = [];
+  let cur = null;
+  for (const raw of lines) {
+    const t = raw.trim();
     if (!t) continue;
-    if (/^#{2,4}\s/.test(t)) {
-      if (current) items.push(current);
-      current = { label: t.replace(/^#{2,4}\s+/, "").trim(), body: "" };
-    } else if (/^#\s/.test(t)) {
-      // skip
-    } else {
-      const clean = cleanBullet(t);
-      if (clean.length > 2) {
-        if (current) current.body = current.body ? current.body + " " + clean : clean;
-        else current = { label: "Overview", body: clean };
-      }
+    const hm = /^#{1,4}\s+(.+)/.exec(t);
+    if (hm) {
+      if (cur) out.push(cur);
+      const body = hm[1];
+      const level = /🔴/.test(body) ? "high" : "moderate";
+      const label = body.replace(/[🔴🟡🟢→]/g, "").replace(/[^\w\s\-&]/gu, "").trim();
+      const iconKey = Object.keys(ICONS).find(k => label.toLowerCase().includes(k)) ?? "";
+      cur = { icon: ICONS[iconKey] ?? "⚠", label, level, detail: "" };
+    } else if (cur) {
+      const v = stripBullet(t);
+      if (v.length > 2) cur.detail = cur.detail ? cur.detail + " " + v : v;
     }
   }
-  if (current) items.push(current);
-  return items;
+  if (cur) out.push(cur);
+  return out.filter(g => g.label.length > 1);
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION III — DRINK INGREDIENT SYSTEM
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function parseAllergens(lines) {
+  const ALL = ["Milk","Soy","Gluten","Tree Nuts","Peanuts","Eggs","Sesame","Fish","Sulfites","Shellfish","Wheat"];
+  const text = lines.join(" ");
+  if (/no major allergen/i.test(text)) return ALL.map(a => ({ label: a, present: false }));
+  return ALL.map(a => ({ label: a, present: new RegExp(a, "i").test(text) }));
+}
 
-const DRINK_ING_GROUPS: Record<string, string[]> = {
-  "Sugars & Sweeteners"       : ["sugar", "sucrose", "glucose", "fructose", "corn syrup", "stevia", "sucralose", "aspartame", "acesulfame", "erythritol", "xylitol", "monk fruit", "agave"],
-  "Acids & pH Agents"         : ["citric acid", "phosphoric acid", "malic acid", "tartaric acid", "ascorbic acid", "lactic acid", "acetic acid", "carbonic"],
-  "Caffeine & Stimulants"     : ["caffeine", "guarana", "taurine", "l-theanine", "ginseng", "yerba mate", "green tea extract", "theacrine"],
-  "Preservatives"             : ["sodium benzoate", "potassium sorbate", "potassium benzoate", "sorbic acid", "benzoic acid", "dimethyl dicarbonate"],
-  "Flavors"                   : ["natural flavor", "artificial flavor", "flavoring", "flavor"],
-  "Colors"                    : ["caramel color", "color", "e150", "e102", "e129", "tartrazine", "red 40", "yellow 5"],
-  "Electrolytes & Minerals"   : ["sodium", "potassium", "magnesium", "calcium", "chloride", "phosphate", "bicarbonate"],
-  "Functional Additives"      : ["vitamin b", "vitamin c", "niacin", "pantothenic", "biotin", "inositol", "glucuronolactone", "l-carnitine"],
-  "Botanical & Herbal"        : ["green tea", "chamomile", "hibiscus", "elderflower", "lavender", "rose", "mint", "turmeric", "ginger"],
-  "Dairy Components"          : ["milk", "cream", "whey", "lactose", "casein"],
-  "Fruit Components"          : ["juice", "puree", "concentrate", "lemon", "lime", "orange", "apple", "berry", "grape"],
-  "Carbonation"               : ["carbon dioxide", "co2", "carbonated water", "sparkling water"],
-};
+function parseFinalVerdict(sections) {
+  const s = findSection(sections, ["FINAL VERDICT"]);
+  if (!s) return "";
+  return s.lines.map(stripBullet).filter(l => l.length > 3).join(" ").trim();
+}
 
-const DRINK_ING_COLORS: Record<string, ColorSet> = {
-  "Sugars & Sweeteners"    : { bg:"#FFF7ED", dot:"#F97316", text:"#7C2D12", border:"#FED7AA" },
-  "Acids & pH Agents"      : { bg:"#FFF1F2", dot:"#EF4444", text:"#7F1D1D", border:"#FECDD3" },
-  "Caffeine & Stimulants"  : { bg:"#1E1B4B", dot:"#A5B4FC", text:"#C7D2FE", border:"#3730A3" },
-  "Preservatives"          : { bg:"#F1F5F9", dot:"#94A3B8", text:"#334155", border:"#E2E8F0" },
-  "Flavors"                : { bg:"#FDF4FF", dot:"#C084FC", text:"#581C87", border:"#E9D5FF" },
-  "Colors"                 : { bg:"#ECFEFF", dot:"#06B6D4", text:"#0C4A6E", border:"#A5F3FC" },
-  "Electrolytes & Minerals": { bg:"#ECFDF5", dot:"#10B981", text:"#064E3B", border:"#A7F3D0" },
-  "Functional Additives"   : { bg:"#EFF6FF", dot:"#3B82F6", text:"#1E3A8A", border:"#BFDBFE" },
-  "Botanical & Herbal"     : { bg:"#F0FDF4", dot:"#22C55E", text:"#14532D", border:"#DCFCE7" },
-  "Dairy Components"       : { bg:"#EFF6FF", dot:"#60A5FA", text:"#1E3A8A", border:"#BFDBFE" },
-  "Fruit Components"       : { bg:"#FFF7ED", dot:"#FB923C", text:"#7C2D12", border:"#FDBA74" },
-  "Carbonation"            : { bg:"#F0F9FF", dot:"#38BDF8", text:"#0C4A6E", border:"#BAE6FD" },
-  "Other"                  : { bg:"#F8FAFC", dot:"#CBD5E1", text:"#475569", border:"#E2E8F0" },
-};
-
-function inferDrinkIngGroup(name: string): string {
-  const lower = name.toLowerCase();
-  for (const [g, kws] of Object.entries(DRINK_ING_GROUPS)) {
-    if (kws.some((k) => lower.includes(k))) return g;
+function parseGuidance(section) {
+  if (!section) return [];
+  const out = [];
+  let cur = null;
+  for (const raw of section.lines) {
+    const t = raw.trim();
+    if (!t) continue;
+    if (/^##\s/.test(t)) {
+      if (cur) out.push(cur);
+      cur = { label: t.replace(/^##\s+/, "").replace(/:/g, "").trim(), lines: [] };
+    } else if (cur) {
+      const v = stripBullet(t);
+      if (v.length > 1) cur.lines.push(v);
+    }
   }
-  return "Other";
+  if (cur) out.push(cur);
+  return out;
 }
 
-function parseDrinkIngredients(lines: string[]): Ingredient[] {
-  return lines
-    .filter((l) => !/^#{1,4}\s/.test(l.trim()))
-    .map((l) => {
-      const clean = cleanBullet(l);
-      if (!clean || clean.length < 2) return null;
-      const parts  = clean.split(/[:—–\-]/);
-      const name   = parts[0]?.trim() ?? clean;
-      if (name.length < 2) return null;
-      const role  = parts[1]?.trim() ?? "Ingredient";
-      const group = inferDrinkIngGroup(name);
-      return { name, role, group, tier: "secondary" as const, color: DRINK_ING_COLORS[group] || DRINK_ING_COLORS.Other };
-    })
-    .filter(Boolean) as Ingredient[];
-}
+// ══════════════════════════════════════════════════════════════════
+// PRIMITIVE UI COMPONENTS
+// ══════════════════════════════════════════════════════════════════
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION IV — SCORE UTILITIES
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function scoreColor(score: number, max = 5): string {
-  const pct = (score / max) * 100;
-  if (pct >= 76) return T.green;
-  if (pct >= 60) return T.cyan;
-  if (pct >= 44) return T.amber;
-  return T.red;
-}
-
-function scoreLabel(score: number, max = 5): string {
-  const pct = (score / max) * 100;
-  if (pct >= 90) return "Exceptional";
-  if (pct >= 76) return "Strong";
-  if (pct >= 60) return "Good";
-  if (pct >= 44) return "Moderate";
-  if (pct >= 28) return "Weak";
-  return "Poor";
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION V — PRIMITIVE COMPONENTS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function ScoreBar({ score, max = 5 }: { score: number; max?: number }) {
-  const pct   = Math.min(100, (score / max) * 100);
-  const color = scoreColor(score, max);
+// Divider with optional label
+function Divider({ label, accent }) {
   return (
-    <div style={{ height: 3, background: T.border, borderRadius: 99, overflow: "hidden", flex: 1, minWidth: 40 }}>
-      <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 99, transition: "width 0.7s cubic-bezier(.4,0,.2,1)", boxShadow: `0 0 6px ${color}80` }} />
+    <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "4px 0" }}>
+      <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${accent ?? C.border}, transparent)` }} />
+      {label && <span style={{ fontSize: 10, fontWeight: 700, color: accent ?? C.faint, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{label}</span>}
+      <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, ${accent ?? C.border}, transparent)` }} />
     </div>
   );
 }
 
-function RatingRing({ score, max, color }: { score: number; max: number; color: string }) {
-  const r    = 38;
-  const circ = 2 * Math.PI * r;
-  const dash = Math.min(1, score / max) * circ;
+// Section header with left accent bar
+function SecHead({ icon, title, color }) {
+  const col = color ?? C.brand;
   return (
-    <svg width="96" height="96" viewBox="0 0 96 96">
-      <circle cx="48" cy="48" r={r} fill="none" stroke="#1F2937" strokeWidth="7" />
-      <circle cx="48" cy="48" r={r} fill="none" stroke={color} strokeWidth="7"
-        strokeLinecap="round" strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ / 4}
-        style={{ transition: "stroke-dasharray 0.9s cubic-bezier(.4,0,.2,1)", filter: `drop-shadow(0 0 4px ${color}80)` }}
-      />
-      <text x="48" y="44" textAnchor="middle" fill={color} fontSize="18" fontWeight="800" fontFamily="'Inter', system-ui, sans-serif">{score.toFixed(1)}</text>
-      <text x="48" y="61" textAnchor="middle" fill={T.textFaint} fontSize="11" fontFamily="'Inter', system-ui, sans-serif">/ {max}</text>
-    </svg>
-  );
-}
-
-function Stars({ score, max = 5 }: { score: number; max?: number }) {
-  return (
-    <div style={{ display: "flex", gap: 3 }}>
-      {Array.from({ length: max }, (_, i) => ({
-        filled: i < Math.floor(score), half: i >= Math.floor(score) && i < score,
-      })).map((s, i) => (
-        <span key={i} style={{ fontSize: 15, color: s.filled || s.half ? "#FBBF24" : T.border, filter: s.filled ? "drop-shadow(0 0 3px #FBBF2480)" : "none" }}>
-          {s.filled ? "★" : s.half ? "⯨" : "☆"}
-        </span>
-      ))}
+    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+      <div style={{ width: 3, height: 20, borderRadius: 99, background: col, flexShrink: 0 }} />
+      {icon && <span style={{ fontSize: 14 }}>{icon}</span>}
+      <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.07em", color: col, textTransform: "uppercase" }}>{title}</span>
     </div>
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION VI — STRUCTURAL SIGNAL CHIPS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-interface SignalChipData { label: string; value: string; icon: string; accentColor: string; }
-
-function inferDrinkSignals(struct: DrinkStructure, scores: ScoreItem[]): SignalChipData[] {
-  const signals: SignalChipData[] = [];
-
-  if (struct.estimatedPH) {
-    const phVal = struct.estimatedPH;
-    const phNum = parseFloat(phVal.match(/[\d.]+/)?.[0] ?? "7");
-    const danger = phNum < 3.5;
-    signals.push({ label: "Est. pH", value: phVal.replace(/estimated ph/i, "").trim() || phVal, icon: "⚗️", accentColor: danger ? T.red : T.green });
-  }
-
-  if (struct.caffeine) {
-    const caf = struct.caffeine;
-    const high = /high/i.test(caf);
-    signals.push({ label: "Caffeine", value: caf, icon: "⚡", accentColor: high ? T.amber : T.cyan });
-  }
-
-  if (struct.carbonated) {
-    const carb = struct.carbonated;
-    signals.push({ label: "Carbonated", value: carb, icon: "🫧", accentColor: /yes/i.test(carb) ? T.cyan : T.textFaint });
-  }
-
-  const acidScore = scores.find((s) => /acid|dental/i.test(s.label));
-  if (acidScore) {
-    signals.push({ label: "Acid Risk", value: `${acidScore.score.toFixed(1)}/5`, icon: "🦷", accentColor: scoreColor(acidScore.score) });
-  }
-
-  const sugarScore = scores.find((s) => /sugar|sweetener|metabolic/i.test(s.label));
-  if (sugarScore) {
-    signals.push({ label: "Sugar Impact", value: `${sugarScore.score.toFixed(1)}/5`, icon: "🍬", accentColor: scoreColor(sugarScore.score) });
-  }
-
-  const addScore = scores.find((s) => /additive|preservative/i.test(s.label));
-  if (addScore) {
-    signals.push({ label: "Additive Load", value: `${addScore.score.toFixed(1)}/5`, icon: "🧪", accentColor: scoreColor(addScore.score) });
-  }
-
-  return signals.slice(0, 6);
-}
-
-function SignalChip({ chip }: { chip: SignalChipData }) {
+// Progress bar — gradient fill, rounded
+function PBar({ score, max = 5, color }) {
+  const pct = Math.min(100, (score / max) * 100);
+  const col = color ?? scoreColor(score, max);
   return (
-    <div style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: 10, padding: "8px 12px", display: "flex", alignItems: "center", gap: 8, minWidth: 100 }}>
-      <span style={{ fontSize: 14 }}>{chip.icon}</span>
-      <div>
-        <div style={{ fontSize: 12.5, fontWeight: 800, color: chip.accentColor, letterSpacing: "0.01em" }}>{chip.value}</div>
-        <div style={{ fontSize: 9.5, color: T.textFaint, fontWeight: 600, letterSpacing: "0.05em", marginTop: 1 }}>{chip.label.toUpperCase()}</div>
-      </div>
+    <div style={{ height: 5, background: C.surfaceAlt, borderRadius: 99, overflow: "hidden" }}>
+      <div style={{ height: "100%", width: `${pct}%`, background: `linear-gradient(to right, ${col}99, ${col})`, borderRadius: 99, transition: "width 0.55s cubic-bezier(.4,0,.2,1)" }} />
     </div>
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION VII — CARD COMPONENTS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function SectionCard({ title, icon, accent, children }: { title?: string; icon?: string; accent?: string; children: React.ReactNode }) {
+// Score badge pill
+function ScorePill({ score, max = 5 }) {
+  const { fg, soft, bdr, label } = ratingTier(score, max);
   return (
-    <div style={{ background: T.surface, border: `1px solid ${accent ? `${accent}30` : T.border}`, borderRadius: 16, padding: "18px 20px", boxShadow: `0 2px 12px rgba(0,0,0,0.3)` }}>
-      {(title || icon) && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-          {icon && <span style={{ fontSize: 14 }}>{icon}</span>}
-          {title && <span style={{ fontWeight: 700, fontSize: 12.5, color: accent || T.textMid, letterSpacing: "0.04em" }}>{title.toUpperCase()}</span>}
-        </div>
-      )}
-      {children}
+    <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+      <span style={{ fontSize: 10, fontWeight: 700, color: fg, background: soft, border: `1px solid ${bdr}`, borderRadius: 99, padding: "2px 8px", letterSpacing: "0.04em" }}>{label}</span>
+      <span style={{ fontSize: 15, fontWeight: 800, color: fg, fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
+        {score.toFixed(1)}<span style={{ fontSize: 10, fontWeight: 500, color: C.faint }}>/{max}</span>
+      </span>
     </div>
   );
 }
 
-function ScoreCard({ item }: { item: ScoreItem }) {
+// ══════════════════════════════════════════════════════════════════
+// CORE SCORE CARD  — expandable, premium
+// ══════════════════════════════════════════════════════════════════
+function CoreScoreCard({ item }) {
   const [open, setOpen] = useState(false);
-  const color   = scoreColor(item.score, item.maxScore);
-  const label   = scoreLabel(item.score, item.maxScore);
-  const preview = previewText(item.reason, 88);
-
+  const col = scoreColor(item.score, item.max);
+  const { soft, bdr } = ratingTier(item.score, item.max);
   return (
     <div
-      onClick={() => item.reason && setOpen(!open)}
+      onClick={() => item.detail && setOpen(o => !o)}
       style={{
-        background: T.surfaceAlt, border: `1px solid ${open ? T.electric + "50" : T.border}`,
-        borderRadius: 12, padding: "13px 15px",
-        cursor: item.reason ? "pointer" : "default",
-        boxShadow: open ? `0 4px 20px ${T.electric}20` : "0 1px 4px rgba(0,0,0,0.2)",
-        transition: "box-shadow 0.2s, border-color 0.2s",
+        background: open ? soft : C.surface,
+        border: `1px solid ${open ? bdr : C.border}`,
+        borderRadius: 12,
+        padding: "13px 15px",
+        cursor: item.detail ? "pointer" : "default",
+        transition: "background 0.2s, border-color 0.2s",
       }}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, gap: 8 }}>
-            <span style={{ fontWeight: 700, fontSize: 12.5, color: T.textDark, lineHeight: 1.35, wordBreak: "break-word" }}>{item.label}</span>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-              <span style={{ fontWeight: 800, fontSize: 14, color }}>{item.score.toFixed(1)}</span>
-              <span style={{ fontSize: 10, color: T.textFaint }}>/5</span>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: open ? 0 : 7 }}>
-            <ScoreBar score={item.score} max={item.maxScore} />
-            <span style={{ fontSize: 10, fontWeight: 700, color, background: `${color}20`, padding: "1px 7px", borderRadius: 99, whiteSpace: "nowrap", letterSpacing: "0.04em" }}>{label}</span>
-          </div>
-          {preview && !open && <p style={{ margin: 0, fontSize: 11.5, color: T.textFaint, lineHeight: 1.6, marginTop: 7 }}>{preview}</p>}
-        </div>
-        {item.reason && (
-          <span style={{ fontSize: 10, color: T.textFaint, flexShrink: 0, marginTop: 2, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s", display: "inline-block" }}>▾</span>
-        )}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: C.inkMid, lineHeight: 1.35, flex: 1 }}>{item.label}</span>
+        <ScorePill score={item.score} max={item.max} />
       </div>
-      {open && item.reason && (
-        <div style={{ marginTop: 10, fontSize: 12.5, color: T.textMid, lineHeight: 1.7, paddingTop: 10, borderTop: `1px solid ${T.border}` }}>{item.reason}</div>
+      <PBar score={item.score} max={item.max} />
+      {item.detail && !open && (
+        <p style={{ margin: "8px 0 0", fontSize: 11.5, color: C.muted, lineHeight: 1.55 }}>
+          {item.detail.length > 90 ? item.detail.slice(0, 90) + "…" : item.detail}
+        </p>
+      )}
+      {open && item.detail && (
+        <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${bdr}` }}>
+          <p style={{ margin: 0, fontSize: 12.5, color: C.text, lineHeight: 1.7 }}>{item.detail}</p>
+        </div>
+      )}
+      {item.detail && (
+        <div style={{ marginTop: 6, textAlign: "right", fontSize: 10, color: C.faint }}>
+          {open ? "▲ collapse" : "▼ expand"}
+        </div>
       )}
     </div>
   );
 }
 
-function CompatCard({ item }: { item: CompatItem }) {
+// Category score card — colorful, compact
+function CatScoreCard({ item }) {
   const [open, setOpen] = useState(false);
-  const color = scoreColor(item.score, 5);
-  const preview = previewText(item.reason, 88);
-  const c = item.compatible
-    ? { border: "#065F46", bg: "#022C22", dot: T.green }
-    : { border: "#7F1D1D", bg: "#1C0505", dot: T.red };
-
+  const { fg, soft, bdr } = catColor(item.label);
+  const barCol = scoreColor(item.score, item.max);
+  const pct = Math.min(100, (item.score / item.max) * 100);
   return (
     <div
-      onClick={() => item.reason && setOpen(!open)}
-      style={{ background: c.bg, border: `1px solid ${open ? (item.compatible ? T.green + "80" : T.red + "80") : c.border}`, borderRadius: 12, padding: "12px 14px", cursor: item.reason ? "pointer" : "default", transition: "box-shadow 0.2s, border-color 0.2s" }}
+      onClick={() => item.detail && setOpen(o => !o)}
+      style={{
+        background: soft,
+        border: `1px solid ${bdr}`,
+        borderRadius: 12,
+        padding: "12px 14px",
+        cursor: item.detail ? "pointer" : "default",
+        transition: "opacity 0.15s",
+      }}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 7 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 8, flex: 1, minWidth: 0 }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: c.dot, marginTop: 4, flexShrink: 0, boxShadow: `0 0 4px ${c.dot}80` }} />
-          <span style={{ fontWeight: 700, fontSize: 12.5, color: T.textDark, wordBreak: "break-word", lineHeight: 1.4 }}>{item.label}</span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7, flex: 1, minWidth: 0 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: fg, flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: fg, lineHeight: 1.3, wordBreak: "break-word" }}>{item.label}</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-          <span style={{ fontWeight: 800, fontSize: 13, color }}>{item.score.toFixed(1)}</span>
-          <span style={{ fontSize: 10, color: T.textFaint }}>/5</span>
-          {item.reason && <span style={{ fontSize: 10, color: T.textFaint, marginLeft: 2, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.2s", display: "inline-block" }}>▾</span>}
-        </div>
+        <span style={{ fontSize: 15, fontWeight: 800, color: fg, flexShrink: 0 }}>{item.score.toFixed(1)}</span>
       </div>
-      <ScoreBar score={item.score} max={5} />
-      {preview && !open && <p style={{ margin: "7px 0 0", fontSize: 11.5, color: T.textFaint, lineHeight: 1.6 }}>{preview}</p>}
-      {open && item.reason && <p style={{ margin: "10px 0 0", fontSize: 12.5, color: T.textMid, lineHeight: 1.65, paddingTop: 10, borderTop: `1px solid ${T.border}` }}>{item.reason}</p>}
+      <div style={{ height: 4, background: `${fg}22`, borderRadius: 99, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, background: fg, borderRadius: 99 }} />
+      </div>
+      {open && item.detail && (
+        <p style={{ margin: "9px 0 0", fontSize: 11.5, color: C.text, lineHeight: 1.65, paddingTop: 9, borderTop: `1px solid ${bdr}` }}>{item.detail}</p>
+      )}
     </div>
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION VIII — TAB BAR
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function TabBar({ tabs, activeTab, onTabChange }: { tabs: Tab[]; activeTab: number; onTabChange: (i: number) => void }) {
+// ══════════════════════════════════════════════════════════════════
+// ATTRIBUTE CHIPS  (hero section) — rich per-color identity
+// ══════════════════════════════════════════════════════════════════
+function AttrChip({ attrKey, value }) {
+  const cfg = ATTR_STYLES[attrKey];
+  if (!cfg) return null;
+  const isBase = attrKey === "base";
   return (
-    <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none", borderTop: `1px solid ${T.border}`, marginLeft: -22, marginRight: -22, paddingLeft: 22 }}>
+    <div style={{
+      background: cfg.soft,
+      border: `1px solid ${cfg.bdr}`,
+      borderLeft: `3px solid ${cfg.fg}`,
+      borderRadius: 12,
+      padding: isBase ? "13px 18px" : "10px 14px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      flex: isBase ? "2 1 180px" : "1 1 110px",
+      minWidth: isBase ? 160 : 100,
+      position: "relative",
+      overflow: "hidden",
+    }}>
+      {/* faint tinted corner glow */}
+      <div style={{
+        position: "absolute", top: -18, right: -18,
+        width: 56, height: 56, borderRadius: "50%",
+        background: `${cfg.fg}18`, pointerEvents: "none",
+      }} />
+      {/* icon badge + label row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+        <div style={{
+          width: 24, height: 24, borderRadius: 7,
+          background: `${cfg.fg}22`,
+          border: `1px solid ${cfg.fg}44`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 12, flexShrink: 0,
+        }}>
+          {cfg.icon}
+        </div>
+        <span style={{
+          fontSize: 9.5, fontWeight: 800, color: cfg.fg,
+          letterSpacing: "0.09em", textTransform: "uppercase", opacity: 0.85,
+        }}>
+          {cfg.label}
+        </span>
+      </div>
+      {/* value */}
+      <span style={{
+        fontSize: isBase ? 14 : 13,
+        fontWeight: 700,
+        color: cfg.fg,
+        lineHeight: 1.3,
+      }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TAB BAR
+// ══════════════════════════════════════════════════════════════════
+function TabBar({ tabs, active, onChange }) {
+  return (
+    <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none", borderTop: `1px solid ${C.border}`, marginLeft: -24, marginRight: -24, paddingLeft: 24 }}>
       {tabs.map((tab, i) => (
         <button
           key={tab.id}
-          onClick={() => onTabChange(i)}
+          onClick={() => onChange(i)}
           style={{
-            background: "none", border: "none",
-            borderBottom: activeTab === i ? `2px solid ${T.electric}` : "2px solid transparent",
-            padding: "11px 16px", fontSize: 12,
-            fontWeight: activeTab === i ? 700 : 500,
-            color: activeTab === i ? T.electricGlow : T.textFaint,
-            cursor: "pointer", whiteSpace: "nowrap",
-            display: "flex", alignItems: "center", gap: 5, transition: "color 0.15s",
+            background: "none", border: "none", outline: "none",
+            borderBottom: active === i ? `2.5px solid ${C.brand}` : "2.5px solid transparent",
+            padding: "11px 17px",
+            fontSize: 12.5,
+            fontWeight: active === i ? 700 : 500,
+            color: active === i ? C.brand : C.muted,
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            transition: "color 0.15s, border-color 0.15s",
           }}
         >
-          <span style={{ fontSize: 11 }}>{tab.icon}</span>
           {tab.label}
         </button>
       ))}
@@ -664,688 +511,411 @@ function TabBar({ tabs, activeTab, onTabChange }: { tabs: Tab[]; activeTab: numb
   );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION IX — TAB CONTENT PANELS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function ScoresPanel({ keyScores, catScores }: { keyScores: ScoreItem[]; catScores: ScoreItem[] }) {
+// ══════════════════════════════════════════════════════════════════
+// INSIGHT ROW
+// ══════════════════════════════════════════════════════════════════
+function InsightRow({ text, icon, fg, soft, bdr, marker }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {keyScores.length > 0 && (
-        <SectionCard title="Key Formulation Scores" icon="📊" accent={T.electric}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 10 }}>
-            {keyScores.map((s, i) => <ScoreCard key={i} item={s} />)}
-          </div>
-        </SectionCard>
-      )}
-      {catScores.length > 0 && (
-        <SectionCard title="Ingredient Category Scores" icon="🧪" accent={T.cyan}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 10 }}>
-            {catScores.map((s, i) => <ScoreCard key={i} item={s} />)}
-          </div>
-        </SectionCard>
-      )}
+    <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: soft, border: `1px solid ${bdr}`, borderRadius: 10, padding: "10px 13px" }}>
+      <span style={{ fontSize: 14, color: fg, flexShrink: 0, fontWeight: 800, marginTop: 1 }}>{marker ?? icon}</span>
+      <span style={{ fontSize: 13, color: C.text, lineHeight: 1.65 }}>{text}</span>
     </div>
   );
 }
 
-function IngredientsPanel({ ingGroups, contribs }: { ingGroups: Record<string, Ingredient[]>; contribs: ContribSignal[] }) {
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
-  const toggle = (g: string) => setOpenGroups((prev) => ({ ...prev, [g]: !prev[g] }));
-
+// ══════════════════════════════════════════════════════════════════
+// MINDFUL CARD
+// ══════════════════════════════════════════════════════════════════
+function MindfulCard({ group }) {
+  const isHigh = group.level === "high";
+  const fg  = isHigh ? C.red    : C.amber;
+  const soft = isHigh ? C.redSoft  : C.amberSoft;
+  const bdr  = isHigh ? C.redBdr   : C.amberBdr;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {contribs.length > 0 && (
-        <SectionCard title="Formulation Contribution Signals" icon="🌿" accent={T.green}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {contribs.map((c, i) => (
-              <div key={i} style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: 10, padding: "11px 13px", display: "flex", alignItems: "flex-start", gap: 10 }}>
-                <div style={{ width: 10, height: 10, borderRadius: "50%", background: c.dot, marginTop: 3, flexShrink: 0, boxShadow: `0 0 5px ${c.dot}80` }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 12.5, color: T.textDark, marginBottom: 3 }}>{c.name}</div>
-                  <div style={{ fontSize: 11.5, color: T.textFaint, lineHeight: 1.6 }}>{c.description}</div>
-                </div>
-                <span style={{ fontSize: 10, fontWeight: 700, color: c.dot, background: `${c.dot}20`, padding: "2px 8px", borderRadius: 99, whiteSpace: "nowrap", flexShrink: 0 }}>
-                  {c.tier === "primary" ? "Primary" : c.tier === "secondary" ? "Secondary" : "Trace"}
-                </span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-
-      {Object.keys(ingGroups).length > 0 && (
-        <SectionCard title="Ingredient Architecture" icon="🔬" accent={T.cyan}>
-          {Object.entries(ingGroups).map(([group, items]) => {
-            const color  = items[0]?.color || DRINK_ING_COLORS.Other;
-            const isOpen = openGroups[group] !== false; // default open
-            return (
-              <div key={group} style={{ marginBottom: 8 }}>
-                <button
-                  onClick={() => toggle(group)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: color.bg, border: `1px solid ${color.border}`, borderRadius: 10, padding: "8px 12px", cursor: "pointer" }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: color.dot }} />
-                    <span style={{ fontWeight: 700, fontSize: 12, color: color.text }}>{group}</span>
-                    <span style={{ fontSize: 11, color: color.text + "80" }}>({items.length})</span>
-                  </div>
-                  <span style={{ fontSize: 10, color: color.text + "80", transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", display: "inline-block" }}>▾</span>
-                </button>
-                {isOpen && (
-                  <div style={{ marginTop: 3, display: "flex", flexDirection: "column", gap: 3 }}>
-                    {items.map((ing, j) => (
-                      <div key={j} style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: 8, padding: "9px 12px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: 12.5, color: T.textDark }}>{ing.name}</div>
-                          <div style={{ fontSize: 11, color: T.textFaint, marginTop: 2 }}>{ing.role}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </SectionCard>
-      )}
-    </div>
-  );
-}
-
-function AcidDentalPanel({ acidScores }: { acidScores: ScoreItem[] }) {
-  const phNote = acidScores.find((s) => /acid|dental|ph|enamel/i.test(s.label));
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <SectionCard title="Acid & Dental Safety" icon="🦷" accent={T.red}>
-        {acidScores.length > 0 ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 10 }}>
-            {acidScores.map((s, i) => <ScoreCard key={i} item={s} />)}
-          </div>
-        ) : (
-          <div style={{ padding: "20px 0", textAlign: "center", fontSize: 13, color: T.textFaint }}>No acid/dental scores detected in this analysis.</div>
-        )}
-      </SectionCard>
-      <div style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: 12, padding: "14px 16px" }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.textFaint, letterSpacing: "0.06em", marginBottom: 8 }}>ENAMEL RISK GUIDE</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {[["pH < 3.0", "Extreme risk", T.red], ["pH 3.0–4.0", "High risk", T.orange], ["pH 4.0–5.0", "Moderate", T.amber], ["pH > 5.5", "Safe range", T.green]].map(([range, label, color]) => (
-            <div key={range as string} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, padding: "6px 12px", display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", background: color as string }} />
-              <span style={{ fontSize: 11.5, color: T.textMid }}>{range as string}</span>
-              <span style={{ fontSize: 11, color: T.textFaint }}>— {label as string}</span>
-            </div>
-          ))}
+    <div style={{ background: soft, border: `1px solid ${bdr}`, borderRadius: 12, padding: "13px 15px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: group.detail ? 8 : 0 }}>
+        <span style={{ fontSize: 18 }}>{group.icon}</span>
+        <div style={{ flex: 1 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: C.inkMid }}>{group.label}</span>
         </div>
+        <span style={{ fontSize: 10, fontWeight: 700, color: fg, background: `${fg}18`, border: `1px solid ${bdr}`, borderRadius: 99, padding: "2px 9px", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>
+          {isHigh ? "HIGH" : "MOD"}
+        </span>
+      </div>
+      {group.detail && <p style={{ margin: 0, fontSize: 12, color: C.muted, lineHeight: 1.65 }}>{group.detail}</p>}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════
+// GUIDANCE ITEM
+// ══════════════════════════════════════════════════════════════════
+const GUIDANCE_STYLES = {
+  "Best suited for":         { fg: C.teal,   soft: C.tealSoft,   bdr: C.tealBdr,   icon: "◎" },
+  "Better balance strategy": { fg: C.brand,  soft: C.brandPale,  bdr: C.brandSoft, icon: "◈" },
+  "Smarter alternatives":    { fg: C.green,  soft: C.greenSoft,  bdr: C.greenBdr,  icon: "◉" },
+  "Frequency that limits concern": { fg: C.amber, soft: C.amberSoft, bdr: C.amberBdr, icon: "◌" },
+};
+
+function GuidanceCard({ item }) {
+  const style = Object.entries(GUIDANCE_STYLES).find(([k]) => item.label.toLowerCase().includes(k.toLowerCase()))?.[1]
+    ?? { fg: C.muted, soft: C.surfaceAlt, bdr: C.border, icon: "›" };
+  return (
+    <div style={{ background: style.soft, border: `1px solid ${style.bdr}`, borderRadius: 12, padding: "13px 16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8 }}>
+        <span style={{ fontSize: 12, color: style.fg }}>{style.icon}</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: style.fg, letterSpacing: "0.07em", textTransform: "uppercase" }}>{item.label}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        {item.lines.map((l, i) => (
+          <p key={i} style={{ margin: 0, fontSize: 13, color: C.text, lineHeight: 1.65 }}>{l}</p>
+        ))}
       </div>
     </div>
   );
 }
 
-function MetabolicPanel({ metabolicScores, positives, concerns }: { metabolicScores: ScoreItem[]; positives: string[]; concerns: string[] }) {
+// ══════════════════════════════════════════════════════════════════
+// FINAL VERDICT BLOCK
+// ══════════════════════════════════════════════════════════════════
+function VerdictBlock({ text, score, max }) {
+  if (!text) return null;
+  const { fg, soft, bdr, grd } = ratingTier(score, max);
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {metabolicScores.length > 0 && (
-        <SectionCard title="Metabolic & Sugar Analysis" icon="🩸" accent={T.amber}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 10 }}>
-            {metabolicScores.map((s, i) => <ScoreCard key={i} item={s} />)}
-          </div>
-        </SectionCard>
-      )}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
-        {positives.length > 0 && (
-          <SectionCard title="Positive Formulation Signals" icon="✅" accent={T.green}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {positives.map((s, i) => (
-                <div key={i} style={{ display: "flex", gap: 9, alignItems: "flex-start", background: "#022C22", border: `1px solid #065F46`, borderRadius: 9, padding: "9px 11px" }}>
-                  <span style={{ color: T.green, fontWeight: 800, flexShrink: 0, fontSize: 13 }}>+</span>
-                  <span style={{ fontSize: 12.5, color: T.textMid, lineHeight: 1.6 }}>{s}</span>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
-        )}
-        {concerns.length > 0 && (
-          <SectionCard title="Things to Be Aware Of" icon="⚠️" accent={T.amber}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {concerns.map((s, i) => (
-                <div key={i} style={{ display: "flex", gap: 9, alignItems: "flex-start", background: "#1C1100", border: `1px solid #78350F`, borderRadius: 9, padding: "9px 11px" }}>
-                  <span style={{ color: T.amber, fontWeight: 800, flexShrink: 0, fontSize: 13 }}>!</span>
-                  <span style={{ fontSize: 12.5, color: T.textMid, lineHeight: 1.6 }}>{s}</span>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
-        )}
+    <div style={{ background: soft, border: `1px solid ${bdr}`, borderRadius: 14, overflow: "hidden" }}>
+      <div style={{ background: grd, padding: "10px 18px", display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 12, fontWeight: 800, color: "#fff", opacity: 0.9, letterSpacing: "0.1em", textTransform: "uppercase" }}>Final verdict</span>
+      </div>
+      <div style={{ padding: "14px 18px" }}>
+        <p style={{ margin: 0, fontSize: 14, color: fg, lineHeight: 1.75, fontWeight: 600 }}>{text}</p>
       </div>
     </div>
   );
 }
 
-function CaffeinePanel({ cafScores, insights }: { cafScores: ScoreItem[]; insights: string[] }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {cafScores.length > 0 && (
-        <SectionCard title="Caffeine & Stimulant Systems" icon="⚡" accent={T.electric}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 10 }}>
-            {cafScores.map((s, i) => <ScoreCard key={i} item={s} />)}
-          </div>
-        </SectionCard>
-      )}
-      {insights.length > 0 && (
-        <SectionCard title="Formulation Insights" icon="🔍" accent={T.electricGlow}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {insights.map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: 9, padding: "10px 12px" }}>
-                <span style={{ color: T.electric, flexShrink: 0, marginTop: 2, fontSize: 13 }}>›</span>
-                <span style={{ fontSize: 12.5, color: T.textMid, lineHeight: 1.6 }}>{s}</span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-    </div>
-  );
-}
+// ══════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ══════════════════════════════════════════════════════════════════
+const TABS = [
+  { id: "scores",      label: "Scores"        },
+  { id: "ingredients", label: "Ingredients"   },
+  { id: "insights",    label: "Insights"      },
+  { id: "mindful",     label: "Mindful Groups"},
+  { id: "allergens",   label: "Allergens"     },
+  { id: "guidance",    label: "Guidance"      },
+];
 
-function InsightsPanel({ positives, concerns }: { positives: string[]; concerns: string[] }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
-      {positives.length > 0 && (
-        <SectionCard title="Positive Formulation Signals" icon="✅" accent={T.green}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {positives.map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: 9, alignItems: "flex-start", background: "#022C22", border: `1px solid #065F46`, borderRadius: 9, padding: "9px 11px" }}>
-                <span style={{ color: T.green, fontWeight: 800, flexShrink: 0, fontSize: 14 }}>+</span>
-                <span style={{ fontSize: 12.5, color: T.textMid, lineHeight: 1.6 }}>{s}</span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-      {concerns.length > 0 && (
-        <SectionCard title="Things to Be Aware Of" icon="⚠️" accent={T.amber}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {concerns.map((s, i) => (
-              <div key={i} style={{ display: "flex", gap: 9, alignItems: "flex-start", background: "#1C1100", border: `1px solid #78350F`, borderRadius: 9, padding: "9px 11px" }}>
-                <span style={{ color: T.amber, fontWeight: 800, flexShrink: 0, fontSize: 14 }}>!</span>
-                <span style={{ fontSize: 12.5, color: T.textMid, lineHeight: 1.6 }}>{s}</span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-    </div>
-  );
-}
-
-function MindfulGroupsPanel({ groups }: { groups: MindfulGroup[] }) {
-  const high     = groups.filter((g) => g.level === "high");
-  const moderate = groups.filter((g) => g.level === "moderate");
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      {high.length > 0 && (
-        <SectionCard title="High Consideration Groups" icon="🔴" accent={T.red}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 10 }}>
-            {high.map((g, i) => (
-              <div key={i} style={{ background: "#1C0505", border: `1px solid #7F1D1D`, borderRadius: 11, padding: "12px 14px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
-                  <span style={{ fontSize: 16 }}>{g.icon}</span>
-                  <span style={{ fontWeight: 700, fontSize: 12.5, color: T.textDark }}>{g.label}</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: T.red, background: `${T.red}20`, padding: "1px 7px", borderRadius: 99, marginLeft: "auto" }}>HIGH</span>
-                </div>
-                {g.reason && <div style={{ fontSize: 12, color: T.textFaint, lineHeight: 1.6 }}>{g.reason}</div>}
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-      {moderate.length > 0 && (
-        <SectionCard title="Moderate Consideration Groups" icon="🟡" accent={T.amber}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 10 }}>
-            {moderate.map((g, i) => (
-              <div key={i} style={{ background: "#1C1100", border: `1px solid #78350F`, borderRadius: 11, padding: "12px 14px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 7 }}>
-                  <span style={{ fontSize: 16 }}>{g.icon}</span>
-                  <span style={{ fontWeight: 700, fontSize: 12.5, color: T.textDark }}>{g.label}</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: T.amber, background: `${T.amber}20`, padding: "1px 7px", borderRadius: 99, marginLeft: "auto" }}>MOD</span>
-                </div>
-                {g.reason && <div style={{ fontSize: 12, color: T.textFaint, lineHeight: 1.6 }}>{g.reason}</div>}
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-    </div>
-  );
-}
-
-function AllergensPanel({ allergens }: { allergens: AllergenItem[] }) {
-  const detected = allergens.filter((a) => a.detected);
-  const none     = detected.length === 0;
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <SectionCard title="Allergen Advisory" icon="⚠️" accent={none ? T.green : T.red}>
-        {none ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 0" }}>
-            <span style={{ fontSize: 24 }}>✅</span>
-            <span style={{ fontSize: 13, color: T.green, fontWeight: 600 }}>No major allergens detected in this formulation.</span>
-          </div>
-        ) : (
-          <>
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: "0.06em", marginBottom: 8 }}>DETECTED ALLERGENS</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                {detected.map((a, i) => (
-                  <span key={i} style={{ fontSize: 12, fontWeight: 700, color: T.red, background: `${T.red}20`, border: `1px solid ${T.red}40`, padding: "4px 12px", borderRadius: 99 }}>{a.label}</span>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-        <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textFaint, letterSpacing: "0.06em", marginBottom: 8 }}>FULL PANEL</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {allergens.map((a, i) => (
-              <span key={i} style={{ fontSize: 11.5, fontWeight: 600, color: a.detected ? T.red : T.textFaint, background: a.detected ? `${T.red}15` : T.surfaceAlt, border: `1px solid ${a.detected ? T.red + "40" : T.border}`, padding: "3px 10px", borderRadius: 99 }}>
-                {a.detected ? "⚠ " : ""}{a.label}
-              </span>
-            ))}
-          </div>
-        </div>
-      </SectionCard>
-    </div>
-  );
-}
-
-function ConsumptionPanel({ lines }: { lines: string[] }) {
-  const items = parseEvidenceItems(lines);
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <SectionCard title="Consumption Guidance" icon="🍽" accent={T.cyan}>
-        {items.length > 0 ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {items.map((item, i) => (
-              <div key={i} style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: 11, padding: "12px 14px" }}>
-                <div style={{ fontWeight: 700, fontSize: 12.5, color: T.cyan, marginBottom: 5 }}>{item.label}</div>
-                <div style={{ fontSize: 12.5, color: T.textMid, lineHeight: 1.65 }}>{item.body}</div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ padding: "16px 0", textAlign: "center", fontSize: 13, color: T.textFaint }}>No consumption guidance found in this analysis.</div>
-        )}
-      </SectionCard>
-    </div>
-  );
-}
-
-function SciencePanel({ verdictLines, finalRating, maxRating, ratingSubtitle, rLabel, gradient, highScoreLines }: {
-  verdictLines: string[]; finalRating: number; maxRating: number; ratingSubtitle: string; rLabel: string; gradient: string; highScoreLines: string[];
-}) {
-  const verdict = linesAsText(verdictLines);
-  const hsItems = parseBullets(highScoreLines);
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <div style={{ background: gradient, borderRadius: 16, padding: "22px 24px", display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", opacity: 0.65, marginBottom: 5, color: "#FFF" }}>FINAL VERDICT</div>
-          <div style={{ fontWeight: 900, fontSize: 48, letterSpacing: "-1.5px", lineHeight: 1, color: "#FFF" }}>{finalRating.toFixed(1)}</div>
-          <div style={{ fontSize: 12, opacity: 0.65, marginTop: 3, color: "#FFF" }}>/ {maxRating} · {rLabel}</div>
-        </div>
-        <div style={{ flex: 1, minWidth: 120 }}>
-          <Stars score={finalRating} max={maxRating} />
-          {ratingSubtitle && <div style={{ fontSize: 12.5, opacity: 0.8, lineHeight: 1.55, marginTop: 8, color: "#FFF" }}>{ratingSubtitle}</div>}
-        </div>
-      </div>
-
-      {verdict && (
-        <SectionCard title="Formulation Verdict" icon="📌" accent={T.electric}>
-          <div style={{ fontSize: 13, color: T.textMid, lineHeight: 1.8 }}>{verdict}</div>
-        </SectionCard>
-      )}
-
-      {hsItems.length > 0 && (
-        <SectionCard title="High-Score Eligibility" icon="🏆" accent={T.amber}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-            {hsItems.map((s, i) => {
-              const pass = s.startsWith("✅") || s.startsWith("✓");
-              const fail = s.startsWith("❌") || s.startsWith("✗");
-              const warn = s.startsWith("⚠");
-              const color = pass ? T.green : fail ? T.red : T.amber;
-              return (
-                <div key={i} style={{ display: "flex", gap: 9, alignItems: "flex-start", background: T.surfaceAlt, border: `1px solid ${color}30`, borderRadius: 9, padding: "9px 12px" }}>
-                  <span style={{ color, flexShrink: 0, fontSize: 13 }}>{pass ? "✓" : fail ? "✗" : "!"}</span>
-                  <span style={{ fontSize: 12.5, color: T.textMid, lineHeight: 1.55 }}>{s.replace(/^[✅❌⚠️✓✗!]\s*/, "")}</span>
-                </div>
-              );
-            })}
-          </div>
-        </SectionCard>
-      )}
-    </div>
-  );
-}
-
-function TransparencyPanel({ structureData }: { structureData: DrinkStructure }) {
-  const rows = [
-    { label: "Processing Style",  value: structureData.processingStyle },
-    { label: "Ingredient Count",  value: structureData.ingredientCount },
-    { label: "Primary Base",      value: structureData.primaryBase     },
-    { label: "Estimated pH",      value: structureData.estimatedPH     },
-    { label: "Caffeine Level",    value: structureData.caffeine        },
-    { label: "Carbonated",        value: structureData.carbonated      },
-  ].filter((r) => r.value);
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <SectionCard title="Drink Transparency Dashboard" icon="📦" accent={T.cyan}>
-        {rows.length > 0 ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {rows.map((r, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, padding: "10px 0", borderBottom: i < rows.length - 1 ? `1px solid ${T.border}` : "none" }}>
-                <span style={{ fontSize: 12.5, color: T.textFaint, fontWeight: 600 }}>{r.label}</span>
-                <span style={{ fontSize: 12.5, color: T.textDark, fontWeight: 700, textAlign: "right", maxWidth: "60%" }}>{r.value}</span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div style={{ padding: "16px 0", textAlign: "center", fontSize: 13, color: T.textFaint }}>Drink structure data not detected.</div>
-        )}
-      </SectionCard>
-    </div>
-  );
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SECTION X — MAIN COMPONENT
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-interface DrinkCareProps { markdown: string; }
-
-export default function DrinkCare({ markdown }: DrinkCareProps) {
+export default function DrinkCare({ markdown }) {
   const [activeTab, setActiveTab] = useState(0);
 
   if (!markdown || typeof markdown !== "string") {
     return (
-      <div style={{ padding: 48, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', system-ui, sans-serif", background: T.bg, borderRadius: 24 }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🥤</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: T.textDark, marginBottom: 8 }}>No drink analysis found</div>
-          <div style={{ fontSize: 13, color: T.textFaint }}>Please provide a valid drink product analysis result.</div>
-        </div>
+      <div style={{ padding: 48, textAlign: "center", fontFamily: "system-ui, sans-serif", background: C.pageBg, borderRadius: 20 }}>
+        <div style={{ fontSize: 36, marginBottom: 12 }}>🥤</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: C.ink }}>No analysis provided</div>
+        <div style={{ fontSize: 13, color: C.muted, marginTop: 4 }}>Pass a valid drink analysis as the markdown prop.</div>
       </div>
     );
   }
 
-  const drinkType = useMemo(() => detectDrinkType(markdown), [markdown]);
-  const gradient  = DRINK_GRADIENT[drinkType];
+  // ── parse ──────────────────────────────────────────
+  const sections   = useMemo(() => parseSections(markdown), [markdown]);
+  const identity   = useMemo(() => parseDrinkIdentity(sections), [sections]);
+  const rating     = useMemo(() => parseFinalRating(sections), [sections]);
+  const structure  = useMemo(() => parseDrinkStructure(sections), [sections]);
+  const verdict    = useMemo(() => parseFinalVerdict(sections), [sections]);
 
-  const sections = useMemo(() => parseMarkdown(markdown), [markdown]);
+  const coreScoreSection = useMemo(() => findSection(sections, ["KEY FORMULATION SCORES","FORMULATION SCORES"]), [sections]);
+  const catScoreSection  = useMemo(() => findSection(sections, ["INGREDIENT CATEGORY SCORES","CATEGORY SCORES"]), [sections]);
+  const contribSection   = useMemo(() => findSection(sections, ["FORMULATION CONTRIBUTION SIGNALS","CONTRIBUTION SIGNALS"]), [sections]);
+  const insightSection   = useMemo(() => findSection(sections, ["MAIN FORMULATION INSIGHTS","FORMULATION INSIGHTS"]), [sections]);
+  const positiveSection  = useMemo(() => findSection(sections, ["POSITIVE FORMULATION SIGNALS","POSITIVE"]), [sections]);
+  const awareSection     = useMemo(() => findSection(sections, ["THINGS TO BE AWARE","AWARE"]), [sections]);
+  const mindfulSection   = useMemo(() => findSection(sections, ["WHO SHOULD BE MINDFUL","MINDFUL"]), [sections]);
+  const allergenSection  = useMemo(() => findSection(sections, ["ALLERGEN ADVISORY","ALLERGEN"]), [sections]);
+  const guidanceSection  = useMemo(() => findSection(sections, ["CONSUMPTION GUIDANCE","CONSUMPTION"]), [sections]);
 
-  // Section extraction
-  const { lines: ratingLines, key: ratingKey } = findSection(sections, ["FINAL RATING"]);
-  const { lines: structLines }   = findSection(sections, ["DRINK STRUCTURE"]);
-  const { lines: keyScoreLines } = findSection(sections, ["KEY FORMULATION SCORES", "FORMULATION SCORES"]);
-  const { lines: catScoreLines } = findSection(sections, ["INGREDIENT CATEGORY SCORES", "CATEGORY SCORES"]);
-  const { lines: contribLines }  = findSection(sections, ["FORMULATION CONTRIBUTION SIGNALS", "CONTRIBUTION SIGNALS"]);
-  const { lines: insightLines }  = findSection(sections, ["MAIN FORMULATION INSIGHTS", "FORMULATION INSIGHTS"]);
-  const { lines: positiveLines } = findSection(sections, ["POSITIVE FORMULATION SIGNALS", "POSITIVES"]);
-  const { lines: concernLines }  = findSection(sections, ["THINGS TO BE AWARE", "CONCERNS", "AWARE OF"]);
-  const { lines: mindfulLines }  = findSection(sections, ["WHO SHOULD BE MINDFUL", "MINDFUL", "CONSIDERATION"]);
-  const { lines: allergenLines } = findSection(sections, ["ALLERGEN ADVISORY", "ALLERGEN"]);
-  const { lines: consumeLines }  = findSection(sections, ["CONSUMPTION GUIDANCE", "CONSUMPTION"]);
-  const { lines: verdictLines }  = findSection(sections, ["FINAL VERDICT", "VERDICT"]);
-  const { lines: highScoreLines }= findSection(sections, ["HIGH-SCORE ELIGIBILITY", "HIGH SCORE"]);
+  const coreScores   = useMemo(() => parseScoreItems(coreScoreSection?.lines ?? []), [coreScoreSection]);
+  const catScores    = useMemo(() => parseScoreItems(catScoreSection?.lines ?? []), [catScoreSection]);
+  const contribs     = useMemo(() => parseContribSignals(contribSection?.lines ?? []), [contribSection]);
+  const insights     = useMemo(() => parseBullets(insightSection?.lines ?? []), [insightSection]);
+  const positives    = useMemo(() => parseBullets(positiveSection?.lines ?? []), [positiveSection]);
+  const concerns     = useMemo(() => parseBullets(awareSection?.lines ?? []), [awareSection]);
+  const mindful      = useMemo(() => parseMindful(mindfulSection?.lines ?? []), [mindfulSection]);
+  const allergens    = useMemo(() => parseAllergens(allergenSection?.lines ?? []), [allergenSection]);
+  const guidanceItems= useMemo(() => parseGuidance(guidanceSection), [guidanceSection]);
 
-  // Acid/dental and metabolic/caffeine sections from cat scores
-  const acidScoreItems = useMemo(() => parseScores(catScoreLines).filter((s) => /acid|dental|ph/i.test(s.label)), [catScoreLines]);
-  const metabolicItems = useMemo(() => parseScores(catScoreLines).filter((s) => /sugar|sweetener|metabolic|additive|preservative/i.test(s.label)), [catScoreLines]);
-  const caffeineItems  = useMemo(() => parseScores(catScoreLines).filter((s) => /caffeine|stimulant/i.test(s.label)), [catScoreLines]);
-
-  // Extract rating
-  const ratingText = ratingKey ? [ratingKey, ...(sections.get(ratingKey) || [])].join(" ") : "";
-  let finalRating = 0, maxRating = 5, ratingSubtitle = "";
-  const rm    = ratingText.match(/(\d+\.?\d*)\s*\/\s*(\d+)/);
-  if (rm)     { finalRating = parseFloat(rm[1]); maxRating = parseInt(rm[2]); }
-  const rmSub = ratingText.match(/\d+\.?\d*\s*\/\s*\d+\s*[—–\-]+\s*(.+)/);
-  if (rmSub)  { ratingSubtitle = rmSub[1].trim(); }
-
-  const rColor = scoreColor(finalRating, maxRating);
-  const rLabel = scoreLabel(finalRating, maxRating);
-
-  // Parse data
-  const keyScores     = useMemo(() => parseScores(keyScoreLines),                   [keyScoreLines]);
-  const catScores     = useMemo(() => parseScores(catScoreLines),                   [catScoreLines]);
-  const structureData = useMemo(() => parseDrinkStructure(structLines),             [structLines]);
-  const contribs      = useMemo(() => parseContribSignals(contribLines),            [contribLines]);
-  const positives     = useMemo(() => parseBullets(positiveLines),                  [positiveLines]);
-  const concerns      = useMemo(() => parseBullets(concernLines),                   [concernLines]);
-  const insights      = useMemo(() => parseBullets(insightLines),                   [insightLines]);
-  const mindfulGroups = useMemo(() => parseMindfulGroups(mindfulLines),             [mindfulLines]);
-  const allergens     = useMemo(() => parseAllergens(allergenLines),                [allergenLines]);
-  const ingredients   = useMemo(() => parseDrinkIngredients(catScoreLines.concat(contribLines)), [catScoreLines, contribLines]);
-
-  // Group ingredients
-  const ingGroups = useMemo(() => {
-    const groups: Record<string, Ingredient[]> = {};
-    for (const ing of ingredients) {
-      if (!groups[ing.group]) groups[ing.group] = [];
-      groups[ing.group].push(ing);
-    }
-    return groups;
-  }, [ingredients]);
-
-  // Signal chips for executive panel
-  const allScores = [...keyScores, ...catScores];
-  const signals   = useMemo(() => inferDrinkSignals(drinkType, allScores), [drinkType, allScores]);
-
-  const hasStructure   = Object.values(structureData).some(Boolean);
-  const hasAllergens   = allergenLines.length > 0;
-  const hasMindful     = mindfulGroups.length > 0;
-  const hasInsights    = positives.length > 0 || concerns.length > 0 || insights.length > 0;
-  const hasCaffeine    = caffeineItems.length > 0 || insights.some((i) => /caffeine|stimulant/i.test(i));
-  const hasAcid        = acidScoreItems.length > 0;
-  const hasMetabolic   = metabolicItems.length > 0 || positives.length > 0 || concerns.length > 0;
-  const hasIngredients = ingredients.length > 0 || contribs.length > 0;
-
-  const TABS: Tab[] = [
-    { id: "scores",      label: "Scores",        icon: "◎"  },
-    { id: "ingredients", label: "Ingredients",   icon: "🔬" },
-    { id: "acid",        label: "Acid & Dental", icon: "🦷" },
-    { id: "metabolic",   label: "Metabolic",     icon: "🩸" },
-    { id: "caffeine",    label: "Caffeine",       icon: "⚡" },
-    { id: "insights",    label: "Insights",       icon: "💡" },
-    { id: "mindful",     label: "Mindful Groups", icon: "🛡️" },
-    { id: "allergens",   label: "Allergens",      icon: "⚠️" },
-    { id: "consumption", label: "Consumption",    icon: "🍽" },
-    { id: "science",     label: "Science",        icon: "🧠" },
-    { id: "transparency",label: "Transparency",   icon: "📦" },
-  ].filter((tab) => {
-    if (tab.id === "scores")       return keyScores.length > 0 || catScores.length > 0;
-    if (tab.id === "ingredients")  return hasIngredients;
-    if (tab.id === "acid")         return hasAcid;
-    if (tab.id === "metabolic")    return hasMetabolic;
-    if (tab.id === "caffeine")     return hasCaffeine;
-    if (tab.id === "insights")     return hasInsights;
-    if (tab.id === "mindful")      return hasMindful;
-    if (tab.id === "allergens")    return hasAllergens;
-    if (tab.id === "consumption")  return consumeLines.length > 0;
-    if (tab.id === "science")      return true;
-    if (tab.id === "transparency") return hasStructure;
+  // ── tabs ──────────────────────────────────────────
+  const visibleTabs = useMemo(() => TABS.filter(t => {
+    if (t.id === "scores")      return coreScores.length > 0 || catScores.length > 0;
+    if (t.id === "ingredients") return contribs.length > 0;
+    if (t.id === "insights")    return insights.length > 0 || positives.length > 0 || concerns.length > 0;
+    if (t.id === "mindful")     return mindful.length > 0;
+    if (t.id === "allergens")   return !!allergenSection;
+    if (t.id === "guidance")    return guidanceItems.length > 0;
     return false;
-  });
+  }), [coreScores, catScores, contribs, insights, positives, concerns, mindful, allergenSection, guidanceItems]);
 
-  const safeActiveTab = Math.min(activeTab, TABS.length - 1);
-  const currentTabId  = TABS[safeActiveTab]?.id;
+  const safeTab  = Math.min(activeTab, Math.max(0, visibleTabs.length - 1));
+  const tabId    = visibleTabs[safeTab]?.id;
+
+  const tier     = ratingTier(rating.score, rating.max);
+  const rLabel   = rating.label || tier.label;
+
+  // structure chips (no pH)
+  const structKeys = ["processing", "count", "base", "caffeine", "carbonated"];
+  const structChips = structKeys.filter(k => structure[k]);
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: T.bg, borderRadius: 24, overflow: "hidden", color: T.textDark }}>
+    <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: C.pageBg, borderRadius: 20, overflow: "hidden", color: C.ink }}>
 
-      {/* ── HEADER ── */}
-      <div style={{ background: T.inkMid, borderBottom: `1px solid ${T.border}`, padding: "13px 22px", display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ width: 28, height: 28, background: gradient, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>
-          {DRINK_ICONS[drinkType]}
-        </div>
-        <span style={{ fontWeight: 800, fontSize: 12.5, letterSpacing: "0.1em", color: T.electric }}>{DC_BRAND}</span>
-        <span style={{ fontSize: 12, color: T.border, margin: "0 4px" }}>·</span>
-        <span style={{ fontSize: 12, color: T.textFaint, fontWeight: 500 }}>{DC_TITLE}</span>
+      {/* ── TOP NAV ─────────────────────────────────────────────── */}
+      <div style={{ background: C.surface, borderBottom: `1px solid ${C.border}`, padding: "10px 24px", display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 11.5, fontWeight: 900, letterSpacing: "0.14em", color: C.brand }}>NIGOODA</span>
+        <span style={{ color: C.border, fontSize: 16 }}>·</span>
+        <span style={{ fontSize: 11.5, color: C.muted, fontWeight: 500 }}>Drink Intelligence</span>
         <div style={{ marginLeft: "auto" }}>
-          <span style={{ fontSize: 11, color: T.textFaint, background: T.surfaceAlt, padding: "4px 12px", borderRadius: 99, border: `1px solid ${T.border}` }}>{DC_BADGE}</span>
+          <span style={{ fontSize: 10.5, fontWeight: 600, color: C.faint, background: C.surfaceAlt, border: `1px solid ${C.border}`, borderRadius: 99, padding: "3px 11px", letterSpacing: "0.04em" }}>
+            Formulation Analysis
+          </span>
         </div>
       </div>
 
-      {/* ── SUBTITLE BANNER ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "8px 16px", background: `${T.electric}15`, borderBottom: `1px solid ${T.electric}30` }}>
-        <span style={{ fontSize: 12, color: T.electricGlow, flexShrink: 0 }}>✦</span>
-        <span style={{ fontSize: 11.5, color: T.electricGlow, fontWeight: 500, letterSpacing: "0.01em" }}>{DC_SUBTITLE}</span>
+      {/* ── HERO ────────────────────────────────────────────────── */}
+      <div style={{
+        background: `linear-gradient(160deg, ${C.surface} 0%, ${C.brandPale} 100%)`,
+        borderBottom: `1px solid ${C.border}`,
+        padding: "28px 24px 0",
+      }}>
+
+        {/* identity */}
+        <div style={{ marginBottom: 22 }}>
+          {identity.category && (
+            <div style={{ marginBottom: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: C.brand, background: C.brandPale, border: `1px solid ${C.brandSoft}`, borderRadius: 99, padding: "3px 12px", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                {identity.category}
+              </span>
+            </div>
+          )}
+          {identity.name && (
+            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, color: C.ink, lineHeight: 1.15, letterSpacing: "-0.5px" }}>{identity.name}</h1>
+          )}
+        </div>
+
+        {/* rating row */}
+        <div style={{ display: "flex", gap: 16, alignItems: "stretch", marginBottom: 22, flexWrap: "wrap" }}>
+
+          {/* big rating card */}
+          <div style={{
+            background: tier.grd,
+            borderRadius: 16,
+            padding: "18px 22px",
+            color: "#fff",
+            minWidth: 140,
+            flexShrink: 0,
+            position: "relative",
+            overflow: "hidden",
+          }}>
+            <div style={{ position: "absolute", top: -14, right: -14, width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.07)" }} />
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", opacity: 0.75, marginBottom: 5, textTransform: "uppercase" }}>Final rating</div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 3, marginBottom: 6 }}>
+              <span style={{ fontSize: 44, fontWeight: 900, lineHeight: 1, letterSpacing: "-1.5px" }}>{rating.score.toFixed(1)}</span>
+              <span style={{ fontSize: 16, opacity: 0.55, fontWeight: 400 }}>/{rating.max}</span>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, opacity: 0.9 }}>{rLabel}</div>
+          </div>
+
+          {/* summary */}
+          {rating.summary && (
+            <div style={{
+              flex: 1,
+              minWidth: 180,
+              background: C.glass,
+              backdropFilter: "blur(8px)",
+              border: `1px solid ${C.border}`,
+              borderRadius: 16,
+              padding: "16px 18px",
+              display: "flex",
+              alignItems: "center",
+            }}>
+              <p style={{ margin: 0, fontSize: 14, color: C.text, lineHeight: 1.7 }}>{rating.summary}</p>
+            </div>
+          )}
+        </div>
+
+        {/* attribute chips */}
+        {structChips.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 22 }}>
+            {structChips.map(k => <AttrChip key={k} attrKey={k} value={structure[k]} />)}
+          </div>
+        )}
+
+        {/* tab bar */}
+        {visibleTabs.length > 0 && (
+          <TabBar tabs={visibleTabs} active={safeTab} onChange={i => setActiveTab(i)} />
+        )}
       </div>
 
-      {/* ── EXECUTIVE DASHBOARD ── */}
-      <div style={{ background: T.surface, borderBottom: `1px solid ${T.border}`, padding: "22px 22px 0" }}>
-        <div style={{ maxWidth: 980, margin: "0 auto" }}>
+      {/* ── TAB CONTENT ─────────────────────────────────────────── */}
+      <div style={{ padding: "24px 24px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 16, marginBottom: 20, alignItems: "start" }}>
-
-            {/* Left column */}
-            <div>
-              {/* Hero rating card */}
-              <div style={{ background: gradient, borderRadius: 16, padding: "22px 24px", color: "#FFF", marginBottom: 14, position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", top: -20, right: -20, width: 120, height: 120, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", opacity: 0.7, marginBottom: 6 }}>⭐ DRINK INTELLIGENCE</div>
-                <div style={{ fontWeight: 900, fontSize: 42, lineHeight: 1, letterSpacing: "-1.5px", marginBottom: 4 }}>
-                  {finalRating.toFixed(1)}
-                  <span style={{ fontSize: 18, fontWeight: 500, opacity: 0.6, marginLeft: 4 }}>/ {maxRating}</span>
+        {/* SCORES */}
+        {tabId === "scores" && (
+          <>
+            {coreScores.length > 0 && (
+              <div>
+                <SecHead icon="◉" title="Core Formulation Scores" color={C.brand} />
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10 }}>
+                  {coreScores.map((item, i) => <CoreScoreCard key={i} item={item} />)}
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, opacity: 0.85, marginBottom: ratingSubtitle ? 4 : 0 }}>{rLabel}</div>
-                {ratingSubtitle && <div style={{ fontSize: 12, opacity: 0.7, lineHeight: 1.5, marginTop: 4 }}>{ratingSubtitle}</div>}
-                <div style={{ marginTop: 12 }}><Stars score={finalRating} max={maxRating} /></div>
               </div>
+            )}
+            {catScores.length > 0 && (
+              <div style={{ marginTop: coreScores.length > 0 ? 6 : 0 }}>
+                <SecHead icon="◈" title="Ingredient Category Scores" color={C.teal} />
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 9 }}>
+                  {catScores.map((item, i) => <CatScoreCard key={i} item={item} />)}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
-              {/* Drink structure quick-view */}
-              {hasStructure && (
-                <div style={{ background: T.surfaceAlt, border: `1px solid ${T.border}`, borderRadius: 13, padding: "13px 16px", marginBottom: 14 }}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-                    {structureData.processingStyle && (
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: T.textFaint, letterSpacing: "0.06em", marginBottom: 3 }}>PROCESSING</div>
-                        <div style={{ fontSize: 12.5, fontWeight: 700, color: T.textDark }}>{structureData.processingStyle}</div>
+        {/* INGREDIENTS */}
+        {tabId === "ingredients" && contribs.length > 0 && (
+          <div>
+            <SecHead icon="🌿" title="Formulation Contribution Signals" color={C.green} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
+              {contribs.map((c, i) => {
+                const tCol = c.tier === "primary" ? C.green : c.tier === "supporting" ? C.amber : C.faint;
+                const tSft = c.tier === "primary" ? C.greenSoft : c.tier === "supporting" ? C.amberSoft : C.surfaceAlt;
+                const tBdr = c.tier === "primary" ? C.greenBdr  : c.tier === "supporting" ? C.amberBdr  : C.border;
+                const tLbl = c.tier === "primary" ? "Primary" : c.tier === "supporting" ? "Supporting" : "Trace";
+                return (
+                  <div key={i} style={{ background: tSft, border: `1px solid ${tBdr}`, borderRadius: 12, padding: "12px 15px", display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <div style={{ width: 9, height: 9, borderRadius: "50%", background: tCol, flexShrink: 0, marginTop: 5 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                        <span style={{ fontSize: 13.5, fontWeight: 700, color: C.inkMid }}>{c.name}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: tCol, background: `${tCol}18`, border: `1px solid ${tBdr}`, borderRadius: 99, padding: "2px 8px", letterSpacing: "0.04em" }}>{tLbl}</span>
                       </div>
-                    )}
-                    {structureData.primaryBase && (
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: T.textFaint, letterSpacing: "0.06em", marginBottom: 3 }}>PRIMARY BASE</div>
-                        <div style={{ fontSize: 12.5, fontWeight: 700, color: T.textDark }}>{structureData.primaryBase}</div>
-                      </div>
-                    )}
-                    {structureData.carbonated && (
-                      <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: T.textFaint, letterSpacing: "0.06em", marginBottom: 3 }}>CARBONATED</div>
-                        <div style={{ fontSize: 12.5, fontWeight: 700, color: T.cyan }}>{structureData.carbonated}</div>
-                      </div>
-                    )}
+                      {c.detail && <p style={{ margin: 0, fontSize: 12.5, color: C.muted, lineHeight: 1.65 }}>{c.detail}</p>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* INSIGHTS */}
+        {tabId === "insights" && (
+          <>
+            {insights.length > 0 && (
+              <div>
+                <SecHead icon="◎" title="Formulation Insights" color={C.blue} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                  {insights.map((s, i) => (
+                    <InsightRow key={i} text={s} fg={C.blue} soft={C.blueSoft} bdr={C.blueBdr} marker="›" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(positives.length > 0 || concerns.length > 0) && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+                {positives.length > 0 && (
+                  <div>
+                    <SecHead icon="✓" title="Positive Signals" color={C.green} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                      {positives.map((s, i) => (
+                        <InsightRow key={i} text={s} fg={C.green} soft={C.greenSoft} bdr={C.greenBdr} marker="+" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {concerns.length > 0 && (
+                  <div>
+                    <SecHead icon="!" title="Be Aware Of" color={C.amber} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                      {concerns.map((s, i) => (
+                        <InsightRow key={i} text={s} fg={C.amber} soft={C.amberSoft} bdr={C.amberBdr} marker="!" />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* MINDFUL */}
+        {tabId === "mindful" && mindful.length > 0 && (
+          <>
+            {["high","moderate"].map(level => {
+              const grp = mindful.filter(g => g.level === level);
+              if (!grp.length) return null;
+              return (
+                <div key={level}>
+                  <SecHead
+                    icon={level === "high" ? "⚠" : "◌"}
+                    title={level === "high" ? "High Consideration" : "Moderate Consideration"}
+                    color={level === "high" ? C.red : C.amber}
+                  />
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 9 }}>
+                    {grp.map((g, i) => <MindfulCard key={i} group={g} />)}
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        )}
+
+        {/* ALLERGENS */}
+        {tabId === "allergens" && (() => {
+          const detected = allergens.filter(a => a.present);
+          return (
+            <div>
+              <SecHead icon="◎" title="Allergen Advisory" color={detected.length ? C.red : C.green} />
+              {detected.length === 0 ? (
+                <div style={{ background: C.greenSoft, border: `1px solid ${C.greenBdr}`, borderRadius: 12, padding: "14px 18px", display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <span style={{ fontSize: 20 }}>✓</span>
+                  <span style={{ fontSize: 14, color: C.green, fontWeight: 600 }}>No major allergens detected in this formulation.</span>
+                </div>
+              ) : (
+                <div style={{ background: C.redSoft, border: `1px solid ${C.redBdr}`, borderRadius: 12, padding: "14px 18px", marginBottom: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: C.red, letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 9 }}>Detected allergens</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+                    {detected.map((a, i) => (
+                      <span key={i} style={{ fontSize: 12, fontWeight: 700, color: C.red, background: `${C.red}14`, border: `1px solid ${C.redBdr}`, borderRadius: 99, padding: "4px 12px" }}>{a.label}</span>
+                    ))}
                   </div>
                 </div>
               )}
-
-              {/* Positives / Concerns mini preview */}
-              {(positives.length > 0 || concerns.length > 0) && (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10 }}>
-                  {positives.length > 0 && (
-                    <div style={{ background: "#022C22", border: `1px solid #065F46`, borderRadius: 12, padding: "12px 14px" }}>
-                      <div style={{ fontWeight: 700, fontSize: 11, color: T.green, marginBottom: 8, letterSpacing: "0.05em" }}>✓ POSITIVE SIGNALS</div>
-                      {positives.slice(0, 3).map((s, i) => (
-                        <div key={i} style={{ display: "flex", gap: 7, fontSize: 12, color: T.textMid, marginBottom: 5, lineHeight: 1.5 }}>
-                          <span style={{ color: T.green, fontWeight: 800, flexShrink: 0 }}>+</span>
-                          <span>{s}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {concerns.length > 0 && (
-                    <div style={{ background: "#1C1100", border: `1px solid #78350F`, borderRadius: 12, padding: "12px 14px" }}>
-                      <div style={{ fontWeight: 700, fontSize: 11, color: T.amber, marginBottom: 8, letterSpacing: "0.05em" }}>! BE AWARE OF</div>
-                      {concerns.slice(0, 3).map((s, i) => (
-                        <div key={i} style={{ display: "flex", gap: 7, fontSize: 12, color: T.textMid, marginBottom: 5, lineHeight: 1.5 }}>
-                          <span style={{ color: T.amber, fontWeight: 800, flexShrink: 0 }}>!</span>
-                          <span>{s}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              <Divider label="Full panel" />
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
+                {allergens.map((a, i) => (
+                  <span key={i} style={{ fontSize: 11.5, fontWeight: 600, color: a.present ? C.red : C.faint, background: a.present ? `${C.red}10` : C.surfaceAlt, border: `1px solid ${a.present ? C.redBdr : C.border}`, borderRadius: 99, padding: "3px 10px" }}>
+                    {a.present ? "⚠ " : ""}{a.label}
+                  </span>
+                ))}
+              </div>
             </div>
+          );
+        })()}
 
-            {/* Right column — ring + signal chips */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, paddingTop: 4 }}>
-              <RatingRing score={finalRating} max={maxRating} color={rColor} />
-              {signals.map((chip, i) => (
-                <SignalChip key={i} chip={chip} />
-              ))}
+        {/* GUIDANCE */}
+        {tabId === "guidance" && guidanceItems.length > 0 && (
+          <div>
+            <SecHead icon="◈" title="Consumption Guidance" color={C.teal} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {guidanceItems.map((item, i) => <GuidanceCard key={i} item={item} />)}
             </div>
           </div>
-
-          {/* ── TAB BAR ── */}
-          <TabBar tabs={TABS} activeTab={safeActiveTab} onTabChange={(i) => setActiveTab(i)} />
-        </div>
-      </div>
-
-      {/* ── TAB CONTENT ── */}
-      <div style={{ maxWidth: 980, margin: "0 auto", padding: "22px 22px" }}>
-
-        {currentTabId === "scores" && (
-          <ScoresPanel keyScores={keyScores} catScores={catScores} />
         )}
 
-        {currentTabId === "ingredients" && (
-          <IngredientsPanel ingGroups={ingGroups} contribs={contribs} />
-        )}
-
-        {currentTabId === "acid" && (
-          <AcidDentalPanel acidScores={acidScoreItems} />
-        )}
-
-        {currentTabId === "metabolic" && (
-          <MetabolicPanel metabolicScores={metabolicItems} positives={positives} concerns={concerns} />
-        )}
-
-        {currentTabId === "caffeine" && (
-          <CaffeinePanel cafScores={caffeineItems} insights={insights} />
-        )}
-
-        {currentTabId === "insights" && (
-          <InsightsPanel positives={positives} concerns={concerns} />
-        )}
-
-        {currentTabId === "mindful" && (
-          <MindfulGroupsPanel groups={mindfulGroups} />
-        )}
-
-        {currentTabId === "allergens" && (
-          <AllergensPanel allergens={allergens} />
-        )}
-
-        {currentTabId === "consumption" && (
-          <ConsumptionPanel lines={consumeLines} />
-        )}
-
-        {currentTabId === "science" && (
-          <SciencePanel
-            verdictLines={verdictLines}
-            finalRating={finalRating}
-            maxRating={maxRating}
-            ratingSubtitle={ratingSubtitle}
-            rLabel={rLabel}
-            gradient={gradient}
-            highScoreLines={highScoreLines}
-          />
-        )}
-
-        {currentTabId === "transparency" && (
-          <TransparencyPanel structureData={structureData} />
-        )}
+        {/* FINAL VERDICT — always anchored at bottom */}
+        <VerdictBlock text={verdict} score={rating.score} max={rating.max} />
 
       </div>
     </div>

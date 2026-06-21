@@ -1,33 +1,10 @@
-// CREATE NEW FILE
 // pages/Dashboard.jsx
 
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
-import { db } from "../lib/firebase";
 import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
   const { currentUser, userData } = useAuth();
-  const [recentScans, setRecentScans] = useState([]);
-  const [loadingScans, setLoadingScans] = useState(true);
-
-  useEffect(() => {
-    if (!currentUser) return;
-    const fetchScans = async () => {
-      try {
-        const scansRef = collection(db, "users", currentUser.uid, "scans");
-        const q = query(scansRef, orderBy("createdAt", "desc"), limit(5));
-        const snap = await getDocs(q);
-        setRecentScans(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoadingScans(false);
-      }
-    };
-    fetchScans();
-  }, [currentUser]);
 
   const planLabel = userData?.plan === "pro" ? "Pro" : userData?.plan === "starter" ? "Starter" : "Free";
   const planColor = userData?.plan === "pro" ? "text-violet-600 bg-violet-50 border-violet-100" : userData?.plan === "starter" ? "text-blue-600 bg-blue-50 border-blue-100" : "text-slate-600 bg-slate-50 border-slate-200";
@@ -91,66 +68,18 @@ const Dashboard = () => {
 
         </div>
 
-        {/* RECENT SCANS */}
-        <div className="bg-white border border-slate-100 rounded-2xl shadow-sm mb-6 overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-5 border-b border-slate-50">
-            <h2 className="text-base font-semibold text-slate-900">Recent Scans</h2>
-            <Link to="/my-scans" className="text-sm font-medium text-slate-400 hover:text-slate-700 transition-colors">
-              View all →
-            </Link>
-          </div>
-
-          {loadingScans ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
-            </div>
-          ) : recentScans.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center px-6">
-              <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center mb-3 text-2xl">🔍</div>
-              <p className="text-sm font-medium text-slate-700 mb-1">No scans yet</p>
-              <p className="text-xs text-slate-400">Analyze your first product to see results here.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-50">
-              {recentScans.map((scan) => (
-                <div key={scan.id} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50/60 transition-colors duration-150">
-                  <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                    {scan.image ? (
-                      <img src={scan.image} alt={scan.productName} className="w-9 h-9 object-contain" onError={(e) => { e.target.src = "https://via.placeholder.com/44"; }} />
-                    ) : (
-                      <span className="text-lg">🧴</span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{scan.productName}</p>
-                    <p className="text-xs text-slate-400">{scan.brand}</p>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${scan.score >= 7 ? "bg-emerald-50 text-emerald-700" : scan.score >= 4 ? "bg-amber-50 text-amber-700" : "bg-red-50 text-red-600"}`}>
-                      Score {scan.score}/10
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      {scan.createdAt?.toDate?.()?.toLocaleDateString("en-IN") ?? "—"}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* UPGRADE CTA */}
         {userData?.plan === "free" && (
           <div className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50 to-indigo-50 p-6 flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-violet-900 mb-0.5">Unlock more with Pro</p>
-              <p className="text-xs text-violet-600">Get 100 scans, priority AI, and advanced reports.</p>
+              <p className="text-sm font-semibold text-violet-900 mb-0.5">Need More Scans?</p>
+              <p className="text-xs text-violet-600">Purchase additional scan credits anytime and continue analyzing products.</p>
             </div>
             <Link
               to="/billing"
               className="shrink-0 px-5 py-2.5 bg-slate-900 hover:bg-slate-700 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-sm"
             >
-              Upgrade Plan →
+              View Credit Packs →
             </Link>
           </div>
         )}

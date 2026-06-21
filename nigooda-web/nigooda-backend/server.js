@@ -1052,6 +1052,8 @@ app.post(
         "Weight / Size": cleanString(row["Weight / Size"]),
         "Short Description": cleanString(row["Short Description"]),
         "Seller Website": cleanString(row["Seller Website"]),
+        "Buy Link": cleanString(row["Buy Link"]),
+        "Referral Code": cleanString(row["Referral Code"]),
         "Variant Group ID": cleanString(row["Variant Group ID"]),
         "Variant Name": cleanString(row["Variant Name"]),
         Tags: cleanString(row.Tags),
@@ -1194,7 +1196,7 @@ app.post("/products/:id/update", async (req, res) => {
   const ALLOWED_FIELDS = [
     "isNewLaunch", "isBestForDailyUse", "isTrending", "isUnderrated",
     "homeSections", "Status", "Price", "Brand", "Name of Product",
-    "Short Description", "Seller Website", "Subcategory Sample Rank",
+    "Short Description", "Seller Website", "Buy Link", "Referral Code", "Subcategory Sample Rank",
     "Rating",
     "analysisEngine",
     "analysisIngredients",

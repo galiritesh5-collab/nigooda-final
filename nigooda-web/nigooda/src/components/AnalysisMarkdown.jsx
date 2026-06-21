@@ -30,6 +30,18 @@ import ReactMarkdown from "react-markdown";
  * split by H1 boundaries." This is what makes it future-proof: a
  * brand-new engine with completely different section names works
  * automatically, with no code change here.
+ *
+ * NOTE ON THE "PRODUCT" HEADER SECTION
+ * The Product Intelligence Report's header area (the first
+ * `headerSectionCount` H1 sections, usually a product banner +
+ * final rating) sometimes includes a section titled "PRODUCT" that
+ * just lists the raw ingredient string. That's already shown
+ * elsewhere on the Product Page, so it's filtered out of the header
+ * render below by title (case-insensitive exact match on "product").
+ * This is a narrow, position-preserving filter: it does not touch
+ * FINAL RATING, Overview, Product Structure, Pros, Cons, Warnings,
+ * or any other section, and it does not change how header slicing,
+ * tab splitting, or any other part of the architecture works.
  * ------------------------------------------------------------------
  */
 
@@ -128,6 +140,21 @@ function toTabLabel(title) {
   return stripped || title;
 }
 
+/**
+ * Returns true when a section's title is exactly "PRODUCT" in a
+ * case-insensitive sense (ignoring any leading emoji/symbol cluster
+ * and surrounding whitespace). Used only to hide the raw-ingredient
+ * "PRODUCT" header section, since that content is already shown on
+ * the Product Page. This intentionally matches by exact title only
+ * (not "contains"), so it can never accidentally swallow sections
+ * like "Product Structure" or "Product Overview".
+ */
+function isProductHeaderSection(title) {
+  if (!title) return false;
+  const normalized = toTabLabel(title).trim().toLowerCase();
+  return normalized === "product";
+}
+
 function SectionMarkdown({ content, components }) {
   return (
     <div className="max-w-3xl mx-auto prose prose-sm dark:prose-invert prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-sm prose-li:text-sm prose-p:leading-6 prose-li:leading-6">
@@ -157,10 +184,28 @@ export default function AnalysisMarkdown({
   headerSectionCount = 2,
   className = "",
 }) {
-  const sections = useMemo(() => splitIntoH1Sections(markdown), [markdown]);
+ const sections = useMemo(() => splitIntoH1Sections(markdown), [markdown]);
 
-  const headerSections = sections.slice(0, headerSectionCount);
-  const tabSections = sections.slice(headerSectionCount);
+const headerSections = sections
+  .slice(0, headerSectionCount)
+  // Hide only the "PRODUCT" header section (raw ingredient list),
+  // case-insensitively, since it's already shown on the Product
+  // Page. Position-based slicing above is untouched; this is a
+  // pure post-filter on the header subset only, so FINAL RATING
+  // and any other header section keep rendering exactly as before.
+  .filter((section) => !isProductHeaderSection(section.title));
+
+const tabSections = sections
+  .slice(headerSectionCount)
+  .filter((section) => {
+    const title = (section.title || "").toLowerCase();
+
+    return (
+      !title.includes("ingredient analysis") &&
+      !title.includes("ingredients analysis") &&
+      !title.includes("ingredients")
+    );
+  });
 
   const [activeIndex, setActiveIndex] = useState(0);
   const tabListRef = useRef(null);
@@ -224,7 +269,8 @@ export default function AnalysisMarkdown({
       {/* ---------------------------------------------------------- */}
       {/* HEADER AREA — always the first N (default 2) H1 sections.  */}
       {/* Position-based, never name-based, so it works regardless   */}
-      {/* of what the engine actually titles these sections.         */}
+      {/* of what the engine actually titles these sections. The     */}
+      {/* "PRODUCT" raw-ingredient section is filtered out above.    */}
       {/* ---------------------------------------------------------- */}
       {headerSections.length > 0 && (
         <div className="mb-6 space-y-6">
