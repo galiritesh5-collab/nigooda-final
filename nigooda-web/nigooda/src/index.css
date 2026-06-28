@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @keyframes fadeSlideIn {
   from {
     opacity: 0;
@@ -11,4 +12,47 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@layer base {
+  body {
+    background-color: #F8FAFC;
+    color: #0F172A;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Premium inputs and textareas focus rings */
+  input, textarea, select {
+    @apply transition-all duration-200;
+  }
+  input:focus, textarea:focus, select:focus {
+    @apply ring-2 ring-indigo-600/10 border-indigo-600 outline-none;
+  }
+}
+
+/* Premium micro-animations */
+.hover-lift {
+  @apply transition-all duration-300 ease-out;
+}
+.hover-lift:hover {
+  @apply -translate-y-1 shadow-lg border-slate-200/80;
+}
+.active-press:active {
+  transform: scale(0.98);
+}
+
+/* Smooth scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #CBD5E1;
 }

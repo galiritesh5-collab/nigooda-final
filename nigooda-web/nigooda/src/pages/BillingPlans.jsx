@@ -10,7 +10,7 @@ const PLANS = [
     name: "Free",
     price: 0,
     scans: 5,
-    features: ["5 AI scans", "Basic health score", "Ingredient breakdown"],
+    features: ["5 AI scans", "Food Intelligence", "Product Intelligence"],
     color: "slate",
     popular: false,
   },
@@ -20,10 +20,9 @@ const PLANS = [
     price: 139,
     scans: 50,
     features: [
-      "50 AI scans",
-      "Detailed health ratings",
-      "Additive analysis",
-      "PDF reports",
+   
+      "50 AI scans","Food Intelligence", "Product Intelligence"
+      
     ],
     color: "blue",
     popular: false,
@@ -34,11 +33,9 @@ const PLANS = [
     price: 229,
     scans: 100,
     features: [
-      "100 AI scans",
-      "Everything in Starter",
-      "Priority AI",
-      "Advanced ingredient insights",
-      "Scan history export",
+      
+      "100 AI scans","Food Intelligence", "Product Intelligence"
+    
     ],
     color: "violet",
     popular: true,
@@ -121,7 +118,7 @@ const BillingPlans = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-20 md:pt-24 pb-12 md:pb-16 px-4 md:px-8">
+    <div className="min-h-screen bg-slate-50 pt-20 md:pt-24 pb-12 md:pb-16 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
 
         {/* HEADER */}
@@ -191,7 +188,7 @@ const BillingPlans = () => {
 
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-violet-600 text-white text-[10px] font-bold rounded-full tracking-wide uppercase shadow-sm">
-                    Most Popular
+                    Best Value
                   </div>
                 )}
 
@@ -224,7 +221,7 @@ const BillingPlans = () => {
                   </div>
 
                   <p className="text-xs text-slate-400 mt-1">
-                    {plan.scans} AI scans included
+                    {plan.scans} scans per month
                   </p>
 
                 </div>

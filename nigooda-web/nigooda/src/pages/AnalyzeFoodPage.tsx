@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { API_URL } from "../config";
-import { db } from "../lib/firebase";
+import { db, auth, googleProvider } from "../lib/firebase";
+import { signInWithPopup } from "firebase/auth";
 import {
   useNavigate,
   useParams,
@@ -67,10 +68,10 @@ const AnalyzeFoodPage = () => {
   };
 
   /* ====================================
-     ANALYZE
+     RUN ANALYSIS (existing logic, unchanged)
   ==================================== */
 
-  const handleAnalyze =
+  const runAnalysis =
     async () => {
 
       try {
@@ -234,6 +235,41 @@ const AnalyzeFoodPage = () => {
 
     };
 
+  /* ====================================
+     ANALYZE (auth gate)
+  ==================================== */
+
+  const handleAnalyze =
+    async () => {
+
+      if (!currentUser) {
+
+        try {
+
+          await signInWithPopup(
+            auth,
+            googleProvider
+          );
+
+        }
+
+        catch (error) {
+
+          console.error(
+            "FOOD ANALYSIS ERROR:",
+            error
+          );
+
+          return;
+
+        }
+
+      }
+
+      await runAnalysis();
+
+    };
+
   return (
 
     <div className="min-h-screen bg-slate-50 px-4 md:px-6 py-6 md:py-8">
@@ -345,12 +381,12 @@ const AnalyzeFoodPage = () => {
             {/* IMAGE */}
 
             <div
-              className={`rounded-2xl border p-5 hover:shadow-xl transition-all duration-300 ${
+              className={`rounded-2xl border p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ${
                 isDrinks
 
-                  ? "border-sky-100 bg-sky-50"
+                  ? "border-sky-100 bg-sky-50/50"
 
-                  : "border-emerald-100 bg-emerald-50"
+                  : "border-emerald-100 bg-emerald-50/50"
               }`}
             >
 
@@ -394,7 +430,7 @@ const AnalyzeFoodPage = () => {
 
             {/* PASTE */}
 
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 hover:shadow-xl transition-all duration-300">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
 
               <div className="text-3xl mb-3">
                 ✍️
@@ -438,12 +474,12 @@ const AnalyzeFoodPage = () => {
                   : "Paste food ingredients here..."
               }
 
-              className={`w-full h-36 md:h-44 rounded-2xl border p-4 text-sm text-slate-700 resize-none focus:outline-none focus:ring-4 ${
+              className={`w-full h-36 md:h-44 rounded-2xl border bg-slate-50/30 p-4 text-sm text-slate-800 placeholder:text-slate-400/80 resize-none focus:outline-none focus:ring-2 transition-all duration-200 shadow-sm ${
                 isDrinks
 
-                  ? "border-sky-200 focus:ring-sky-100"
+                  ? "border-sky-200 focus:ring-sky-500/10 focus:border-sky-500"
 
-                  : "border-emerald-200 focus:ring-emerald-100"
+                  : "border-emerald-200 focus:ring-emerald-500/10 focus:border-emerald-500"
               }`}
             />
 
@@ -458,12 +494,12 @@ const AnalyzeFoodPage = () => {
                 )
               }
 
-              className={`mt-4 px-6 py-3 rounded-xl text-sm text-white font-semibold transition-all duration-200 disabled:opacity-50 ${
+              className={`mt-4 px-6 py-3 rounded-xl text-sm text-white font-semibold shadow-sm hover:shadow active-press transition-all duration-200 disabled:opacity-50 ${
                 isDrinks
 
-                  ? "bg-sky-600 hover:bg-sky-500"
+                  ? "bg-sky-600 hover:bg-sky-700"
 
-                  : "bg-emerald-600 hover:bg-emerald-500"
+                  : "bg-emerald-600 hover:bg-emerald-700"
               }`}
             >
 

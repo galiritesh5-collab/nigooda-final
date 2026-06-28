@@ -27,7 +27,7 @@ const Settings = () => {
     .slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] pt-20 md:pt-24 pb-12 px-4 md:px-8">
+    <div className="min-h-screen bg-slate-50 pt-20 md:pt-24 pb-12 px-4 md:px-8">
       <div className="max-w-2xl mx-auto">
 
         {/* HEADER */}

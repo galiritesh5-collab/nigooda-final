@@ -173,7 +173,7 @@ const AppContent = () => {
 
   return (
 
-    <div className="min-h-screen font-sans text-slate-900">
+    <div className="min-h-screen font-sans text-slate-900 bg-slate-50">
       <ScrollToTop />
 
       <Navbar

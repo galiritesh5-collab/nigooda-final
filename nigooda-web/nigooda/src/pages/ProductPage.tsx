@@ -201,7 +201,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
               onClick={(e) => {
                 if (!buyLinkHref) e.preventDefault();
               }}
-              className={`flex-1 flex items-center justify-center gap-2 bg-black text-white py-3.5 rounded-lg font-bold text-base shadow-sm hover:bg-slate-900 hover:shadow-md transition ${
+              className={`flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-semibold text-base shadow-sm hover:shadow active-press transition ${
                 !buyLinkHref ? "opacity-40 cursor-not-allowed pointer-events-none" : ""
               }`}
             >
@@ -211,7 +211,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
             <button
               onClick={() => toggleWishlist(activeVariant.id)}
-              className="flex-1 flex items-center justify-center gap-2 border border-gray-300 bg-white py-3.5 rounded-lg font-medium text-sm text-slate-600 hover:bg-gray-50 transition"
+              className="flex-1 flex items-center justify-center gap-2 border border-slate-200 bg-white py-3.5 rounded-xl font-medium text-sm text-slate-700 hover:bg-slate-50 hover:border-slate-300 active-press transition"
             >
               <Heart
                 size={18}
@@ -225,7 +225,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
           {/* 🎁 REFERRAL CODE CARD */}
           {activeVariant["Referral Code"] && (
-            <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-5 py-4">
+            <div className="rounded-2xl bg-emerald-50/50 border border-emerald-100 px-5 py-4 shadow-sm">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="flex items-center gap-2 text-sm font-medium text-emerald-800">
                   <Tag size={16} />
@@ -248,7 +248,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
           {/* ⭐ RATING BADGE */}
           {activeVariant.Rating && (
-            <div className="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold px-3 py-1 rounded-full">
+            <div className="inline-flex items-center gap-1 bg-amber-50/80 border border-amber-200/60 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
               ⭐ {activeVariant.Rating}
             </div>
           )}
@@ -281,7 +281,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
           {/* 🧪 INGREDIENTS CARD */}
           {ingredientsText && (
-            <div className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
+            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm px-6 py-5">
               <h3 className="font-semibold text-slate-900 mb-2">
                 Ingredients
               </h3>
@@ -307,7 +307,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
           {/* 📄 DESCRIPTION CARD — same design system as Ingredients */}
           {descriptionFull && (
-            <div className="rounded-2xl border border-slate-200 bg-white px-6 py-5">
+            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm px-6 py-5">
               <h3 className="font-semibold text-slate-900 mb-2">
                 Description
               </h3>
@@ -333,9 +333,9 @@ const ProductPage = ({ products }: { products: Product[] }) => {
 
           {/* 🌐 SELLER WEBSITE CTA CARD — premium brand exploration */}
           {sellerWebsiteHref && (
-            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-white px-6 py-6">
+            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/30 via-white to-white shadow-sm px-6 py-6">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-indigo-100/50 flex items-center justify-center">
                   <Globe2 size={22} className="text-indigo-600" />
                 </div>
                 <div>
@@ -352,7 +352,7 @@ const ProductPage = ({ products }: { products: Product[] }) => {
                 href={sellerWebsiteHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 flex items-center justify-center gap-2 w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition shadow-sm"
+                className="mt-5 flex items-center justify-center gap-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 active-press shadow-sm"
               >
                 Visit Official Website
                 <ExternalLink size={16} />

@@ -10,25 +10,25 @@ type Props = {
 
 const colorMap = {
   emerald: {
-    bg: "bg-emerald-50/60",
-    border: "border-emerald-100/80",
-    iconBg: "bg-emerald-100/80",
-    tag: "bg-emerald-100/70 text-emerald-700",
-    glow: "from-emerald-100/50",
+    bg: "bg-white",
+    border: "border-slate-200/80 hover:border-emerald-300",
+    iconBg: "bg-emerald-50/80 text-emerald-700 border border-emerald-100/40",
+    tag: "bg-emerald-50/80 text-emerald-700 border border-emerald-100/30",
+    glow: "from-emerald-100/40",
   },
   indigo: {
-    bg: "bg-indigo-50/60",
-    border: "border-indigo-100/80",
-    iconBg: "bg-indigo-100/80",
-    tag: "bg-indigo-100/70 text-indigo-700",
-    glow: "from-indigo-100/50",
+    bg: "bg-white",
+    border: "border-slate-200/80 hover:border-indigo-300",
+    iconBg: "bg-indigo-50/80 text-indigo-700 border border-indigo-100/40",
+    tag: "bg-indigo-50/80 text-indigo-700 border border-indigo-100/30",
+    glow: "from-indigo-100/40",
   },
   rose: {
-    bg: "bg-rose-50/60",
-    border: "border-rose-100/80",
-    iconBg: "bg-rose-100/80",
-    tag: "bg-rose-100/70 text-rose-700",
-    glow: "from-rose-100/50",
+    bg: "bg-white",
+    border: "border-slate-200/80 hover:border-rose-300",
+    iconBg: "bg-rose-50/80 text-rose-700 border border-rose-100/40",
+    tag: "bg-rose-50/80 text-rose-700 border border-rose-100/30",
+    glow: "from-rose-100/40",
   },
 };
 
@@ -37,7 +37,7 @@ const IntelligenceCard = ({ icon, title, description, tags, buttonText, color, o
 
   return (
     <div
-      className={`relative group rounded-3xl border ${c.border} ${c.bg} backdrop-blur-sm p-5 md:p-6 flex flex-col gap-3.5 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/8 transition-all duration-300 overflow-hidden`}
+      className={`relative group rounded-2xl border ${c.border} ${c.bg} backdrop-blur-sm p-5 md:p-6 flex flex-col gap-3.5 shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300 ease-out overflow-hidden`}
     >
       {/* Subtle top glow */}
       <div className={`absolute -top-12 -right-12 w-40 h-40 rounded-full bg-gradient-radial ${c.glow} to-transparent blur-2xl pointer-events-none`} />
@@ -72,7 +72,7 @@ const IntelligenceCard = ({ icon, title, description, tags, buttonText, color, o
       {/* BUTTON */}
       <button
         onClick={onClick}
-        className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-700 text-white text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+        className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition-all duration-200 active-press shadow-sm"
       >
         {buttonText}
       </button>

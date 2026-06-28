@@ -81,7 +81,7 @@ const ProductAnalysisResultPage = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#F7F8FC] px-4 py-8">
+    <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="max-w-6xl mx-auto">
 
         <div className="mb-8">

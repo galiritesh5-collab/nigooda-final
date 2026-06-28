@@ -9,14 +9,14 @@ const TITLE = "Skin Care Intelligence";
 const SUBTITLE = "Analyze long-term skin compatibility and formulation architecture";
 
 const T = {
-  indigo      : "#4F46E5",
-  indigoLight : "#6366F1",
-  indigoPale  : "#EEF2FF",
-  indigoMid   : "#C7D2FE",
+  indigo      : "#2563EB",
+  indigoLight : "#1D4ED8",
+  indigoPale  : "#DBEAFE",
+  indigoMid   : "#BFDBFE",
   teal        : "#0D9488",
   tealLight   : "#CCFBF1",
   mint        : "#10B981",
-  amber       : "#D97706",
+  amber       : "#F59E0B",
   amberLight  : "#FEF3C7",
   red         : "#DC2626",
   redLight    : "#FEE2E2",
@@ -31,14 +31,14 @@ const T = {
   orange      : "#EA580C",
   orangeLight : "#FFF7ED",
   textDark    : "#0F172A",
-  textMid     : "#334155",
+  textMid     : "#475569",
   textMuted   : "#64748B",
-  textFaint   : "#94A3B8",
+  textFaint   : "#64748B",
   surface     : "#FFFFFF",
-  surfaceAlt  : "#F8FAFC",
+  surfaceAlt  : "#F1F5F9",
   border      : "#E2E8F0",
   borderMid   : "#CBD5E1",
-  bg          : "#F1F5F9",
+  bg          : "#F8FAFC",
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

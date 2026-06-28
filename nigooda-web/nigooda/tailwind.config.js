@@ -9,6 +9,33 @@ export default {
       fontFamily: {
         sans: ['Outfit', 'sans-serif'],
       },
+      colors: {
+        slate: {
+          50: '#F8FAFC',
+          100: '#F1F5F9',
+          200: '#E2E8F0',
+          500: '#64748B',
+          600: '#475569',
+          700: '#475569',
+          900: '#0F172A',
+        },
+        indigo: {
+          50: '#DBEAFE',
+          100: '#DBEAFE',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1D4ED8',
+        },
+        brand: {
+          blue: '#2563EB',
+          'blue-hover': '#1D4ED8',
+          'blue-surface': '#DBEAFE',
+          purple: '#7C3AED',
+          success: '#16A34A',
+          warning: '#F59E0B',
+          danger: '#DC2626',
+        }
+      },
       animation: {
         'gradient-x': 'gradient-x 15s ease infinite',
         'gradient-y': 'gradient-y 15s ease infinite',

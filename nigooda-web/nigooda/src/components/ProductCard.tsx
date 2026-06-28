@@ -41,7 +41,7 @@ const ProductCard: React.FC<{
 
   return (
     <div
-      className={`relative group bg-white rounded-2xl hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/8 transition-all duration-300 overflow-hidden ${
+      className={`relative group bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 active-press transition-all duration-300 ease-out overflow-hidden ${
         compact ? "p-3" : "p-4"
       }`}
     >

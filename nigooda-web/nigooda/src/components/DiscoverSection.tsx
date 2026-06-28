@@ -20,35 +20,35 @@ const sectionThemes: Record<
   }
 > = {
   "new-launch": {
-    bg: "bg-[#fdf8f0]",
-    accent: "border-amber-200/60",
+    bg: "bg-slate-100/50",
+    accent: "border-slate-200/80 shadow-sm",
     label: "New Arrivals",
-    labelColor: "text-amber-700 bg-amber-100/80",
-    decorColor: "from-amber-100/60",
+    labelColor: "text-amber-700 bg-amber-50/80 border border-amber-100/60",
+    decorColor: "from-amber-100/30",
   },
 
   "daily-use": {
-    bg: "bg-[#f5f3ff]",
-    accent: "border-violet-200/60",
+    bg: "bg-slate-100/50",
+    accent: "border-slate-200/80 shadow-sm",
     label: "Daily Essentials",
-    labelColor: "text-violet-700 bg-violet-100/80",
-    decorColor: "from-violet-100/60",
+    labelColor: "text-blue-700 bg-blue-50/80 border border-blue-100/60",
+    decorColor: "from-blue-100/30",
   },
 
   trending: {
-    bg: "bg-[#fff5f0]",
-    accent: "border-orange-200/60",
+    bg: "bg-slate-100/50",
+    accent: "border-slate-200/80 shadow-sm",
     label: "Trending",
-    labelColor: "text-orange-700 bg-orange-100/80",
-    decorColor: "from-orange-100/60",
+    labelColor: "text-purple-700 bg-purple-50/80 border border-purple-100/60",
+    decorColor: "from-purple-100/30",
   },
 
   underrated: {
-    bg: "bg-[#f0f7ff]",
-    accent: "border-sky-200/60",
+    bg: "bg-slate-100/50",
+    accent: "border-slate-200/80 shadow-sm",
     label: "Hidden Gems",
-    labelColor: "text-sky-700 bg-sky-100/80",
-    decorColor: "from-sky-100/60",
+    labelColor: "text-emerald-700 bg-emerald-50/80 border border-emerald-100/60",
+    decorColor: "from-emerald-100/30",
   },
 };
 

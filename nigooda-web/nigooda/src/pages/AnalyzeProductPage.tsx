@@ -12,7 +12,9 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-import { db } from "../lib/firebase";
+import { signInWithPopup } from "firebase/auth";
+
+import { db, auth, googleProvider } from "../lib/firebase";
 
 const AnalyzeProductPage = () => {
 
@@ -91,10 +93,10 @@ const AnalyzeProductPage = () => {
   };
 
   /* ====================================
-     HANDLE ANALYZE
+     RUN ANALYSIS (existing logic, unchanged)
   ==================================== */
 
-  const handleAnalyze =
+  const runAnalysis =
     async () => {
 
       try {
@@ -490,6 +492,41 @@ navigate(
 
     };
 
+  /* ====================================
+     HANDLE ANALYZE (auth gate)
+  ==================================== */
+
+  const handleAnalyze =
+    async () => {
+
+      if (!currentUser) {
+
+        try {
+
+          await signInWithPopup(
+            auth,
+            googleProvider
+          );
+
+        }
+
+        catch (error) {
+
+          console.error(
+            "FRONTEND ERROR:",
+            error
+          );
+
+          return;
+
+        }
+
+      }
+
+      await runAnalysis();
+
+    };
+
   return (
 
     <div className="min-h-screen bg-slate-50 px-4 md:px-6 py-6 md:py-8">
@@ -562,7 +599,7 @@ navigate(
 
             {/* UPLOAD */}
 
-            <div className="rounded-2xl border border-indigo-100 bg-indigo-50 p-5 hover:shadow-xl transition-all duration-300">
+            <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
 
               <div className="text-3xl mb-3">
                 📸
@@ -581,7 +618,7 @@ navigate(
               <input
                 type="file"
                 accept="image/*"
-                className="mt-6"
+                className="mt-6 text-sm"
                 onChange={(e) => {
 
                   if (
@@ -601,7 +638,7 @@ navigate(
 
             {/* SCAN */}
 
-            <button className="rounded-2xl border border-slate-200 bg-white p-5 text-left hover:shadow-xl transition-all duration-300">
+            <button className="rounded-2xl border border-slate-200/80 bg-white p-5 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active-press">
 
               <div className="text-3xl mb-3">
                 🔍
@@ -620,7 +657,7 @@ navigate(
 
             {/* PASTE */}
 
-            <button className="rounded-2xl border border-slate-200 bg-white p-5 text-left hover:shadow-xl transition-all duration-300">
+            <button className="rounded-2xl border border-slate-200/80 bg-white p-5 text-left shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 active-press">
 
               <div className="text-3xl mb-3">
                 ✍️
@@ -652,13 +689,13 @@ navigate(
                 )
               }
               placeholder="Paste ingredients here..."
-              className="w-full h-36 md:h-44 rounded-2xl border border-slate-200 p-4 text-sm text-slate-700 resize-none focus:outline-none focus:ring-4 focus:ring-indigo-100"
+              className="w-full h-36 md:h-44 rounded-2xl border border-slate-200 bg-slate-50/30 p-4 text-sm text-slate-800 placeholder:text-slate-400/80 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm"
             />
 
             <button
               onClick={handleAnalyze}
               disabled={loading}
-              className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm text-white font-semibold transition-all duration-200 disabled:opacity-50"
+              className="mt-4 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-sm text-white font-semibold shadow-sm hover:shadow active-press transition-all duration-200 disabled:opacity-50"
             >
               {loading
                 ? "Analyzing..."

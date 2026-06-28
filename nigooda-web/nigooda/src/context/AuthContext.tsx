@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../lib/firebase";
+import { auth, db, createUserDocument } from "../lib/firebase";
 
 interface UserData {
   name: string;
@@ -27,7 +27,9 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,23 +41,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         if (user) {
           const userRef = doc(db, "users", user.uid);
-          const snap = await getDoc(userRef);
-          setUserData(snap.exists() ? (snap.data() as UserData) : null);
+
+          let snap = await getDoc(userRef);
+
+          // Auto-create user document if missing
+          if (!snap.exists()) {
+            console.log("User document missing. Creating...");
+
+            await createUserDocument(user);
+
+            snap = await getDoc(userRef);
+          }
+
+          console.log("AUTH USER:", user.uid);
+          console.log("USER DOC EXISTS:", snap.exists());
+
+          setUserData(
+            snap.exists() ? (snap.data() as UserData) : null
+          );
         } else {
           setUserData(null);
         }
       } catch (error) {
-        // FIX: Firestore read can throw (denied rules, offline, etc.)
-        // Without this catch, the throw skips setLoading(false) below
-        // and protected pages spin forever.
         console.error("AuthContext: failed to load user data", error);
         setUserData(null);
       } finally {
-        // FIX: guaranteed to run whether user exists, Firestore
-        // succeeds, Firestore fails, or the user logs out.
         setLoading(false);
       }
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -65,3 +79,5 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;

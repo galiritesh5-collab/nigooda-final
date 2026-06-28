@@ -260,7 +260,7 @@ const ProductIntelligencePage = () => {
 
               <div
                 key={section.title}
-                className="bg-white border border-slate-200 rounded-2xl p-4"
+                className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm"
               >
 
                 {/* SECTION TITLE */}
@@ -295,7 +295,7 @@ const ProductIntelligencePage = () => {
 );
 
                       }}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 hover:border-indigo-300 hover:bg-indigo-50 transition-all duration-200 cursor-pointer text-left"
+                      className="rounded-xl border border-slate-200/80 bg-slate-50/50 px-5 py-4 hover:border-indigo-300 hover:bg-indigo-50/50 hover:shadow-sm active-press transition-all duration-200 cursor-pointer text-left"
                     >
 
                       <p className="text-sm font-medium text-slate-800">
